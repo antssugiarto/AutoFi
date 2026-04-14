@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>AutoFi - Smart Strategy Preview</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700;800&amp;family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-dim": "#070d1f",
+                        "on-surface-variant": "#a5aac2",
+                        "on-primary": "#0f00a4",
+                        "on-tertiary-fixed": "#001a29",
+                        "tertiary-fixed-dim": "#25adf1",
+                        "on-tertiary": "#003b56",
+                        "primary": "#a3a6ff",
+                        "on-secondary-fixed": "#4f0089",
+                        "primary-dim": "#6063ee",
+                        "surface-container-low": "#0c1326",
+                        "surface": "#070d1f",
+                        "error": "#ff6e84",
+                        "surface-bright": "#222b47",
+                        "secondary-fixed-dim": "#dbb4ff",
+                        "secondary-fixed": "#e5c6ff",
+                        "tertiary-dim": "#17a8ec",
+                        "on-secondary-fixed-variant": "#7511c3",
+                        "tertiary": "#61c2ff",
+                        "on-error": "#490013",
+                        "surface-container": "#11192e",
+                        "secondary-container": "#6f00be",
+                        "on-tertiary-fixed-variant": "#003d5a",
+                        "error-container": "#a70138",
+                        "on-primary-container": "#0a0081",
+                        "outline": "#6f758b",
+                        "surface-container-lowest": "#000000",
+                        "secondary-dim": "#9c48ea",
+                        "inverse-surface": "#faf8ff",
+                        "background": "#070d1f",
+                        "on-tertiary-container": "#003047",
+                        "error-dim": "#d73357",
+                        "surface-variant": "#1c253e",
+                        "inverse-on-surface": "#4f5469",
+                        "tertiary-fixed": "#40bbff",
+                        "on-secondary": "#33005b",
+                        "secondary": "#c180ff",
+                        "on-background": "#dfe4fe",
+                        "on-secondary-container": "#e9cdff",
+                        "primary-fixed-dim": "#8387ff",
+                        "inverse-primary": "#494bd7",
+                        "outline-variant": "#41475b",
+                        "on-primary-fixed-variant": "#0e009d",
+                        "surface-container-highest": "#1c253e",
+                        "tertiary-container": "#34b5fa",
+                        "surface-container-high": "#171f36",
+                        "on-surface": "#dfe4fe",
+                        "on-error-container": "#ffb2b9",
+                        "on-primary-fixed": "#000000",
+                        "primary-fixed": "#9396ff",
+                        "surface-tint": "#a3a6ff",
+                        "primary-container": "#9396ff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "2xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Manrope"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body { font-family: 'Inter', sans-serif; }
+        h1, h2, h3 { font-family: 'Manrope', sans-serif; }
+    </style>
+</head>
+<body class="bg-surface text-on-surface antialiased overflow-x-hidden selection:bg-primary/30">
+<!-- TopNavBar -->
+<nav class="fixed top-0 w-full z-50 bg-surface/80 backdrop-blur-xl shadow-[0_0_64px_rgba(99,102,241,0.06)]">
+<div class="flex justify-between items-center px-8 h-20 max-w-[1440px] mx-auto">
+<div class="text-2xl font-bold tracking-tighter text-[#a3a6ff] font-headline">AutoFi</div>
+<div class="hidden md:flex items-center gap-8">
+<a class="font-headline tracking-tight text-[#a3a6ff] border-b-2 border-[#a3a6ff] pb-1" href="#">Dashboard</a>
+<a class="font-headline tracking-tight text-on-surface-variant hover:text-[#a3a6ff] transition-colors" href="#">Strategies</a>
+<a class="font-headline tracking-tight text-on-surface-variant hover:text-[#a3a6ff] transition-colors" href="#">Governance</a>
+</div>
+<button class="bg-gradient-to-br from-primary to-primary-dim text-on-primary font-bold py-3 px-6 rounded-full hover:scale-95 transition-all duration-200 active:scale-90 font-body">
+                Connect Wallet
+            </button>
+</div>
+</nav>
+<!-- SideNavBar (Suppressed for focused Strategy Preview journey as per Shell visibility rules) -->
+<main class="min-h-screen pt-32 pb-20 px-6 max-w-4xl mx-auto relative">
+<!-- Ambient Glow Blobs -->
+<div class="fixed top-1/4 -left-20 w-[500px] h-[500px] bg-secondary/10 blur-[120px] -z-10 rounded-full"></div>
+<div class="fixed bottom-1/4 -right-20 w-[400px] h-[400px] bg-tertiary/10 blur-[100px] -z-10 rounded-full"></div>
+<section class="flex flex-col gap-12">
+<!-- Header Section -->
+<div class="flex flex-col gap-4">
+<div class="flex items-center gap-3 text-primary uppercase tracking-[0.2em] font-bold text-xs">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">magic_button</span>
+                    Automated Intelligence
+                </div>
+<h1 class="text-5xl md:text-6xl font-extrabold tracking-tighter leading-tight bg-gradient-to-r from-on-surface via-primary to-secondary bg-clip-text text-transparent">
+                    Smart Strategy Preview
+                </h1>
+<p class="text-on-surface-variant text-lg max-w-xl leading-relaxed">
+                    AutoFi has analyzed liquidity depth and yield curves to construct the most efficient path for your capital.
+                </p>
+</div>
+<!-- Bento Preview Container -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+<!-- Main Execution Flow (Bento Large) -->
+<div class="md:col-span-8 bg-surface-container-low rounded-2xl p-8 shadow-2xl relative overflow-hidden group">
+<!-- Subtle Scanning Line Effect -->
+<div class="absolute inset-0 bg-gradient-to-b from-primary/5 to-transparent h-1/2 -translate-y-full group-hover:translate-y-[200%] transition-transform duration-[3000ms] pointer-events-none"></div>
+<h3 class="text-on-surface-variant font-label text-sm uppercase tracking-widest mb-8">Proposed Execution Path</h3>
+<div class="flex flex-col gap-8 relative">
+<!-- Step 1 -->
+<div class="flex gap-6 items-start relative">
+<div class="z-10 bg-surface-container-highest p-3 rounded-xl ring-1 ring-outline-variant/20 shadow-lg">
+<span class="material-symbols-outlined text-primary" data-icon="swap_horiz">swap_horiz</span>
+</div>
+<div class="flex flex-col gap-1 flex-1">
+<span class="text-on-surface font-bold text-xl">We will: Swap SOL to USDC</span>
+<span class="text-on-surface-variant text-sm">Optimal route found via Jupiter Aggregator (0.01% slippage)</span>
+</div>
+<!-- Connector Line -->
+<div class="absolute left-6 top-14 bottom-[-2rem] w-[2px] bg-gradient-to-b from-primary/30 to-transparent"></div>
+</div>
+<!-- Step 2 -->
+<div class="flex gap-6 items-start relative pt-4">
+<div class="z-10 bg-surface-container-highest p-3 rounded-xl ring-1 ring-outline-variant/20 shadow-lg">
+<span class="material-symbols-outlined text-secondary" data-icon="account_balance">account_balance</span>
+</div>
+<div class="flex flex-col gap-1 flex-1">
+<span class="text-on-surface font-bold text-xl">We will: Deposit into lending protocol</span>
+<span class="text-on-surface-variant text-sm">Collateralizing USDC in Solend Main Pool</span>
+</div>
+</div>
+</div>
+<!-- Decorative AI Mesh Background -->
+<div class="absolute -bottom-10 -right-10 opacity-10 pointer-events-none">
+<svg fill="none" height="200" viewbox="0 0 200 200" width="200" xmlns="http://www.w3.org/2000/svg">
+<path class="text-primary" d="M100 0L105.5 94.5L200 100L105.5 105.5L100 200L94.5 105.5L0 100L94.5 94.5L100 0Z" fill="currentColor"></path>
+</svg>
+</div>
+</div>
+<!-- Metrics Card (Bento Small) -->
+<div class="md:col-span-4 flex flex-col gap-6">
+<div class="bg-surface-container-highest rounded-2xl p-8 flex flex-col justify-between items-start h-full ring-1 ring-white/5 relative overflow-hidden">
+<div class="flex flex-col gap-2">
+<span class="text-on-surface-variant font-label text-xs uppercase tracking-widest">Yield Optimization</span>
+<div class="text-5xl font-extrabold tracking-tighter text-primary font-headline">12%</div>
+<span class="text-tertiary font-bold text-sm">Estimated APY</span>
+</div>
+<div class="mt-8 flex flex-col gap-4 w-full">
+<div class="flex justify-between items-center text-sm">
+<span class="text-on-surface-variant">Risk Level</span>
+<span class="text-secondary font-bold">Low/Med</span>
+</div>
+<div class="w-full h-1 bg-surface-container-low rounded-full overflow-hidden">
+<div class="bg-gradient-to-r from-primary to-secondary w-2/3 h-full"></div>
+</div>
+</div>
+<!-- Glow effect -->
+<div class="absolute -top-10 -right-10 w-32 h-32 bg-primary/20 blur-[40px] rounded-full"></div>
+</div>
+</div>
+<!-- Additional Analysis (Asymmetric Row) -->
+<div class="md:col-span-12 grid md:grid-cols-3 gap-6">
+<div class="bg-surface-container/50 rounded-xl p-6 flex items-center gap-4 group hover:bg-surface-variant transition-colors">
+<span class="material-symbols-outlined text-on-surface-variant group-hover:text-primary transition-colors" data-icon="verified_user">verified_user</span>
+<div class="flex flex-col">
+<span class="text-on-surface font-bold text-sm">Smart Audited</span>
+<span class="text-on-surface-variant text-xs">Verified secure protocol</span>
+</div>
+</div>
+<div class="bg-surface-container/50 rounded-xl p-6 flex items-center gap-4 group hover:bg-surface-variant transition-colors">
+<span class="material-symbols-outlined text-on-surface-variant group-hover:text-primary transition-colors" data-icon="bolt">bolt</span>
+<div class="flex flex-col">
+<span class="text-on-surface font-bold text-sm">Instant Setup</span>
+<span class="text-on-surface-variant text-xs">~12 seconds execution</span>
+</div>
+</div>
+<div class="bg-surface-container/50 rounded-xl p-6 flex items-center gap-4 group hover:bg-surface-variant transition-colors">
+<span class="material-symbols-outlined text-on-surface-variant group-hover:text-primary transition-colors" data-icon="local_atm">local_atm</span>
+<div class="flex flex-col">
+<span class="text-on-surface font-bold text-sm">Zero Fee Intro</span>
+<span class="text-on-surface-variant text-xs">Protocol fees waived</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer Action Area -->
+<div class="flex flex-col md:flex-row items-center justify-between gap-8 pt-8 border-t border-outline-variant/10">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-full overflow-hidden ring-2 ring-primary/20">
+<img alt="User Wallet Avatar" class="w-full h-full object-cover" data-alt="abstract geometric shape with soft purple and blue hues representing a digital wallet identity" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBAghm1hrgSbkG8_s54bm1N3k4OqydPS0TViq7fHvrWNd13Mkid5vqWem62ivdIsV1HeuEp0yiLAXevmFREm_TegrFRvKYtTTwjE3B-VBiAdcsk6uVFxBO7-CTiLOzNPORu_HxKWHsDXPe6n6csyKHYNHqN_g4uzAFxzRuJ2gp8gMns5RpRlMWsWXEff_km1QKvtiKJcu5nmW3xjhBwVNCSM1-NLvJKWxt3DfAr1WidVbh4Mkt0PM9VBUDeqImnJTKiqHvD7qc9w-M"/>
+</div>
+<div class="flex flex-col">
+<span class="text-on-surface font-bold text-sm">The Ethereal Ledger</span>
+<span class="text-on-surface-variant text-xs font-mono">0x12...34</span>
+</div>
+</div>
+<div class="flex gap-4 items-center w-full md:w-auto">
+<button class="flex-1 md:flex-none px-8 py-4 text-on-surface font-bold hover:bg-surface-variant rounded-full transition-colors">
+                        Back to Edit
+                    </button>
+<button class="flex-1 md:flex-none px-12 py-4 bg-gradient-to-br from-primary to-primary-dim text-on-primary font-bold text-lg rounded-full shadow-[0_0_32px_rgba(163,166,255,0.3)] hover:shadow-[0_0_48px_rgba(163,166,255,0.5)] hover:scale-105 active:scale-95 transition-all duration-300">
+                        Confirm &amp; Execute
+                    </button>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer Component -->
+<footer class="w-full py-12 bg-[#070d1f]">
+<div class="bg-surface-container-low h-[1px] w-full mb-12 opacity-30"></div>
+<div class="flex flex-col items-center gap-6 px-4 max-w-[1440px] mx-auto">
+<div class="flex gap-8">
+<a class="font-inter text-xs uppercase tracking-widest text-on-surface-variant hover:text-white transition-all opacity-80 hover:opacity-100 hover:underline" href="#">Security</a>
+<a class="font-inter text-xs uppercase tracking-widest text-on-surface-variant hover:text-white transition-all opacity-80 hover:opacity-100 hover:underline" href="#">Docs</a>
+<a class="font-inter text-xs uppercase tracking-widest text-on-surface-variant hover:text-white transition-all opacity-80 hover:opacity-100 hover:underline" href="#">Privacy</a>
+<a class="font-inter text-xs uppercase tracking-widest text-on-surface-variant hover:text-white transition-all opacity-80 hover:opacity-100 hover:underline" href="#">Terms</a>
+</div>
+<div class="font-inter text-xs uppercase tracking-widest text-on-surface-variant opacity-50">
+                © 2024 AutoFi. The Intelligent Atmosphere.
+            </div>
+</div>
+</footer>
+</body></html>
