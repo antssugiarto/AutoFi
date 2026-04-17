@@ -1,26 +1,184 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+/* ============================================================
+   AutoFi — "Obsidian Aura" Design System
+   Tailwind CSS v4 Native Theme Configuration
+   ============================================================ */
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  /* ── Surface Hierarchy (Stacked Frosted Glass) ── */
+  --color-surface-dim: #070d1f;
+  --color-surface: #070d1f;
+  --color-surface-container-lowest: #000000;
+  --color-surface-container-low: #0c1326;
+  --color-surface-container: #11192e;
+  --color-surface-container-high: #171f36;
+  --color-surface-container-highest: #1c253e;
+  --color-surface-bright: #222b47;
+  --color-surface-variant: #1c253e;
+  --color-surface-tint: #a3a6ff;
+  --color-background: #070d1f;
+
+  /* ── On-Surface (Text & Icons) ── */
+  --color-on-surface: #dfe4fe;
+  --color-on-surface-variant: #a5aac2;
+  --color-on-background: #dfe4fe;
+
+  /* ── Primary (Bioluminescent Indigo) ── */
+  --color-primary: #a3a6ff;
+  --color-primary-dim: #6063ee;
+  --color-primary-fixed: #9396ff;
+  --color-primary-fixed-dim: #8387ff;
+  --color-primary-container: #9396ff;
+  --color-on-primary: #0f00a4;
+  --color-on-primary-container: #0a0081;
+  --color-on-primary-fixed: #000000;
+  --color-on-primary-fixed-variant: #0e009d;
+  --color-inverse-primary: #494bd7;
+
+  /* ── Secondary (Bioluminescent Purple) ── */
+  --color-secondary: #c180ff;
+  --color-secondary-dim: #9c48ea;
+  --color-secondary-fixed: #e5c6ff;
+  --color-secondary-fixed-dim: #dbb4ff;
+  --color-secondary-container: #6f00be;
+  --color-on-secondary: #33005b;
+  --color-on-secondary-container: #e9cdff;
+  --color-on-secondary-fixed: #4f0089;
+  --color-on-secondary-fixed-variant: #7511c3;
+
+  /* ── Tertiary (Bioluminescent Cyan) ── */
+  --color-tertiary: #61c2ff;
+  --color-tertiary-dim: #17a8ec;
+  --color-tertiary-fixed: #40bbff;
+  --color-tertiary-fixed-dim: #25adf1;
+  --color-tertiary-container: #34b5fa;
+  --color-on-tertiary: #003b56;
+  --color-on-tertiary-container: #003047;
+  --color-on-tertiary-fixed: #001a29;
+  --color-on-tertiary-fixed-variant: #003d5a;
+
+  /* ── Error ── */
+  --color-error: #ff6e84;
+  --color-error-dim: #d73357;
+  --color-error-container: #a70138;
+  --color-on-error: #490013;
+  --color-on-error-container: #ffb2b9;
+
+  /* ── Outline ── */
+  --color-outline: #6f758b;
+  --color-outline-variant: #41475b;
+
+  /* ── Inverse ── */
+  --color-inverse-surface: #faf8ff;
+  --color-inverse-on-surface: #4f5469;
+
+  /* ── Semantic Aliases ── */
+  --color-success: #4ade80;
+
+  /* ── Typography ── */
+  --font-headline: "Manrope", system-ui, sans-serif;
+  --font-body: "Inter", system-ui, sans-serif;
+  --font-label: "Inter", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+
+  /* ── Border Radius ── */
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1.5rem;
+  --radius-2xl: 2rem;
+  --radius-3xl: 3rem;
+
+  /* ── Animations ── */
+  --animate-float: float 6s ease-in-out infinite;
+  --animate-glow-pulse: glow-pulse 3s ease-in-out infinite;
+  --animate-scan: scan 3s ease-in-out infinite;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* ── Keyframes ── */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-12px); }
+}
+
+@keyframes glow-pulse {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+@keyframes scan {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(200%); }
+}
+
+/* ============================================================
+   Base Styles
+   ============================================================ */
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--color-surface);
+  color: var(--color-on-surface);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::selection {
+  background-color: color-mix(in srgb, var(--color-primary) 30%, transparent);
+  color: var(--color-on-surface);
+}
+
+/* ============================================================
+   Utility Classes
+   ============================================================ */
+
+/* Glassmorphism panel */
+.glass-panel {
+  background: color-mix(in srgb, var(--color-surface-container-highest) 40%, transparent);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+}
+
+/* Text glow for large display numbers */
+.text-glow {
+  text-shadow: 0 0 20px color-mix(in srgb, var(--color-primary) 30%, transparent);
+}
+
+/* Ghost border (design spec: 15% opacity outlines) */
+.ghost-border {
+  border: 1px solid color-mix(in srgb, var(--color-outline-variant) 15%, transparent);
+}
+
+/* ── Number Input Spinner Removal ── */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+/* ── Scrollbar Styling ── */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-outline-variant);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-outline);
 }
