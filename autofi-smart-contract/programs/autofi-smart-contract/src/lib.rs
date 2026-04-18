@@ -11,33 +11,17 @@ pub mod autofi_smart_contract {
         Ok(())
     }
 
-    pub fn execute_intent(ctx: Context<ExecuteIntent>, intent: Intent, strategy: Strategy) -> Result<()> {
+    pub fn execute_intent(ctx: Context<ExecuteIntent>, goal: String,
+    amount: u64,) -> Result<()> {
         msg!("Executing AutoFi intent");
 
         msg!("User: {:?}", ctx.accounts.user.key());
 
-        msg!("Goal: {}", intent.goal);
-        msg!("Amount: {}", intent.amount);
-
-        msg!("Executing strategy...");
-
-        for step in strategy.steps.iter() {
-            msg!("Step: {}", step);
-        }
+        msg!("Goal: {}", goal);
+        msg!("Amount: {}", amount);
 
         Ok(())
     }
-}
-
-#[derive(AnchorSerialize, AnchorDeserialize)]
-pub struct Strategy {
-    pub steps: Vec<String>,
-}
-
-#[derive(AnchorSerialize, AnchorDeserialize)]
-pub struct Intent {
-    pub goal: String,
-    pub amount: u64,
 }
 
 #[derive(Accounts)]
