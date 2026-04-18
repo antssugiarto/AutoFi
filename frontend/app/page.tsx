@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Navbar from "./components/navbar";
 import Footer from "./components/footer";
@@ -18,16 +20,25 @@ import {
   IconVerifiedUser,
 } from "./components/icons";
 import { STATS } from "./lib/constants";
-import { useWallet } from "./lib/WalletContext";
+import { useWallet } from "@solana/wallet-adapter-react";
+import { useGlobalState } from "./lib/GlobalStateContext";
 
 export default function LandingPage() {
-  const { isConnected, isConnecting, connectWallet } = useWallet();
+  const { connected, connecting } = useWallet();
+  const { state } = useGlobalState();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (connected) {
+      router.push("/dashboard");
+    }
+  }, [connected, router]);
   return (
     <>
       <Navbar />
 
       <main className="pt-20">
-        {/* ── Hero Section ── */}
+        {/* â”€â”€ Hero Section â”€â”€ */}
         <section className="relative min-h-[700px] md:min-h-[calc(100vh-80px)] flex items-center justify-center overflow-hidden px-8 py-12">
           <AmbientBackground
             fixed={false}
@@ -62,17 +73,17 @@ export default function LandingPage() {
               </p>
 
               <div className="flex flex-wrap gap-4 pt-4">
-                {isConnected ? (
+                {connected ? (
                   <Button size="lg">
                     <Link href="/dashboard">Go to Dashboard</Link>
                   </Button>
                 ) : (
-                  <Button size="lg" onClick={() => connectWallet()} disabled={isConnecting}>
-                    {isConnecting ? "Connecting..." : "Connect Wallet"}
+                  <Button size="lg">
+                    <Link href="/connect">Connect Wallet</Link>
                   </Button>
                 )}
                 <Button variant="secondary" size="lg">
-                  <Link href="/goals">Explore Strategies</Link>
+                  <Link href="/strategy">Explore Strategies</Link>
                 </Button>
               </div>
             </div>
@@ -142,7 +153,7 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* ── Stats Section ── */}
+        {/* â”€â”€ Stats Section â”€â”€ */}
         <section className="py-16 bg-surface-container-low">
           <div className="max-w-[1440px] mx-auto px-8 grid grid-cols-2 md:grid-cols-4 gap-12 text-center">
             {STATS.map((stat) => (
@@ -158,7 +169,7 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* ── Curated Intelligence (Bento Grid) ── */}
+        {/* â”€â”€ Curated Intelligence (Bento Grid) â”€â”€ */}
         <section className="py-24 px-8 max-w-[1440px] mx-auto">
           <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
             <div className="max-w-2xl">
@@ -171,7 +182,7 @@ export default function LandingPage() {
               </p>
             </div>
             <Link
-              href="/goals"
+              href="/strategy"
               className="text-primary font-bold flex items-center gap-2 group"
             >
               View all strategies
@@ -183,7 +194,7 @@ export default function LandingPage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* Strategy 1 — Featured */}
+            {/* Strategy 1 â€” Featured */}
             <div className="md:col-span-2 group relative overflow-hidden rounded-3xl bg-surface-container-high p-8 flex flex-col justify-between min-h-[350px]">
               <div className="relative z-10">
                 <div className="inline-block px-4 py-1 bg-primary/10 text-primary text-xs font-bold rounded-full mb-6 uppercase tracking-wider">
@@ -213,7 +224,7 @@ export default function LandingPage() {
                   </div>
                 </div>
                 <Link
-                  href="/invest"
+                  href="/amount"
                   className="w-14 h-14 rounded-full bg-on-surface text-surface flex items-center justify-center hover:bg-primary transition-colors"
                 >
                   <IconAdd size={24} />
@@ -243,7 +254,7 @@ export default function LandingPage() {
                   </span>
                 </div>
                 <Link
-                  href="/invest"
+                  href="/amount"
                   className="block w-full py-3 rounded-xl bg-surface-container-highest text-on-surface font-bold border border-outline-variant/20 hover:border-secondary/50 transition-all text-center"
                 >
                   Invest Now
@@ -273,7 +284,7 @@ export default function LandingPage() {
                   </span>
                 </div>
                 <Link
-                  href="/invest"
+                  href="/amount"
                   className="block w-full py-3 rounded-xl bg-surface-container-highest text-on-surface font-bold border border-outline-variant/20 hover:border-tertiary/50 transition-all text-center"
                 >
                   Invest Now
@@ -281,7 +292,7 @@ export default function LandingPage() {
               </div>
             </div>
 
-            {/* Strategy 4 — Custom Builder */}
+            {/* Strategy 4 â€” Custom Builder */}
             <div className="md:col-span-2 group relative overflow-hidden rounded-3xl bg-gradient-to-br from-surface-container-low to-surface-dim p-8 flex items-center gap-12 min-h-[350px] border border-outline-variant/10">
               <div className="flex-1">
                 <h3 className="text-2xl md:text-3xl font-headline font-bold mb-4">
@@ -316,7 +327,7 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* ── CTA Section ── */}
+        {/* â”€â”€ CTA Section â”€â”€ */}
         <section className="py-24 px-8">
           <div className="max-w-[1200px] mx-auto relative rounded-[2.5rem] bg-gradient-to-br from-primary-container/20 to-secondary-container/20 p-10 md:p-20 overflow-hidden border border-outline-variant/10 text-center">
             <div className="absolute top-0 left-0 w-full h-full pointer-events-none bg-[radial-gradient(circle_at_50%_50%,rgba(163,166,255,0.1),transparent)]" />
@@ -329,13 +340,13 @@ export default function LandingPage() {
               Secure, transparent, and non-custodial by design.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center relative z-10">
-              {isConnected ? (
+              {connected ? (
                 <Button size="lg" className="shadow-xl">
                   <Link href="/dashboard">Go to Dashboard</Link>
                 </Button>
               ) : (
-                <Button size="lg" className="shadow-xl" onClick={() => connectWallet()} disabled={isConnecting}>
-                  {isConnecting ? "Connecting..." : "Connect Wallet Now"}
+                <Button size="lg" className="shadow-xl">
+                  <Link href="/connect">Connect Wallet Now</Link>
                 </Button>
               )}
               <Button variant="secondary" size="lg" className="bg-surface/50 backdrop-blur-md border-outline-variant/20">
@@ -350,3 +361,4 @@ export default function LandingPage() {
     </>
   );
 }
+

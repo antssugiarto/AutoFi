@@ -1,4 +1,4 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import { IconClose, IconTune } from "./icons";
 
 interface SettingsModalProps {
@@ -128,3 +128,4 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
     </div>
   );
 }
+

@@ -1,4 +1,4 @@
-import { IconTrendingUp, IconArrowForward, IconSwapHoriz, IconArrowUpward } from "@/app/components/icons";
+﻿import { IconTrendingUp, IconArrowForward, IconSwapHoriz, IconArrowUpward } from "@/app/components/icons";
 
 const HISTORY_DATA = [
   { id: "tx-1", type: "Harvest", asset: "USDC", amount: "+$45.20", date: "Today, 14:32", status: "Success", icon: IconTrendingUp, color: "text-tertiary" },
@@ -79,3 +79,4 @@ export default function HistoryPage() {
     </div>
   );
 }
+

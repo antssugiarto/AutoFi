@@ -1,5 +1,5 @@
-/* ============================================================
-   AutoFi — SVG Icon Library
+﻿/* ============================================================
+   AutoFi â€” SVG Icon Library
    Replaces Material Symbols CDN with inline SVGs for
    better performance and zero external dependencies.
    ============================================================ */
@@ -52,7 +52,7 @@ function createFilledIcon(paths: string[], viewBox = "0 0 24 24") {
   };
 }
 
-// ── Navigation & UI ──
+// â”€â”€ Navigation & UI â”€â”€
 export const IconDashboard = createFilledIcon([
   "M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z",
 ]);
@@ -97,7 +97,7 @@ export const IconAdd = createFilledIcon([
   "M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z",
 ]);
 
-// ── DeFi & Finance ──
+// â”€â”€ DeFi & Finance â”€â”€
 export const IconAutoAwesome = createFilledIcon([
   "M19 9l1.25-2.75L23 5l-2.75-1.25L19 1l-1.25 2.75L15 5l2.75 1.25L19 9zm-7.5.5L9 4 6.5 9.5 1 12l5.5 2.5L9 20l2.5-5.5L17 12l-5.5-2.5zm7.5 5.5l-1.25 2.75L15 19l2.75 1.25L19 23l1.25-2.75L23 19l-2.75-1.25L19 15z",
 ]);
@@ -174,7 +174,7 @@ export const IconMagicButton = createFilledIcon([
   "M19 9l1.25-2.75L23 5l-2.75-1.25L19 1l-1.25 2.75L15 5l2.75 1.25L19 9zm-7.5.5L9 4 6.5 9.5 1 12l5.5 2.5L9 20l2.5-5.5L17 12l-5.5-2.5z",
 ]);
 
-// ── Logo ──
+// â”€â”€ Logo â”€â”€
 export function AutoFiLogo({ className = "" }: { className?: string }) {
   return (
     <span className={`text-2xl font-bold tracking-tighter text-primary font-headline ${className}`}>
@@ -182,3 +182,4 @@ export function AutoFiLogo({ className = "" }: { className?: string }) {
     </span>
   );
 }
+

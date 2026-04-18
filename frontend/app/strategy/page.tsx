@@ -1,3 +1,6 @@
+﻿"use client";
+
+import { useState } from "react";
 import Link from "next/link";
 import Navbar from "@/app/components/navbar";
 import Footer from "@/app/components/footer";
@@ -9,9 +12,12 @@ import {
   IconBolt,
   IconSmartToy,
   IconArrowForward,
+  IconClose,
 } from "@/app/components/icons";
 import { GOALS } from "@/app/lib/constants";
 import type { Goal } from "@/app/lib/types";
+import { useGlobalState } from "@/app/lib/GlobalStateContext";
+import { useRouter } from "next/navigation";
 
 const ICON_MAP: Record<string, typeof IconAutoAwesome> = {
   auto_awesome: IconAutoAwesome,
@@ -43,12 +49,16 @@ const ACCENT_MAP: Record<string, { text: string; bg: string; hoverBg: string }> 
   },
 };
 
-function GoalCard({ goal }: { goal: Goal }) {
+function GoalCard({ goal, onSelect }: { goal: Goal, onSelect: () => void }) {
   const Icon = ICON_MAP[goal.icon] || IconAutoAwesome;
   const accent = ACCENT_MAP[goal.accentColor] || ACCENT_MAP.primary;
 
+  const handleSelect = () => {
+    onSelect();
+  };
+
   return (
-    <Link href="/invest" className="block">
+    <div onClick={handleSelect} className="block w-full text-left">
       <div className="group relative bg-surface-container-low p-8 rounded-xl border border-outline-variant/10 hover:bg-surface-variant transition-all duration-300 cursor-pointer overflow-hidden h-full">
         <div className="relative z-10 flex flex-col h-full justify-between">
           <div>
@@ -73,11 +83,22 @@ function GoalCard({ goal }: { goal: Goal }) {
         {/* Hover Glow */}
         <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 blur-3xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
       </div>
-    </Link>
+    </div>
   );
 }
 
 export default function GoalsPage() {
+  const [selectedGoal, setSelectedGoal] = useState<Goal | null>(null);
+  const { setGoal } = useGlobalState();
+  const router = useRouter();
+
+  const handleConfirm = () => {
+    if (selectedGoal) {
+      setGoal(selectedGoal.id);
+      router.push("/amount");
+    }
+  };
+
   return (
     <>
       <Navbar />
@@ -99,9 +120,69 @@ export default function GoalsPage() {
         {/* Goal Selection Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {GOALS.map((goal) => (
-            <GoalCard key={goal.id} goal={goal} />
+            <GoalCard key={goal.id} goal={goal} onSelect={() => setSelectedGoal(goal)} />
           ))}
         </div>
+
+        {/* Strategy Details Modal */}
+        {selectedGoal && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+            <div className="bg-surface-container-high w-full max-w-lg rounded-3xl p-8 shadow-2xl relative border border-outline-variant/20 animate-in zoom-in-95 duration-200">
+              <button 
+                onClick={() => setSelectedGoal(null)}
+                className="absolute top-6 right-6 text-on-surface-variant hover:text-white transition-colors"
+              >
+                <IconClose size={24} />
+              </button>
+
+              <div className="flex items-center gap-4 mb-6">
+                <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${ACCENT_MAP[selectedGoal.accentColor].bg} ${ACCENT_MAP[selectedGoal.accentColor].text}`}>
+                  {(() => {
+                    const ModalIcon = ICON_MAP[selectedGoal.icon] || IconAutoAwesome;
+                    return <ModalIcon size={24} />;
+                  })()}
+                </div>
+                <h2 className="text-2xl font-bold font-headline">{selectedGoal.title}</h2>
+              </div>
+
+              <div className="space-y-6">
+                <div>
+                  <p className="text-sm font-label uppercase tracking-widest text-on-surface-variant mb-2">Strategy Overview</p>
+                  <p className="text-on-surface">{selectedGoal.description}</p>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="bg-surface-container-highest p-4 rounded-xl border border-outline-variant/10">
+                    <p className="text-xs text-on-surface-variant font-label uppercase tracking-widest mb-1">Expected APY</p>
+                    <p className="text-xl font-bold text-tertiary">8% - 15%</p>
+                  </div>
+                  <div className="bg-surface-container-highest p-4 rounded-xl border border-outline-variant/10">
+                    <p className="text-xs text-on-surface-variant font-label uppercase tracking-widest mb-1">Risk Profile</p>
+                    <p className="text-xl font-bold text-secondary">Medium</p>
+                  </div>
+                </div>
+
+                <div>
+                  <p className="text-sm font-label uppercase tracking-widest text-on-surface-variant mb-2">Protocols Used</p>
+                  <div className="flex gap-2">
+                    <span className="px-3 py-1 bg-surface-container-highest rounded-full text-xs font-bold border border-outline-variant/20">Solend</span>
+                    <span className="px-3 py-1 bg-surface-container-highest rounded-full text-xs font-bold border border-outline-variant/20">Raydium</span>
+                    <span className="px-3 py-1 bg-surface-container-highest rounded-full text-xs font-bold border border-outline-variant/20">Jupiter</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-10">
+                <button 
+                  onClick={handleConfirm}
+                  className="w-full py-4 rounded-full bg-gradient-to-r from-primary to-primary-dim text-on-primary font-bold text-lg active:scale-95 transition-transform shadow-[0_0_20px_rgba(163,166,255,0.2)]"
+                >
+                  Use This Strategy
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Intelligence Insight Section */}
         <div className="mt-24 bg-surface-container-low rounded-xl overflow-hidden flex flex-col md:flex-row items-center border border-outline-variant/5">
@@ -150,3 +231,5 @@ export default function GoalsPage() {
     </>
   );
 }
+
+

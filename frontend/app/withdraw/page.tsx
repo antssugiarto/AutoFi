@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import Link from "next/link";
@@ -51,7 +51,7 @@ export default function WithdrawPage() {
 
         <AmbientBackground
           blobs={[
-            { color: "error", position: "top-left", size: "md" },
+            { color: "primary", position: "top-left", size: "md" },
             { color: "tertiary", position: "bottom-right", size: "lg" },
           ]}
         />
@@ -168,7 +168,7 @@ export default function WithdrawPage() {
 
           {/* CTA */}
           <div className="w-full mt-12 flex flex-col items-center gap-6">
-            <Link href="/executing?action=withdraw" className="w-full">
+            <Link href="/execute?action=withdraw" className="w-full">
               <button 
                 disabled={numericAmount <= 0 || numericAmount > maxBalance}
                 className="w-full h-16 rounded-full bg-surface-bright hover:bg-surface-variant border border-outline-variant/20 text-white font-body font-bold text-lg transition-all duration-300 active:scale-95 flex items-center justify-center gap-2 disabled:opacity-50 disabled:active:scale-100"
@@ -194,3 +194,5 @@ export default function WithdrawPage() {
     </>
   );
 }
+
+

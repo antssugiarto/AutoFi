@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -11,7 +11,7 @@ import {
 
 const MOBILE_TABS = [
   { label: "Overview", href: "/dashboard", icon: IconDashboard },
-  { label: "Goals", href: "/goals", icon: IconTrackChanges },
+  { label: "Goals", href: "/strategy", icon: IconTrackChanges },
   { label: "Analytics", href: "#", icon: IconInsights },
   { label: "Settings", href: "#", icon: IconSettings },
 ];
@@ -41,3 +41,5 @@ export default function MobileNav() {
     </div>
   );
 }
+
+

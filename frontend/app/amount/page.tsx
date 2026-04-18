@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import Link from "next/link";
@@ -7,14 +7,19 @@ import AmbientBackground from "@/app/components/ambient-background";
 import Footer from "@/app/components/footer";
 import SettingsModal from "@/app/components/settings-modal";
 import { TOKENS } from "@/app/lib/constants";
+import { useGlobalState } from "@/app/lib/GlobalStateContext";
+import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 
 export default function InvestPage() {
   const [selectedToken, setSelectedToken] = useState(TOKENS[1]); // Default USDC
-  const [amount, setAmount] = useState("");
+  const [localAmount, setLocalAmount] = useState("");
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const { setAmount, state } = useGlobalState();
+  const router = useRouter();
 
   const maxBalance = selectedToken.balance;
-  const numericAmount = parseFloat(amount) || 0;
+  const numericAmount = parseFloat(localAmount) || 0;
   const usdValue = (numericAmount * selectedToken.usdPrice).toLocaleString("en-US", {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
@@ -22,7 +27,10 @@ export default function InvestPage() {
 
   const setPercentage = (pct: number) => {
     const value = (maxBalance * pct) / 100;
-    setAmount(value.toFixed(2));
+    setLocalAmount(value.toFixed(2));
+    if (pct === 100) {
+      toast.success("Amount set to Max balance");
+    }
   };
 
   return (
@@ -41,7 +49,7 @@ export default function InvestPage() {
               <IconTune size={18} />
             </button>
             <Link
-              href="/goals"
+              href="/strategy"
               className="w-10 h-10 rounded-full bg-surface-container-highest flex items-center justify-center text-on-surface-variant hover:text-white transition-all duration-300"
             >
               <IconClose size={20} />
@@ -118,13 +126,13 @@ export default function InvestPage() {
               </div>
               <input
                 type="number"
-                value={amount}
-                onChange={(e) => setAmount(e.target.value)}
+                value={localAmount}
+                onChange={(e) => setLocalAmount(e.target.value)}
                 placeholder="0.00"
                 className="w-full bg-transparent border-none text-center font-headline text-7xl md:text-8xl font-black tracking-tighter text-white focus:ring-0 focus:outline-none placeholder:text-surface-variant placeholder:opacity-50"
               />
               <div className="mt-4 font-body text-on-surface-variant text-sm flex items-center gap-2">
-                <span>≈ ${usdValue} USD</span>
+                <span>â‰ˆ ${usdValue} USD</span>
               </div>
             </div>
 
@@ -150,12 +158,16 @@ export default function InvestPage() {
 
           {/* Primary Action CTA */}
           <div className="w-full mt-12 flex flex-col items-center gap-6">
-            <Link href="/preview" className="w-full">
-              <button className="w-full h-16 rounded-full bg-gradient-to-br from-primary to-primary-dim text-on-primary font-body font-bold text-lg hover:shadow-[0_0_32px_rgba(163,166,255,0.3)] transition-all duration-300 active:scale-95 flex items-center justify-center gap-2">
-                Review Strategy
-                <IconArrowForward size={20} />
-              </button>
-            </Link>
+            <button 
+              onClick={() => {
+                setAmount(numericAmount);
+                router.push("/preview");
+              }}
+              className="w-full h-16 rounded-full bg-gradient-to-br from-primary to-primary-dim text-on-primary font-body font-bold text-lg hover:shadow-[0_0_32px_rgba(163,166,255,0.3)] transition-all duration-300 active:scale-95 flex items-center justify-center gap-2"
+            >
+              Review Strategy
+              <IconArrowForward size={20} />
+            </button>
             <p className="font-label text-xs text-on-surface-variant flex items-center gap-2">
               <IconVerifiedUser size={14} />
               Automated execution secured by AutoFi Engine
@@ -173,3 +185,5 @@ export default function InvestPage() {
     </>
   );
 }
+
+

@@ -1,14 +1,17 @@
-"use client";
+﻿"use client";
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { AutoFiLogo } from "./icons";
 import { NAV_LINKS } from "@/app/lib/constants";
-import { useWallet } from "@/app/lib/WalletContext";
+import { useWallet } from "@solana/wallet-adapter-react";
+import { useWalletModal } from "@solana/wallet-adapter-react-ui";
 
 export default function Navbar() {
   const pathname = usePathname();
-  const { isConnected, isConnecting, walletAddress, connectWallet, disconnectWallet } = useWallet();
+  const { connected, connecting, publicKey, disconnect } = useWallet();
+  const { setVisible } = useWalletModal();
+  const walletAddress = publicKey ? `${publicKey.toBase58().slice(0, 4)}...${publicKey.toBase58().slice(-4)}` : null;
 
   return (
     <nav className="fixed top-0 w-full z-50 bg-surface/80 backdrop-blur-xl shadow-[0_0_64px_rgba(99,102,241,0.06)]">
@@ -39,14 +42,14 @@ export default function Navbar() {
         </div>
 
         {/* Wallet Status / Connect Button */}
-        {isConnected ? (
+        {connected ? (
           <div className="flex items-center gap-4">
             <div className="hidden md:flex flex-col text-right">
               <span className="text-xs text-on-surface-variant">Connected</span>
               <span className="font-mono text-sm font-bold text-white">{walletAddress}</span>
             </div>
             <button 
-              onClick={disconnectWallet}
+              onClick={() => disconnect()}
               className="bg-surface-container-highest hover:bg-surface-variant text-on-surface font-bold px-5 py-2.5 rounded-full transition-all text-sm border border-outline-variant/20"
             >
               Disconnect
@@ -54,14 +57,15 @@ export default function Navbar() {
           </div>
         ) : (
           <button 
-            onClick={() => connectWallet()}
-            disabled={isConnecting}
+            onClick={() => setVisible(true)}
+            disabled={connecting}
             className="bg-gradient-to-br from-primary to-primary-dim text-on-primary font-bold px-6 py-2.5 rounded-full active:scale-95 duration-200 transition-all shadow-[0_0_20px_rgba(163,166,255,0.2)] hover:shadow-[0_0_32px_rgba(163,166,255,0.4)] disabled:opacity-70 disabled:active:scale-100"
           >
-            {isConnecting ? "Connecting..." : "Connect Wallet"}
+            {connecting ? "Connecting..." : "Connect Wallet"}
           </button>
         )}
       </div>
     </nav>
   );
 }
+

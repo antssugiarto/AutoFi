@@ -1,0 +1,67 @@
+{
+  "version": "0.1.0",
+  "name": "autofi_smart_contract",
+  "instructions": [
+    {
+      "name": "initialize",
+      "accounts": [],
+      "args": []
+    },
+    {
+      "name": "executeIntent",
+      "accounts": [
+        {
+          "name": "user",
+          "isMut": true,
+          "isSigner": true
+        }
+      ],
+      "args": [
+        {
+          "name": "intent",
+          "type": {
+            "defined": "Intent"
+          }
+        },
+        {
+          "name": "strategy",
+          "type": {
+            "defined": "Strategy"
+          }
+        }
+      ]
+    }
+  ],
+  "types": [
+    {
+      "name": "Intent",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "goal",
+            "type": "string"
+          },
+          {
+            "name": "amount",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Strategy",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "steps",
+            "type": {
+              "vec": "string"
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

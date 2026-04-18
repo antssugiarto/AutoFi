@@ -1,4 +1,4 @@
-import { type ButtonHTMLAttributes } from "react";
+﻿import { type ButtonHTMLAttributes } from "react";
 
 type ButtonVariant = "primary" | "secondary" | "ghost";
 type ButtonSize = "sm" | "md" | "lg" | "xl";
@@ -52,3 +52,4 @@ export default function Button({
     </button>
   );
 }
+
