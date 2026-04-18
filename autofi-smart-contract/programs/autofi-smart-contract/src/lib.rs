@@ -1,6 +1,6 @@
 use anchor_lang::prelude::*;
 
-declare_id!("5JNtPMMHqTdcu9SdhSitqmeK2x8QRAKhRxSo83nRBxzq");
+declare_id!("");
 
 #[program]
 pub mod autofi_smart_contract {
