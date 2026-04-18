@@ -3,8 +3,11 @@ import { Manrope, Inter } from "next/font/google";
 import { WalletProvider } from "@/app/lib/WalletContext";
 import "./globals.css";
 
+import Providers from "./providers";
+import '@solana/wallet-adapter-react-ui/styles.css'
+
 const manrope = Manrope({
-  variable: "--font-headline",
+  variable: "--font-manrope",
   subsets: ["latin"],
   weight: ["400", "500", "600", "700", "800"],
   display: "swap",
@@ -18,10 +21,8 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "AutoFi | Automate Your DeFi Goals",
-  description:
-    "Set your goal. We handle the rest. The intelligent layer for decentralized finance that prioritizes your outcomes over complexity.",
-  keywords: ["DeFi", "automation", "yield", "Solana", "crypto", "AutoFi"],
+  title: "AutoFi",
+  description: "AutoFi DeFi Automation",
 };
 
 export default function RootLayout({
@@ -34,8 +35,10 @@ export default function RootLayout({
       lang="en"
       className={`${manrope.variable} ${inter.variable} dark`}
     >
-      <body className="min-h-screen flex flex-col">
-        <WalletProvider>{children}</WalletProvider>
+      <body className="min-h-full flex flex-col">
+        <Providers>
+          {children}
+        </Providers>
       </body>
     </html>
   );
