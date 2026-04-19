@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { useRouter } from "next/navigation";
@@ -43,7 +43,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     if (hasPortfolio) {
       router.push("/dashboard");
     } else {
-      router.push("/goals");
+      router.push("/strategy");
     }
   };
 
@@ -83,3 +83,5 @@ export function useWallet() {
   }
   return context;
 }
+
+

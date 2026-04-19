@@ -12,7 +12,7 @@ import type {
   AssetHolding,
 } from "./types";
 
-// ── Goals ──
+// â”€â”€ Goals â”€â”€
 export const GOALS: Goal[] = [
   {
     id: "maximize_profit",
@@ -21,6 +21,9 @@ export const GOALS: Goal[] = [
       "Aggressive yields across high-liquidity pools and automated farming vaults.",
     icon: "auto_awesome",
     accentColor: "primary",
+    apy: "18.5%",
+    risk: "High",
+    confidence: "78%",
   },
   {
     id: "grow_safely",
@@ -29,6 +32,9 @@ export const GOALS: Goal[] = [
       "Prioritize capital preservation using stablecoin strategies and blue-chip assets.",
     icon: "shield",
     accentColor: "secondary",
+    apy: "8.2%",
+    risk: "Low",
+    confidence: "95%",
   },
   {
     id: "cheapest_swap",
@@ -37,6 +43,9 @@ export const GOALS: Goal[] = [
       "Routing through all major DEXs to find the lowest slippage and zero gas overhead.",
     icon: "bolt",
     accentColor: "tertiary",
+    apy: "0.0%",
+    risk: "Low",
+    confidence: "99%",
   },
   {
     id: "auto_portfolio",
@@ -45,10 +54,13 @@ export const GOALS: Goal[] = [
       "Set it and forget it. Our AI rebalances your holdings to target your ideal index.",
     icon: "smart_toy",
     accentColor: "on-surface",
+    apy: "12.4%",
+    risk: "Medium",
+    confidence: "88%",
   },
 ];
 
-// ── Tokens ──
+// â”€â”€ Tokens â”€â”€
 export const TOKENS: Token[] = [
   {
     symbol: "SOL",
@@ -66,7 +78,7 @@ export const TOKENS: Token[] = [
   },
 ];
 
-// ── Featured Strategies ──
+// â”€â”€ Featured Strategies â”€â”€
 export const STRATEGIES: Strategy[] = [
   {
     id: "blue-chip-autopilot",
@@ -98,7 +110,7 @@ export const STRATEGIES: Strategy[] = [
   },
 ];
 
-// ── Execution Steps ──
+// â”€â”€ Execution Steps â”€â”€
 export const EXECUTION_STEPS: ExecutionStep[] = [
   {
     icon: "swap",
@@ -114,7 +126,7 @@ export const EXECUTION_STEPS: ExecutionStep[] = [
   },
 ];
 
-// ── Mock Portfolio ──
+// â”€â”€ Mock Portfolio â”€â”€
 export const PORTFOLIO: PortfolioBalance = {
   total: 142504.82,
   staked: 84120.0,
@@ -123,14 +135,14 @@ export const PORTFOLIO: PortfolioBalance = {
   changePercent: 2.4,
 };
 
-// ── Mock Asset Holdings ──
+// â”€â”€ Mock Asset Holdings â”€â”€
 export const HOLDINGS: AssetHolding[] = [
   { symbol: "ETH", amount: 24.5, logoColor: "#627EEA" },
   { symbol: "USDC", amount: 82100.0, logoColor: "#2775CA" },
   { symbol: "WBTC", amount: 1.2, logoColor: "#F7931A" },
 ];
 
-// ── Activity Feed ──
+// â”€â”€ Activity Feed â”€â”€
 export const ACTIVITY: ActivityItem[] = [
   {
     id: "1",
@@ -153,7 +165,7 @@ export const ACTIVITY: ActivityItem[] = [
   },
 ];
 
-// ── Stats ──
+// â”€â”€ Stats â”€â”€
 export const STATS = [
   { value: "$1.2B+", label: "Total Value Locked" },
   { value: "45k+", label: "Active Strategists" },
@@ -161,15 +173,15 @@ export const STATS = [
   { value: "0.01s", label: "Execution Speed" },
 ];
 
-// ── Navigation ──
+// â”€â”€ Navigation â”€â”€
 export const NAV_LINKS = [
   { label: "Dashboard", href: "/dashboard" },
-  { label: "Strategies", href: "/goals" },
+  { label: "Strategies", href: "/strategy" },
 ];
 
 export const SIDEBAR_LINKS = [
   { label: "Overview", href: "/dashboard", icon: "dashboard" },
-  { label: "My Goals", href: "/goals", icon: "track_changes" },
+  { label: "My Goals", href: "/strategy", icon: "track_changes" },
   { label: "Analytics", href: "#", icon: "insights" },
   { label: "Settings", href: "#", icon: "settings" },
 ];
@@ -180,3 +192,5 @@ export const FOOTER_LINKS = [
   { label: "Privacy", href: "#" },
   { label: "Terms", href: "#" },
 ];
+
+

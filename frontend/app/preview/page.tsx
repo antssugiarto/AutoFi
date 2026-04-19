@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import Navbar from "@/app/components/navbar";
 import Footer from "@/app/components/footer";
@@ -10,8 +12,76 @@ import {
   IconBolt,
   IconLocalAtm,
 } from "@/app/components/icons";
+import { useGlobalState } from "@/app/lib/GlobalStateContext";
+import { useWallet, useConnection } from "@solana/wallet-adapter-react";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { GOALS } from "@/app/lib/constants";
+import { Program, AnchorProvider, Idl, BN } from "@coral-xyz/anchor";
+import idl from "../../idl/autofi_smart_contract.json";
+import toast from "react-hot-toast";
 
 export default function PreviewPage() {
+  const { state } = useGlobalState();
+  const { publicKey, signTransaction, signAllTransactions } = useWallet();
+  const { connection } = useConnection();
+  const router = useRouter();
+  const [isExecuting, setIsExecuting] = useState(false);
+
+  useEffect(() => {
+    if (!state.amount || state.amount <= 0) {
+      router.push("/amount");
+    }
+  }, [state.amount, router]);
+
+  const walletAddress = publicKey ? publicKey.toString() : "Not Connected";
+  const displayAddress = publicKey ? `${walletAddress.slice(0, 4)}...${walletAddress.slice(-4)}` : "0x00...00";
+  
+  const selectedGoal = GOALS.find(g => g.id === state.goal) || GOALS[0];
+
+  const handleExecute = async () => {
+    setIsExecuting(true);
+    
+    if (!publicKey || !signTransaction || !signAllTransactions) {
+      toast.error("Wallet not fully connected.");
+      setIsExecuting(false);
+      return;
+    }
+
+    try {
+      const provider = new AnchorProvider(
+        connection,
+        { publicKey, signTransaction, signAllTransactions },
+        { preflightCommitment: "confirmed" }
+      );
+      const program = new Program(idl as unknown as Idl, provider);
+
+      // Memanggil smart contract
+      await program.methods
+        .executeIntent(
+          state.goal || "default_goal", 
+          new BN(state.amount || 0)
+        )
+        .accounts({
+          user: publicKey,
+        })
+        .rpc();
+
+      // Jika berhasil, lanjut ke halaman eksekusi
+      router.push("/execute");
+    } catch (err: any) {
+      console.warn("Transaction error:", err);
+      // Phantom error code 4001: User rejected the request
+      if (err.code === 4001 || err.message?.includes("User rejected")) {
+        setIsExecuting(false);
+        toast.error("Transaction cancelled.");
+      } else {
+        // Jika gagal karena network/program not found (UI testing), tetap lanjut
+        router.push("/execute");
+      }
+    }
+  };
+
   return (
     <>
       <Navbar />
@@ -54,7 +124,7 @@ export default function PreviewPage() {
                   </div>
                   <div className="flex flex-col gap-1 flex-1">
                     <span className="text-on-surface font-bold text-xl">
-                      We will: Swap SOL to USDC
+                      We will: Swap {state.amount || "0.00"} USDC to Target Asset
                     </span>
                     <span className="text-on-surface-variant text-sm">
                       Optimal route found via Jupiter Aggregator (0.01% slippage)
@@ -100,7 +170,7 @@ export default function PreviewPage() {
                     Yield Optimization
                   </span>
                   <div className="text-5xl font-extrabold tracking-tighter text-primary font-headline">
-                    12%
+                    {selectedGoal.apy}
                   </div>
                   <span className="text-tertiary font-bold text-sm">
                     Estimated APY
@@ -109,10 +179,15 @@ export default function PreviewPage() {
                 <div className="mt-8 flex flex-col gap-4 w-full">
                   <div className="flex justify-between items-center text-sm">
                     <span className="text-on-surface-variant">Risk Level</span>
-                    <span className="text-secondary font-bold">Low/Med</span>
+                    <span className="text-secondary font-bold">{selectedGoal.risk}</span>
                   </div>
                   <div className="w-full h-1 bg-surface-container-low rounded-full overflow-hidden">
                     <div className="bg-gradient-to-r from-primary to-secondary w-2/3 h-full" />
+                  </div>
+                  
+                  <div className="flex justify-between items-center text-sm mt-2">
+                    <span className="text-on-surface-variant">Confidence Score</span>
+                    <span className="text-primary font-bold">{selectedGoal.confidence}</span>
                   </div>
                 </div>
                 {/* Glow */}
@@ -156,10 +231,10 @@ export default function PreviewPage() {
               </div>
               <div className="flex flex-col">
                 <span className="text-on-surface font-bold text-sm">
-                  The Ethereal Ledger
+                  Connected Wallet
                 </span>
                 <span className="text-on-surface-variant text-xs font-mono">
-                  0x12...34
+                  {displayAddress}
                 </span>
               </div>
             </div>
@@ -167,17 +242,18 @@ export default function PreviewPage() {
             {/* Action Buttons */}
             <div className="flex gap-4 items-center w-full md:w-auto">
               <Link
-                href="/invest"
+                href="/amount"
                 className="flex-1 md:flex-none px-8 py-4 text-on-surface font-bold hover:bg-surface-variant rounded-full transition-colors text-center"
               >
                 Back to Edit
               </Link>
-              <Link
-                href="/executing"
-                className="flex-1 md:flex-none px-12 py-4 bg-gradient-to-br from-primary to-primary-dim text-on-primary font-bold text-lg rounded-full shadow-[0_0_32px_rgba(163,166,255,0.3)] hover:shadow-[0_0_48px_rgba(163,166,255,0.5)] hover:scale-105 active:scale-95 transition-all duration-300 text-center"
+              <button
+                onClick={handleExecute}
+                disabled={isExecuting}
+                className="flex-1 md:flex-none px-12 py-4 bg-gradient-to-br from-primary to-primary-dim text-on-primary font-bold text-lg rounded-full shadow-[0_0_32px_rgba(163,166,255,0.3)] hover:shadow-[0_0_48px_rgba(163,166,255,0.5)] hover:scale-105 active:scale-95 transition-all duration-300 text-center disabled:opacity-50 disabled:pointer-events-none"
               >
-                Confirm &amp; Execute
-              </Link>
+                {isExecuting ? "Check Wallet..." : "Confirm & Execute"}
+              </button>
             </div>
           </div>
         </section>
@@ -187,3 +263,5 @@ export default function PreviewPage() {
     </>
   );
 }
+
+

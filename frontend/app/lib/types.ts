@@ -14,6 +14,9 @@ export interface Goal {
   description: string;
   icon: string;
   accentColor: string;
+  apy: string;
+  risk: string;
+  confidence: string;
 }
 
 export interface Token {
@@ -72,3 +75,4 @@ export type NavItem = {
   href: string;
   icon: string;
 };
+

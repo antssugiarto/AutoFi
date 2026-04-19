@@ -1,4 +1,4 @@
-interface BlobConfig {
+﻿interface BlobConfig {
   color: "primary" | "secondary" | "tertiary";
   position: "top-left" | "top-right" | "bottom-left" | "bottom-right" | "center";
   size?: "sm" | "md" | "lg";
@@ -55,3 +55,4 @@ export default function AmbientBackground({
     </>
   );
 }
+

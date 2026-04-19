@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import { Manrope, Inter } from "next/font/google";
-import { WalletProvider } from "@/app/lib/WalletContext";
-import "./globals.css";
-
 import Providers from "./providers";
-import '@solana/wallet-adapter-react-ui/styles.css'
+import { GlobalStateProvider } from "./lib/GlobalStateContext";
+import { Toaster } from "react-hot-toast";
+import "./globals.css";
+import '@solana/wallet-adapter-react-ui/styles.css';
 
 const manrope = Manrope({
   variable: "--font-manrope",
@@ -35,11 +35,22 @@ export default function RootLayout({
       lang="en"
       className={`${manrope.variable} ${inter.variable} dark`}
     >
-      <body className="min-h-full flex flex-col">
-        <Providers>
-          {children}
-        </Providers>
+      <body className="min-h-screen flex flex-col">
+        <GlobalStateProvider>
+          <Providers>
+            <Toaster position="top-center" toastOptions={{
+              style: {
+                background: '#1a1a24',
+                color: '#fff',
+                border: '1px solid rgba(163, 166, 255, 0.2)',
+                borderRadius: '16px',
+              }
+            }} />
+            {children}
+          </Providers>
+        </GlobalStateProvider>
       </body>
     </html>
   );
 }
+

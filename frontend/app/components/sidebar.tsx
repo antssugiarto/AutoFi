@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import Link from "next/link";
@@ -51,7 +51,7 @@ export default function Sidebar() {
 
         {/* New Goal CTA */}
         <Link
-          href="/goals"
+          href="/strategy"
           className="w-full py-3 bg-surface-container-highest hover:bg-surface-variant transition-all duration-300 rounded-xl flex items-center justify-center gap-2 text-primary font-bold text-sm"
         >
           <IconTrackChanges size={20} />
@@ -97,3 +97,5 @@ export default function Sidebar() {
     </aside>
   );
 }
+
+

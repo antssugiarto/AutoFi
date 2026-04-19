@@ -1,4 +1,4 @@
-import { IconShield, IconHub, IconTrendingUp, IconVerifiedUser } from "@/app/components/icons";
+﻿import { IconShield, IconHub, IconTrendingUp, IconVerifiedUser } from "@/app/components/icons";
 
 export default function StrategyPage() {
   return (
@@ -102,3 +102,4 @@ export default function StrategyPage() {
     </div>
   );
 }
+

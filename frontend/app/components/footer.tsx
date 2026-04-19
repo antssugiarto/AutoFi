@@ -1,4 +1,4 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 import { AutoFiLogo, IconTerminal, IconForum } from "./icons";
 import { FOOTER_LINKS } from "@/app/lib/constants";
 
@@ -13,7 +13,7 @@ export default function Footer({ variant = "full", className = "" }: FooterProps
       <footer className={`w-full py-8 px-4 flex flex-col items-center gap-4 ${className}`}>
         <div className="h-px w-12 bg-outline-variant/30 mb-2" />
         <p className="font-label text-[10px] uppercase tracking-[0.2em] text-on-surface-variant opacity-50">
-          © 2024 AutoFi. The Intelligent Atmosphere.
+          Â© 2024 AutoFi. The Intelligent Atmosphere.
         </p>
       </footer>
     );
@@ -54,9 +54,10 @@ export default function Footer({ variant = "full", className = "" }: FooterProps
         </div>
 
         <div className="font-label text-xs uppercase tracking-widest text-on-surface-variant opacity-60">
-          © 2024 AutoFi. The Intelligent Atmosphere.
+          Â© 2024 AutoFi. The Intelligent Atmosphere.
         </div>
       </div>
     </footer>
   );
 }
+
