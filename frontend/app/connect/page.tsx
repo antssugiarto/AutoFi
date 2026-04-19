@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
@@ -9,9 +9,11 @@ import Footer from "@/app/components/footer";
 import AmbientBackground from "@/app/components/ambient-background";
 import Button from "@/app/components/button";
 import { IconWallet, IconLock, IconShield } from "@/app/components/icons";
+import { WalletReadyState } from "@solana/wallet-adapter-base";
+import toast from "react-hot-toast";
 
 export default function ConnectPage() {
-  const { connected, connecting } = useWallet();
+  const { connected, connecting, wallets } = useWallet();
   const { setVisible } = useWalletModal();
   const router = useRouter();
 
@@ -20,6 +22,18 @@ export default function ConnectPage() {
       router.push("/dashboard");
     }
   }, [connected, router]);
+
+  const handleConnectClick = () => {
+    const phantom = wallets.find((w) => w.adapter.name === "Phantom");
+    
+    if (phantom && phantom.readyState === WalletReadyState.NotDetected) {
+      toast.error("Phantom Wallet not found. Please install it first!");
+      window.open("https://phantom.app/", "_blank");
+      return;
+    }
+    
+    setVisible(true);
+  };
 
   return (
     <>
@@ -43,7 +57,7 @@ export default function ConnectPage() {
             <Button 
               size="lg" 
               className="w-full justify-center text-lg shadow-[0_0_20px_rgba(163,166,255,0.2)]"
-              onClick={() => setVisible(true)}
+              onClick={handleConnectClick}
               disabled={connecting}
             >
               {connecting ? "Connecting..." : "Select Wallet"}

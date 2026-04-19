@@ -1,67 +1,56 @@
 {
-  "version": "0.1.0",
-  "name": "autofi_smart_contract",
+  "address": "5JNtPMMHqTdcu9SdhSitqmeK2x8QRAKhRxSo83nRBxzq",
+  "metadata": {
+    "name": "autofi_smart_contract",
+    "version": "0.1.0",
+    "spec": "0.1.0",
+    "description": "Created with Anchor"
+  },
   "instructions": [
     {
-      "name": "initialize",
-      "accounts": [],
-      "args": []
-    },
-    {
-      "name": "executeIntent",
+      "name": "execute_intent",
+      "discriminator": [
+        53,
+        130,
+        47,
+        154,
+        227,
+        220,
+        122,
+        212
+      ],
       "accounts": [
         {
           "name": "user",
-          "isMut": true,
-          "isSigner": true
+          "writable": true,
+          "signer": true
         }
       ],
       "args": [
         {
-          "name": "intent",
-          "type": {
-            "defined": "Intent"
-          }
+          "name": "goal",
+          "type": "string"
         },
         {
-          "name": "strategy",
-          "type": {
-            "defined": "Strategy"
-          }
+          "name": "amount",
+          "type": "u64"
         }
       ]
-    }
-  ],
-  "types": [
-    {
-      "name": "Intent",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "goal",
-            "type": "string"
-          },
-          {
-            "name": "amount",
-            "type": "u64"
-          }
-        ]
-      }
     },
     {
-      "name": "Strategy",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "steps",
-            "type": {
-              "vec": "string"
-            }
-          }
-        ]
-      }
+      "name": "initialize",
+      "discriminator": [
+        175,
+        175,
+        109,
+        31,
+        13,
+        152,
+        155,
+        237
+      ],
+      "accounts": [],
+      "args": []
     }
   ]
 }

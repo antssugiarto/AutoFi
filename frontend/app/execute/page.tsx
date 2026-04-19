@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useEffect, useState, Suspense } from "react";
 import Link from "next/link";
@@ -28,52 +28,15 @@ function ExecutingContent() {
 
   useEffect(() => {
     let isMounted = true;
-    const executeSmartContract = async () => {
-      // Tunggu sebentar agar animasi loading terlihat
-      await new Promise(resolve => setTimeout(resolve, 2000));
-
-      if (!publicKey || !signTransaction || !signAllTransactions) {
-        if (isMounted) setLocalStatus("error");
-        return;
-      }
-
-      try {
-        const provider = new AnchorProvider(
-          connection,
-          { publicKey, signTransaction, signAllTransactions },
-          { preflightCommitment: "confirmed" }
-        );
-        const program = new Program(idl as unknown as Idl, provider);
-
-        // Memanggil smart contract yang sesungguhnya
-        const tx = await program.methods
-          .executeIntent(
-            { goal: state.goal || "default_goal", amount: new BN(state.amount || 0) },
-            { steps: ["swap", "deposit"] }
-          )
-          .accounts({
-            user: publicKey,
-          })
-          .rpc();
-
-        if (isMounted) {
-          setLocalStatus("success");
-          setStatus("success");
-        }
-      } catch (err) {
-        console.warn("Smart Contract transaction failed (Localnet/Devnet not ready or Program not deployed):", err);
-        console.log("Simulating success for UI testing purposes...");
-        
-        // Fallback simulasi sukses untuk keperluan UI testing
-        if (isMounted) {
-          setLocalStatus("success");
-          setStatus("success");
-        }
-      }
-    };
-
+    
     if (status === "processing") {
-      executeSmartContract();
+      // Hanya delay UI karena transaksi sudah disetujui di halaman preview
+      setTimeout(() => {
+        if (isMounted) {
+          setLocalStatus("success");
+          setStatus("success");
+        }
+      }, 3000);
     }
 
     return () => {

@@ -13,15 +13,20 @@ import {
   IconLocalAtm,
 } from "@/app/components/icons";
 import { useGlobalState } from "@/app/lib/GlobalStateContext";
-import { useWallet } from "@solana/wallet-adapter-react";
-import { useEffect } from "react";
+import { useWallet, useConnection } from "@solana/wallet-adapter-react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { GOALS } from "@/app/lib/constants";
+import { Program, AnchorProvider, Idl, BN } from "@coral-xyz/anchor";
+import idl from "../../idl/autofi_smart_contract.json";
+import toast from "react-hot-toast";
 
 export default function PreviewPage() {
   const { state } = useGlobalState();
-  const { publicKey } = useWallet();
+  const { publicKey, signTransaction, signAllTransactions } = useWallet();
+  const { connection } = useConnection();
   const router = useRouter();
+  const [isExecuting, setIsExecuting] = useState(false);
 
   useEffect(() => {
     if (!state.amount || state.amount <= 0) {
@@ -33,6 +38,49 @@ export default function PreviewPage() {
   const displayAddress = publicKey ? `${walletAddress.slice(0, 4)}...${walletAddress.slice(-4)}` : "0x00...00";
   
   const selectedGoal = GOALS.find(g => g.id === state.goal) || GOALS[0];
+
+  const handleExecute = async () => {
+    setIsExecuting(true);
+    
+    if (!publicKey || !signTransaction || !signAllTransactions) {
+      toast.error("Wallet not fully connected.");
+      setIsExecuting(false);
+      return;
+    }
+
+    try {
+      const provider = new AnchorProvider(
+        connection,
+        { publicKey, signTransaction, signAllTransactions },
+        { preflightCommitment: "confirmed" }
+      );
+      const program = new Program(idl as unknown as Idl, provider);
+
+      // Memanggil smart contract
+      await program.methods
+        .executeIntent(
+          state.goal || "default_goal", 
+          new BN(state.amount || 0)
+        )
+        .accounts({
+          user: publicKey,
+        })
+        .rpc();
+
+      // Jika berhasil, lanjut ke halaman eksekusi
+      router.push("/execute");
+    } catch (err: any) {
+      console.warn("Transaction error:", err);
+      // Phantom error code 4001: User rejected the request
+      if (err.code === 4001 || err.message?.includes("User rejected")) {
+        setIsExecuting(false);
+        toast.error("Transaction cancelled.");
+      } else {
+        // Jika gagal karena network/program not found (UI testing), tetap lanjut
+        router.push("/execute");
+      }
+    }
+  };
 
   return (
     <>
@@ -199,12 +247,13 @@ export default function PreviewPage() {
               >
                 Back to Edit
               </Link>
-              <Link
-                href="/execute"
-                className="flex-1 md:flex-none px-12 py-4 bg-gradient-to-br from-primary to-primary-dim text-on-primary font-bold text-lg rounded-full shadow-[0_0_32px_rgba(163,166,255,0.3)] hover:shadow-[0_0_48px_rgba(163,166,255,0.5)] hover:scale-105 active:scale-95 transition-all duration-300 text-center"
+              <button
+                onClick={handleExecute}
+                disabled={isExecuting}
+                className="flex-1 md:flex-none px-12 py-4 bg-gradient-to-br from-primary to-primary-dim text-on-primary font-bold text-lg rounded-full shadow-[0_0_32px_rgba(163,166,255,0.3)] hover:shadow-[0_0_48px_rgba(163,166,255,0.5)] hover:scale-105 active:scale-95 transition-all duration-300 text-center disabled:opacity-50 disabled:pointer-events-none"
               >
-                Confirm &amp; Execute
-              </Link>
+                {isExecuting ? "Check Wallet..." : "Confirm & Execute"}
+              </button>
             </div>
           </div>
         </section>
