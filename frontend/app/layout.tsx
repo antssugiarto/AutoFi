@@ -1,12 +1,13 @@
-﻿import type { Metadata } from "next";
+import type { Metadata } from "next";
 import { Manrope, Inter } from "next/font/google";
-import { Providers } from "./providers";
+import Providers from "./providers";
 import { GlobalStateProvider } from "./lib/GlobalStateContext";
 import { Toaster } from "react-hot-toast";
 import "./globals.css";
+import '@solana/wallet-adapter-react-ui/styles.css';
 
 const manrope = Manrope({
-  variable: "--font-headline",
+  variable: "--font-manrope",
   subsets: ["latin"],
   weight: ["400", "500", "600", "700", "800"],
   display: "swap",
@@ -20,10 +21,8 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "AutoFi | Automate Your DeFi Goals",
-  description:
-    "Set your goal. We handle the rest. The intelligent layer for decentralized finance that prioritizes your outcomes over complexity.",
-  keywords: ["DeFi", "automation", "yield", "Solana", "crypto", "AutoFi"],
+  title: "AutoFi",
+  description: "AutoFi DeFi Automation",
 };
 
 export default function RootLayout({
