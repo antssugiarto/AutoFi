@@ -1,9 +1,9 @@
-﻿"use client";
+"use client";
 
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import SettingsModal from "./settings-modal";
+import { useWallet } from "@solana/wallet-adapter-react";
 import {
   IconDashboard,
   IconTrackChanges,
@@ -28,7 +28,8 @@ const SIDEBAR_ITEMS = [
 
 export default function Sidebar() {
   const pathname = usePathname();
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const { wallet, connected } = useWallet();
+  const walletName = connected && wallet ? wallet.adapter.name : "Not Connected";
 
   return (
     <aside className="h-screen w-64 fixed left-0 top-0 hidden md:flex flex-col py-8 bg-surface-container-low z-40 border-r border-outline-variant/10">
@@ -36,16 +37,16 @@ export default function Sidebar() {
       <div className="mt-20 px-6 mb-10">
         <div className="flex items-center gap-3 mb-6">
           {/* Avatar */}
-          <div className="w-10 h-10 rounded-full bg-surface-container-highest flex items-center justify-center overflow-hidden">
-            <div className="w-full h-full bg-gradient-to-br from-primary/40 to-secondary/40" />
+          <div className="w-10 h-10 rounded-full bg-surface-container-highest flex items-center justify-center overflow-hidden shrink-0">
+            {connected && wallet ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={wallet.adapter.icon} alt={walletName} className="w-6 h-6" />
+            ) : (
+              <div className="w-full h-full bg-gradient-to-br from-primary/40 to-secondary/40" />
+            )}
           </div>
-          <div>
-            <div className="text-lg font-headline font-bold text-white leading-tight">
-              The Ethereal Ledger
-            </div>
-            <div className="text-xs text-on-surface-variant opacity-70">
-              0x12...34
-            </div>
+          <div className="text-lg font-headline font-bold text-white leading-tight truncate">
+            {walletName}
           </div>
         </div>
 
@@ -82,18 +83,6 @@ export default function Sidebar() {
         })}
       </nav>
 
-      {/* Settings Button */}
-      <div className="mt-auto mb-4 pr-4">
-        <button
-          onClick={() => setIsSettingsOpen(true)}
-          className="w-full flex items-center gap-4 py-3 px-6 rounded-r-full transition-all duration-300 ease-in-out text-on-surface-variant opacity-70 hover:opacity-100 hover:bg-surface-variant"
-        >
-          <IconSettings size={20} />
-          <span>Settings</span>
-        </button>
-      </div>
-
-      <SettingsModal isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />
     </aside>
   );
 }

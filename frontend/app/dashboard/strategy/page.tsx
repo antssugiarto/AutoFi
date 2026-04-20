@@ -1,9 +1,19 @@
-﻿import { IconShield, IconHub, IconTrendingUp, IconVerifiedUser } from "@/app/components/icons";
+"use client";
+
+import Link from "next/link";
+import { IconShield, IconHub, IconTrendingUp, IconVerifiedUser, IconTrackChanges } from "@/app/components/icons";
+import { useGlobalState } from "@/app/lib/GlobalStateContext";
 
 export default function StrategyPage() {
+  const { state } = useGlobalState();
+  const hasStrategy = state.status === "success" || state.goal !== null;
+
   return (
-    <div className="max-w-5xl animate-in fade-in zoom-in-95 duration-500">
-      <header className="mb-10 flex items-center justify-between">
+    <main className="pt-24 pb-12 px-8 flex-1 flex flex-col relative overflow-hidden">
+      <div className="max-w-3xl mx-auto w-full flex-1 flex flex-col animate-in fade-in zoom-in-95 duration-500">
+        {hasStrategy ? (
+          <>
+            <header className="mb-10 flex items-center justify-between">
         <div>
           <div className="inline-block px-3 py-1 bg-primary/10 text-primary text-xs font-bold rounded-full mb-4 uppercase tracking-widest">
             Active Vault
@@ -98,8 +108,27 @@ export default function StrategyPage() {
             </div>
           </div>
         </div>
+        </div>
+          </>
+        ) : (
+          <div className="flex-1 flex flex-col items-center justify-center py-12 text-center">
+            <div className="w-20 h-20 mb-5 rounded-full bg-surface-container-highest flex items-center justify-center text-primary">
+              <IconTrackChanges size={40} />
+            </div>
+            <h2 className="text-2xl font-headline font-bold text-white mb-3">No Active Strategies</h2>
+            <p className="text-sm text-on-surface-variant max-w-md mb-6">
+              You haven't set up any automated DeFi strategies yet. Choose a goal and let AutoFi handle the rest.
+            </p>
+            <Link
+              href="/strategy"
+              className="px-6 py-3 bg-gradient-to-r from-primary to-primary-dim text-white text-sm font-bold rounded-full shadow-[0_0_24px_rgba(163,166,255,0.3)] hover:shadow-[0_0_32px_rgba(163,166,255,0.5)] transition-all"
+            >
+              Select a Strategy
+            </Link>
+          </div>
+        )}
       </div>
-    </div>
+    </main>
   );
 }
 
