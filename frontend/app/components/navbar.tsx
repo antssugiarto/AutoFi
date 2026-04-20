@@ -1,7 +1,7 @@
-﻿"use client";
+"use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { AutoFiLogo } from "./icons";
 import { NAV_LINKS } from "@/app/lib/constants";
 import { useWallet } from "@solana/wallet-adapter-react";
@@ -9,9 +9,15 @@ import { useWalletModal } from "@solana/wallet-adapter-react-ui";
 
 export default function Navbar() {
   const pathname = usePathname();
+  const router = useRouter();
   const { connected, connecting, publicKey, disconnect } = useWallet();
   const { setVisible } = useWalletModal();
   const walletAddress = publicKey ? `${publicKey.toBase58().slice(0, 4)}...${publicKey.toBase58().slice(-4)}` : null;
+
+  const handleDisconnect = async () => {
+    await disconnect();
+    router.push("/");
+  };
 
   return (
     <nav className="fixed top-0 w-full z-50 bg-surface/80 backdrop-blur-xl shadow-[0_0_64px_rgba(99,102,241,0.06)]">
@@ -49,8 +55,8 @@ export default function Navbar() {
               <span className="font-mono text-sm font-bold text-white">{walletAddress}</span>
             </div>
             <button 
-              onClick={() => disconnect()}
-              className="bg-surface-container-highest hover:bg-surface-variant text-on-surface font-bold px-5 py-2.5 rounded-full transition-all text-sm border border-outline-variant/20"
+              onClick={handleDisconnect}
+              className="bg-surface-container-highest hover:bg-red-900/40 hover:text-red-400 hover:border-red-500/30 text-on-surface font-bold px-5 py-2.5 rounded-full transition-all text-sm border border-outline-variant/20"
             >
               Disconnect
             </button>

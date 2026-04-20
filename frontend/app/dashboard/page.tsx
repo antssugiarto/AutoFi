@@ -1,7 +1,6 @@
-﻿"use client";
+"use client";
 
 import Link from "next/link";
-import Footer from "@/app/components/footer";
 import AmbientBackground from "@/app/components/ambient-background";
 import {
   IconArrowUpward,
@@ -19,8 +18,7 @@ export default function DashboardPage() {
   const hasStrategy = state.status === "success" || state.goal !== null;
 
   return (
-    <>
-      <main className="pt-24 pb-12 px-8 min-h-screen relative overflow-hidden">
+    <main className="pt-24 pb-12 px-8 flex-1 flex flex-col relative overflow-hidden">
         <AmbientBackground
           fixed={false}
           blobs={[
@@ -29,13 +27,13 @@ export default function DashboardPage() {
           ]}
         />
 
-        <div className="max-w-[1200px] mx-auto">
+        <div className="max-w-[1200px] mx-auto w-full flex-1 flex flex-col">
           {/* Header */}
-          <header className="mb-12">
-            <span className="text-primary tracking-[0.2em] font-bold uppercase mb-2 block text-sm">
+          <header className="mb-8">
+            <span className="text-primary tracking-[0.2em] font-bold uppercase mb-2 block text-xs">
               Atmosphere Dashboard
             </span>
-            <h1 className="text-4xl md:text-5xl font-headline font-extrabold text-white tracking-tight">
+            <h1 className="text-3xl md:text-4xl font-headline font-extrabold text-white tracking-tight">
               System Status: Optimal
             </h1>
           </header>
@@ -241,17 +239,17 @@ export default function DashboardPage() {
               </section>
             </div>
           ) : (
-            <div className="flex flex-col items-center justify-center py-24 text-center">
-              <div className="w-24 h-24 mb-6 rounded-full bg-surface-container-highest flex items-center justify-center text-primary">
-                <IconTrackChanges size={48} />
+            <div className="flex-1 flex flex-col items-center justify-center py-12 text-center">
+              <div className="w-20 h-20 mb-5 rounded-full bg-surface-container-highest flex items-center justify-center text-primary">
+                <IconTrackChanges size={40} />
               </div>
-              <h2 className="text-3xl font-headline font-bold text-white mb-4">No Active Strategies</h2>
-              <p className="text-on-surface-variant max-w-md mb-8">
+              <h2 className="text-2xl font-headline font-bold text-white mb-3">No Active Strategies</h2>
+              <p className="text-sm text-on-surface-variant max-w-md mb-6">
                 You haven't set up any automated DeFi strategies yet. Choose a goal and let AutoFi handle the rest.
               </p>
               <Link
                 href="/strategy"
-                className="px-8 py-4 bg-gradient-to-r from-primary to-primary-dim text-white font-bold rounded-full shadow-[0_0_32px_rgba(163,166,255,0.3)] hover:shadow-[0_0_48px_rgba(163,166,255,0.5)] transition-all"
+                className="px-6 py-3 bg-gradient-to-r from-primary to-primary-dim text-white text-sm font-bold rounded-full shadow-[0_0_24px_rgba(163,166,255,0.3)] hover:shadow-[0_0_32px_rgba(163,166,255,0.5)] transition-all"
               >
                 Select a Strategy
               </Link>
@@ -259,9 +257,6 @@ export default function DashboardPage() {
           )}
         </div>
       </main>
-
-      <Footer className="md:ml-64" />
-    </>
   );
 }
 

@@ -174,10 +174,7 @@ export const STATS = [
 ];
 
 // â”€â”€ Navigation â”€â”€
-export const NAV_LINKS = [
-  { label: "Dashboard", href: "/dashboard" },
-  { label: "Strategies", href: "/strategy" },
-];
+export const NAV_LINKS: { label: string; href: string }[] = [];
 
 export const SIDEBAR_LINKS = [
   { label: "Overview", href: "/dashboard", icon: "dashboard" },
