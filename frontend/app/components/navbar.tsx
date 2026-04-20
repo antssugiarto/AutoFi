@@ -7,7 +7,7 @@ import { NAV_LINKS } from "@/app/lib/constants";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { useWalletModal } from "@solana/wallet-adapter-react-ui";
 
-export default function Navbar() {
+export default function Navbar({ hideNavLinks = false }: { hideNavLinks?: boolean }) {
   const pathname = usePathname();
   const router = useRouter();
   const { connected, connecting, publicKey, disconnect } = useWallet();
@@ -28,6 +28,7 @@ export default function Navbar() {
         </Link>
 
         {/* Desktop Navigation */}
+        {!hideNavLinks && (
         <div className="hidden md:flex gap-10 items-center">
           {NAV_LINKS.map((link) => {
             const isActive = pathname === link.href || pathname.startsWith(link.href + "/");
@@ -46,6 +47,7 @@ export default function Navbar() {
             );
           })}
         </div>
+        )}
 
         {/* Wallet Status / Connect Button */}
         {connected ? (
