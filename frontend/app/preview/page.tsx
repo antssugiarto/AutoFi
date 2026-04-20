@@ -84,46 +84,46 @@ export default function PreviewPage() {
 
   return (
     <>
-      <Navbar />
+      <Navbar hideNavLinks />
 
-      <main className="min-h-screen pt-32 pb-20 px-6 max-w-4xl mx-auto relative">
+      <main className="min-h-screen pt-28 pb-16 px-6 max-w-3xl mx-auto relative">
         <AmbientBackground />
 
-        <section className="flex flex-col gap-12">
+        <section className="flex flex-col gap-9">
           {/* Header */}
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-3">
             <div className="flex items-center gap-3 text-primary uppercase tracking-[0.2em] font-bold text-xs">
               <IconMagicButton size={16} />
               Automated Intelligence
             </div>
-            <h1 className="text-5xl md:text-6xl font-extrabold font-headline tracking-tighter leading-tight bg-gradient-to-r from-on-surface via-primary to-secondary bg-clip-text text-transparent">
+            <h1 className="text-4xl md:text-5xl font-extrabold font-headline tracking-tighter leading-tight bg-gradient-to-r from-on-surface via-primary to-secondary bg-clip-text text-transparent">
               Smart Strategy Preview
             </h1>
-            <p className="text-on-surface-variant text-lg max-w-xl leading-relaxed">
+            <p className="text-on-surface-variant text-base max-w-xl leading-relaxed">
               AutoFi has analyzed liquidity depth and yield curves to construct
               the most efficient path for your capital.
             </p>
           </div>
 
           {/* Bento Preview Container */}
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-5">
             {/* Main Execution Flow */}
-            <div className="md:col-span-8 bg-surface-container-low rounded-2xl p-8 shadow-2xl relative overflow-hidden group">
+            <div className="md:col-span-8 bg-surface-container-low rounded-2xl p-6 shadow-2xl relative overflow-hidden group">
               {/* Scan Effect */}
               <div className="absolute inset-0 bg-gradient-to-b from-primary/5 to-transparent h-1/2 -translate-y-full group-hover:translate-y-[200%] transition-transform duration-[3000ms] pointer-events-none" />
 
-              <h3 className="text-on-surface-variant font-label text-sm uppercase tracking-widest mb-8">
+              <h3 className="text-on-surface-variant font-label text-xs uppercase tracking-widest mb-6">
                 Proposed Execution Path
               </h3>
 
-              <div className="flex flex-col gap-8 relative">
+              <div className="flex flex-col gap-6 relative">
                 {/* Step 1 */}
-                <div className="flex gap-6 items-start relative">
+                <div className="flex gap-4 items-start relative">
                   <div className="z-10 bg-surface-container-highest p-3 rounded-xl ring-1 ring-outline-variant/20 shadow-lg">
                     <IconSwapHoriz size={24} className="text-primary" />
                   </div>
                   <div className="flex flex-col gap-1 flex-1">
-                    <span className="text-on-surface font-bold text-xl">
+                    <span className="text-on-surface font-bold text-lg">
                       We will: Swap {state.amount || "0.00"} USDC to Target Asset
                     </span>
                     <span className="text-on-surface-variant text-sm">
@@ -135,12 +135,12 @@ export default function PreviewPage() {
                 </div>
 
                 {/* Step 2 */}
-                <div className="flex gap-6 items-start relative pt-4">
+                <div className="flex gap-4 items-start relative pt-2">
                   <div className="z-10 bg-surface-container-highest p-3 rounded-xl ring-1 ring-outline-variant/20 shadow-lg">
                     <IconAccountBalance size={24} className="text-secondary" />
                   </div>
                   <div className="flex flex-col gap-1 flex-1">
-                    <span className="text-on-surface font-bold text-xl">
+                    <span className="text-on-surface font-bold text-lg">
                       We will: Deposit into lending protocol
                     </span>
                     <span className="text-on-surface-variant text-sm">
@@ -164,19 +164,19 @@ export default function PreviewPage() {
 
             {/* Metrics Card */}
             <div className="md:col-span-4 flex flex-col gap-6">
-              <div className="bg-surface-container-highest rounded-2xl p-8 flex flex-col justify-between items-start h-full ring-1 ring-white/5 relative overflow-hidden">
+              <div className="bg-surface-container-highest rounded-2xl p-6 flex flex-col justify-between items-start h-full ring-1 ring-white/5 relative overflow-hidden">
                 <div className="flex flex-col gap-2">
                   <span className="text-on-surface-variant font-label text-xs uppercase tracking-widest">
                     Yield Optimization
                   </span>
-                  <div className="text-5xl font-extrabold tracking-tighter text-primary font-headline">
+                  <div className="text-4xl font-extrabold tracking-tighter text-primary font-headline">
                     {selectedGoal.apy}
                   </div>
                   <span className="text-tertiary font-bold text-sm">
                     Estimated APY
                   </span>
                 </div>
-                <div className="mt-8 flex flex-col gap-4 w-full">
+                <div className="mt-6 flex flex-col gap-3 w-full">
                   <div className="flex justify-between items-center text-sm">
                     <span className="text-on-surface-variant">Risk Level</span>
                     <span className="text-secondary font-bold">{selectedGoal.risk}</span>
@@ -196,15 +196,15 @@ export default function PreviewPage() {
             </div>
 
             {/* Info Badges Row */}
-            <div className="md:col-span-12 grid md:grid-cols-3 gap-6">
+            <div className="md:col-span-12 grid md:grid-cols-3 gap-5">
               {[
-                { icon: <IconVerifiedUser size={20} />, title: "Smart Audited", desc: "Verified secure protocol" },
-                { icon: <IconBolt size={20} />, title: "Instant Setup", desc: "~12 seconds execution" },
-                { icon: <IconLocalAtm size={20} />, title: "Zero Fee Intro", desc: "Protocol fees waived" },
+                { icon: <IconLocalAtm size={20} />, title: `${state.amount || "0.00"} USDC`, desc: "Investment Amount" },
+                { icon: <IconBolt size={20} />, title: selectedGoal.title, desc: "Selected Strategy" },
+                { icon: <IconVerifiedUser size={20} />, title: "~12 Seconds", desc: "Estimated Execution" },
               ].map((badge) => (
                 <div
                   key={badge.title}
-                  className="bg-surface-container/50 rounded-xl p-6 flex items-center gap-4 group hover:bg-surface-variant transition-colors"
+                  className="bg-surface-container/50 rounded-xl p-5 flex items-center gap-3 group hover:bg-surface-variant transition-colors"
                 >
                   <span className="text-on-surface-variant group-hover:text-primary transition-colors">
                     {badge.icon}
@@ -223,22 +223,7 @@ export default function PreviewPage() {
           </div>
 
           {/* Footer Action Area */}
-          <div className="flex flex-col md:flex-row items-center justify-between gap-8 pt-8 border-t border-outline-variant/10">
-            {/* User Info */}
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-full overflow-hidden ring-2 ring-primary/20">
-                <div className="w-full h-full bg-gradient-to-br from-primary/30 to-secondary/30" />
-              </div>
-              <div className="flex flex-col">
-                <span className="text-on-surface font-bold text-sm">
-                  Connected Wallet
-                </span>
-                <span className="text-on-surface-variant text-xs font-mono">
-                  {displayAddress}
-                </span>
-              </div>
-            </div>
-
+          <div className="flex items-center justify-end gap-4 pt-6 border-t border-outline-variant/10">
             {/* Action Buttons */}
             <div className="flex gap-4 items-center w-full md:w-auto">
               <Link
