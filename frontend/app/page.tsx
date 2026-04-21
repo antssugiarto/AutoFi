@@ -386,25 +386,13 @@ export default function LandingPage() {
            ════════════════════════════════════════════ */}
         <section className="py-20 bg-surface-container-low px-8">
           <div className="max-w-[1200px] mx-auto">
-            <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
-              <div className="max-w-2xl">
-                <h2 className="font-headline text-2xl md:text-3xl font-bold mb-4">
-                  Strategy Preview
-                </h2>
-                <p className="text-on-surface-variant text-lg">
-                  Pick a strategy that matches your risk appetite and let AutoFi handle the rest.
-                </p>
-              </div>
-              <Link
-                href="/strategy"
-                className="text-primary font-bold flex items-center gap-2 group"
-              >
-                View all strategies
-                <IconArrowForward
-                  size={18}
-                  className="transition-transform group-hover:translate-x-1"
-                />
-              </Link>
+            <div className="mb-16">
+              <h2 className="font-headline text-2xl md:text-3xl font-bold mb-4">
+                Strategy Preview
+              </h2>
+              <p className="text-on-surface-variant text-lg max-w-2xl">
+                Pick a strategy that matches your risk appetite and let AutoFi handle the rest.
+              </p>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">

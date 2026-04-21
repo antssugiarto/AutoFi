@@ -71,7 +71,7 @@ export default function InvestPage() {
         <main className="flex-grow flex flex-col items-center justify-center w-full max-w-xl px-6 relative z-10 pt-24 pb-10">
           <div className="w-full flex justify-start mb-6">
             <button 
-              onClick={() => router.back()}
+              onClick={() => router.push('/strategy')}
               className="flex items-center gap-2 text-on-surface-variant hover:text-primary transition-colors font-medium text-sm"
             >
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
