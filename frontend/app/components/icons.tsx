@@ -177,9 +177,22 @@ export const IconMagicButton = createFilledIcon([
 // â”€â”€ Logo â”€â”€
 export function AutoFiLogo({ className = "" }: { className?: string }) {
   return (
-    <span className={`text-2xl font-bold tracking-tighter text-primary font-headline ${className}`}>
-      AutoFi
-    </span>
+    <span
+      role="img"
+      aria-label="AutoFi"
+      className={`block h-8 shrink-0 ${className}`}
+      style={{
+        aspectRatio: "2861 / 1281",
+        background: "linear-gradient(to bottom right, var(--color-primary), var(--color-primary-dim))",
+        WebkitMaskImage: "url(/logo.png)",
+        maskImage: "url(/logo.png)",
+        WebkitMaskRepeat: "no-repeat",
+        maskRepeat: "no-repeat",
+        WebkitMaskPosition: "center",
+        maskPosition: "center",
+        WebkitMaskSize: "contain",
+        maskSize: "contain",
+      }}
+    />
   );
 }
-

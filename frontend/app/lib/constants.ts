@@ -183,11 +183,3 @@ export const SIDEBAR_LINKS = [
   { label: "Settings", href: "#", icon: "settings" },
 ];
 
-export const FOOTER_LINKS = [
-  { label: "Security", href: "#" },
-  { label: "Docs", href: "#" },
-  { label: "Privacy", href: "#" },
-  { label: "Terms", href: "#" },
-];
-
-

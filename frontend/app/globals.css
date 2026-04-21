@@ -112,6 +112,37 @@
   100% { transform: translateY(200%); }
 }
 
+@keyframes spawn-rise {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 28px, 0) scale(0.985);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+@keyframes spawn-fade {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes bar-grow {
+  0% {
+    opacity: 0;
+    transform: scaleY(0.15);
+  }
+  100% {
+    opacity: 1;
+    transform: scaleY(1);
+  }
+}
+
 /* ============================================================
    Base Styles
    ============================================================ */
@@ -152,6 +183,45 @@ body {
 /* Ghost border (design spec: 15% opacity outlines) */
 .ghost-border {
   border: 1px solid color-mix(in srgb, var(--color-outline-variant) 15%, transparent);
+}
+
+.spawn-rise {
+  opacity: 0;
+  animation: spawn-rise 780ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation-delay: var(--spawn-delay, 0ms);
+  will-change: transform, opacity;
+}
+
+.spawn-fade {
+  opacity: 0;
+  animation: spawn-fade 900ms ease forwards;
+  animation-delay: var(--spawn-delay, 0ms);
+}
+
+.spawn-card {
+  opacity: 0;
+  animation: spawn-rise 720ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation-delay: var(--spawn-delay, 0ms);
+  will-change: transform, opacity;
+}
+
+.spawn-bar {
+  opacity: 0;
+  transform-origin: bottom;
+  animation: bar-grow 700ms cubic-bezier(0.2, 0.85, 0.2, 1) forwards;
+  animation-delay: var(--spawn-delay, 0ms);
+  will-change: transform, opacity;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spawn-rise,
+  .spawn-fade,
+  .spawn-card,
+  .spawn-bar {
+    opacity: 1;
+    animation: none;
+    transform: none;
+  }
 }
 
 /* ── Number Input Spinner Removal ── */

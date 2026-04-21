@@ -3,6 +3,7 @@ import { Manrope, Inter } from "next/font/google";
 import Providers from "./providers";
 import { GlobalStateProvider } from "./lib/GlobalStateContext";
 import { Toaster } from "react-hot-toast";
+import ScrollToTopButton from "./components/scroll-to-top";
 import "./globals.css";
 import '@solana/wallet-adapter-react-ui/styles.css';
 
@@ -23,6 +24,11 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: "AutoFi",
   description: "AutoFi DeFi Automation",
+  icons: {
+    icon: "/icon.png",
+    shortcut: "/icon.png",
+    apple: "/icon.png",
+  },
 };
 
 export default function RootLayout({
@@ -35,6 +41,10 @@ export default function RootLayout({
       lang="en"
       className={`${manrope.variable} ${inter.variable} dark`}
     >
+      <head>
+        <link rel="preload" href="/logo.png" as="image" />
+        <link rel="preload" href="/icon.png" as="image" />
+      </head>
       <body className="min-h-screen flex flex-col">
         <GlobalStateProvider>
           <Providers>
@@ -47,10 +57,10 @@ export default function RootLayout({
               }
             }} />
             {children}
+            <ScrollToTopButton />
           </Providers>
         </GlobalStateProvider>
       </body>
     </html>
   );
 }
-

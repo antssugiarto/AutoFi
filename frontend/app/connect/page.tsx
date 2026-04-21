@@ -4,7 +4,6 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { useWalletModal } from "@solana/wallet-adapter-react-ui";
-import Footer from "@/app/components/footer";
 import AmbientBackground from "@/app/components/ambient-background";
 import Button from "@/app/components/button";
 import { IconWallet, IconLock, IconShield } from "@/app/components/icons";
@@ -36,7 +35,7 @@ export default function ConnectPage() {
 
   return (
     <>
-      <main className="flex-grow pt-10 pb-20 px-6 flex items-center justify-center relative min-h-screen">
+      <main className="relative flex min-h-dvh flex-grow items-center justify-center px-6 py-6">
         <AmbientBackground />
         
         <button 
@@ -83,8 +82,6 @@ export default function ConnectPage() {
           </div>
         </div>
       </main>
-      <Footer />
     </>
   );
 }
-

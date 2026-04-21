@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, type CSSProperties } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Footer from "./components/footer";
@@ -28,6 +28,7 @@ export default function LandingPage() {
   const router = useRouter();
   const heroRef = useRef<HTMLElement>(null);
   const [showTopbar, setShowTopbar] = useState(false);
+  const [isReady, setIsReady] = useState(false);
 
   const walletAddress = publicKey
     ? `${publicKey.toBase58().slice(0, 4)}...${publicKey.toBase58().slice(-4)}`
@@ -48,6 +49,16 @@ export default function LandingPage() {
     };
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      setIsReady(true);
+    }, 120);
+
+    return () => {
+      window.clearTimeout(timer);
+    };
   }, []);
 
   const strategies = [
@@ -103,15 +114,15 @@ export default function LandingPage() {
             : "-translate-y-full opacity-0 pointer-events-none"
         }`}
       >
-        <div className="flex justify-between items-center px-8 h-16 max-w-[1200px] mx-auto">
+        <div className="flex h-16 w-[calc(100%-2rem)] max-w-[1200px] items-center justify-between mx-auto md:w-full">
           {/* Left: Logo */}
-          <Link href="/">
-            <AutoFiLogo />
+          <Link href="/" className="flex shrink-0 items-center">
+            <AutoFiLogo className="h-9 md:h-10" />
           </Link>
 
           {/* Right: Connect Wallet */}
           {connected ? (
-            <div className="flex items-center gap-4">
+            <div className="flex shrink-0 items-center gap-4">
               <div className="hidden md:flex flex-col text-right">
                 <span className="text-xs text-on-surface-variant">Connected</span>
                 <span className="font-mono text-sm font-bold text-white">{walletAddress}</span>
@@ -126,7 +137,7 @@ export default function LandingPage() {
           ) : (
             <Link
               href="/connect"
-              className="bg-gradient-to-br from-primary to-primary-dim text-on-primary font-bold px-6 py-2.5 rounded-full active:scale-95 duration-200 transition-all shadow-[0_0_20px_rgba(163,166,255,0.2)] hover:shadow-[0_0_32px_rgba(163,166,255,0.4)]"
+              className="inline-flex shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-primary to-primary-dim px-8 py-3 text-[15px] font-bold leading-none text-on-primary transition-all duration-200 active:scale-95 shadow-[0_0_20px_rgba(163,166,255,0.15)] hover:shadow-[0_0_40px_rgba(163,166,255,0.3)]"
             >
               Connect Wallet
             </Link>
@@ -142,12 +153,11 @@ export default function LandingPage() {
           ref={heroRef}
           className="relative min-h-[700px] md:min-h-screen flex flex-col overflow-hidden px-8 py-8"
         >
-          {/* Logo inside Hero */}
-          <div className="relative z-10 pt-8 pb-4">
-            <Link href="/">
-              <AutoFiLogo className="text-3xl" />
-            </Link>
-          </div>
+          <div
+            className={`pointer-events-none absolute inset-0 z-20 bg-surface transition-opacity duration-700 ${
+              isReady ? "opacity-0" : "opacity-100"
+            }`}
+          />
 
           <AmbientBackground
             fixed={false}
@@ -157,112 +167,129 @@ export default function LandingPage() {
             ]}
           />
 
-          <div className="max-w-[1200px] w-full mx-auto flex-1 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-            {/* Hero Content */}
-            <div className="lg:col-span-7 flex flex-col items-start gap-8">
-              {/* Status Badge */}
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-surface-container-highest/50 backdrop-blur-md border border-outline-variant/15">
-                <span className="w-2 h-2 rounded-full bg-tertiary animate-pulse" />
-                <span className="text-tertiary uppercase tracking-widest text-[10px] font-bold">
-                  System Status: Active
-                </span>
-              </div>
-
-              <h1 className="font-headline text-4xl md:text-6xl font-extrabold tracking-tighter leading-[1.05] text-on-surface">
-                Automate Your <br />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-tertiary">
-                  DeFi Strategy
-                </span>{" "}
-                in One Click
-              </h1>
-
-              <p className="text-lg md:text-xl text-on-surface-variant max-w-xl leading-relaxed">
-                Let AutoFi optimize, execute, and grow your crypto automatically.
-              </p>
-
-              <div className="flex flex-wrap gap-4 pt-4">
-                {connected ? (
-                  <Button size="lg">
-                    <Link href="/dashboard">Go to Dashboard</Link>
-                  </Button>
-                ) : (
-                  <Button size="lg">
-                    <Link href="/connect">Connect Wallet</Link>
-                  </Button>
-                )}
-                <Button
-                  variant="secondary"
-                  size="lg"
-                  onClick={() => {
-                    document.getElementById("how-it-works")?.scrollIntoView({ behavior: "smooth" });
-                  }}
-                >
-                  Read More
-                </Button>
-              </div>
+          <div className="relative z-10 w-full max-w-[1200px] mx-auto flex-1 flex flex-col">
+            <div className="flex h-16 items-start">
+              <Link href="/" className="flex shrink-0 items-center">
+                <AutoFiLogo className="h-9 md:h-10" />
+              </Link>
             </div>
 
-            {/* Hero Visual: Glassmorphism Card Stack */}
-            <div className="lg:col-span-5 relative">
-              <div className="relative z-10 p-8 rounded-3xl bg-surface-bright/30 backdrop-blur-2xl border border-outline-variant/15 shadow-2xl shadow-primary/5">
-                {/* Card Header */}
-                <div className="flex justify-between items-center mb-8">
-                  <div className="flex gap-3 items-center">
-                    <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
-                      <IconAutoAwesome size={20} className="text-primary" />
-                    </div>
-                    <div>
-                      <div className="text-sm font-bold">Active Vault</div>
-                      <div className="text-xs text-on-surface-variant">
-                        ETH Growth Strategy
-                      </div>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <div className="text-sm font-bold text-tertiary">+12.4%</div>
-                    <div className="text-xs text-on-surface-variant">APR</div>
-                  </div>
-                </div>
+            <div className="w-full flex-1 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center pt-6 md:pt-8">
+              {/* Hero Content */}
+              <div
+                className={`lg:col-span-7 flex flex-col items-start gap-7 transition-[opacity,transform,filter] duration-[950ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${
+                  isReady
+                    ? "translate-x-0 translate-y-0 opacity-100 blur-0"
+                    : "-translate-x-12 translate-y-6 opacity-0 blur-[10px]"
+                }`}
+                style={{ transitionDelay: "160ms" }}
+              >
+                <h1 className="font-headline text-4xl md:text-6xl font-extrabold tracking-tighter leading-[1.05] text-on-surface">
+                  Automate Your <br />
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-tertiary">
+                    DeFi Strategy
+                  </span>{" "}
+                  in One Click
+                </h1>
 
-                {/* Mini Chart */}
-                <div className="h-48 w-full bg-surface-container-lowest rounded-xl relative overflow-hidden mb-6 flex items-end gap-1 px-4 pb-4">
-                  {[30, 45, 40, 60, 55, 85, 95].map((h, i) => (
-                    <div
-                      key={i}
-                      className="w-full rounded-t-sm transition-all duration-500"
-                      style={{
-                        height: `${h}%`,
-                        backgroundColor: `rgba(163, 166, 255, ${0.2 + i * 0.1})`,
-                      }}
-                    />
-                  ))}
-                </div>
+                <p className="text-lg md:text-xl text-on-surface-variant max-w-xl leading-relaxed">
+                  Let AutoFi optimize, execute, and grow your crypto automatically.
+                </p>
 
-                {/* Info Rows */}
-                <div className="space-y-4">
-                  <div className="flex justify-between items-center p-4 bg-surface-container-low rounded-xl">
-                    <span className="text-on-surface-variant text-sm">
-                      Portfolio Balance
-                    </span>
-                    <span className="font-headline font-bold text-lg">
-                      $42,910.00
-                    </span>
-                  </div>
-                  <div className="flex justify-between items-center p-4 bg-surface-container-low rounded-xl">
-                    <span className="text-on-surface-variant text-sm">
-                      Automation Status
-                    </span>
-                    <span className="text-primary text-sm font-bold flex items-center gap-1">
-                      <IconSync size={14} />
-                      Rebalancing
-                    </span>
-                  </div>
+                <div className="flex flex-wrap gap-4 pt-4">
+                  {connected ? (
+                    <Button size="lg">
+                      <Link href="/dashboard">Go to Dashboard</Link>
+                    </Button>
+                  ) : (
+                    <Button size="lg">
+                      <Link href="/connect">Connect Wallet</Link>
+                    </Button>
+                  )}
+                  <Button
+                    variant="secondary"
+                    size="lg"
+                    onClick={() => {
+                      document.getElementById("how-it-works")?.scrollIntoView({ behavior: "smooth" });
+                    }}
+                  >
+                    Read More
+                  </Button>
                 </div>
               </div>
 
-              {/* Decorative Glows */}
-              <div className="absolute -top-10 -right-10 w-32 h-32 bg-secondary/20 blur-3xl rounded-full" />
-              <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-primary/20 blur-3xl rounded-full" />
+              {/* Hero Visual: Glassmorphism Card Stack */}
+              <div
+                className={`lg:col-span-5 relative transition-[opacity,transform,filter] duration-[1050ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${
+                  isReady
+                    ? "translate-x-0 translate-y-0 rotate-0 opacity-100 blur-0"
+                    : "translate-x-14 translate-y-8 rotate-[1.5deg] opacity-0 blur-[12px]"
+                }`}
+                style={{ transitionDelay: "280ms" }}
+              >
+                <div className="relative z-10 p-8 rounded-3xl bg-surface-bright/30 backdrop-blur-2xl border border-outline-variant/15 shadow-2xl shadow-primary/5">
+                  {/* Card Header */}
+                  <div className="flex justify-between items-center mb-8">
+                    <div className="flex gap-3 items-center">
+                      <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
+                        <IconAutoAwesome size={20} className="text-primary" />
+                      </div>
+                      <div>
+                        <div className="text-sm font-bold">Active Vault</div>
+                        <div className="text-xs text-on-surface-variant">
+                          ETH Growth Strategy
+                        </div>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-sm font-bold text-tertiary">+12.4%</div>
+                      <div className="text-xs text-on-surface-variant">APR</div>
+                    </div>
+                  </div>
+
+                  {/* Mini Chart */}
+                  <div className="h-48 w-full bg-surface-container-lowest rounded-xl relative overflow-hidden mb-6 flex items-end gap-1 px-4 pb-4">
+                    {[30, 45, 40, 60, 55, 85, 95].map((h, i) => (
+                      <div
+                        key={i}
+                        className={`w-full rounded-t-sm origin-bottom transition-[opacity,transform] duration-700 ease-[cubic-bezier(0.2,0.85,0.2,1)] ${
+                          isReady ? "scale-y-100 opacity-100" : "scale-y-[0.15] opacity-0"
+                        }`}
+                        style={{
+                          height: `${h}%`,
+                          backgroundColor: `rgba(163, 166, 255, ${0.2 + i * 0.1})`,
+                          transitionDelay: `${420 + i * 55}ms`,
+                        }}
+                      />
+                    ))}
+                  </div>
+
+                  {/* Info Rows */}
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-center p-4 bg-surface-container-low rounded-xl">
+                      <span className="text-on-surface-variant text-sm">
+                        Portfolio Balance
+                      </span>
+                      <span className="font-headline font-bold text-lg">
+                        $42,910.00
+                      </span>
+                    </div>
+                    <div className="flex justify-between items-center p-4 bg-surface-container-low rounded-xl">
+                      <span className="text-on-surface-variant text-sm">
+                        Automation Status
+                      </span>
+                      <span className="text-primary text-sm font-bold flex items-center gap-1">
+                        <IconSync size={14} />
+                        Rebalancing
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Decorative Glows */}
+                <div className="absolute -top-10 -right-10 w-32 h-32 bg-secondary/20 blur-3xl rounded-full" />
+                <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-primary/20 blur-3xl rounded-full" />
+              </div>
             </div>
           </div>
         </section>
@@ -272,7 +299,10 @@ export default function LandingPage() {
            ════════════════════════════════════════════ */}
         <section id="how-it-works" className="py-20 bg-surface-container-low">
           <div className="max-w-[1200px] mx-auto px-8">
-            <div className="text-center mb-16">
+            <div
+              className="text-center mb-16 spawn-fade"
+              style={{ "--spawn-delay": "320ms" } as CSSProperties}
+            >
               <h2 className="font-headline text-2xl md:text-3xl font-bold mb-4">
                 How It Works
               </h2>
@@ -307,7 +337,8 @@ export default function LandingPage() {
               ].map((item) => (
                 <div
                   key={item.step}
-                  className="relative group p-8 rounded-3xl bg-surface-container border border-outline-variant/10 hover:border-primary/20 transition-all duration-300"
+                  className="relative group p-8 rounded-3xl bg-surface-container border border-outline-variant/10 hover:border-primary/20 transition-all duration-300 spawn-card"
+                  style={{ "--spawn-delay": `${380 + Number(item.step) * 90}ms` } as CSSProperties}
                 >
                   {/* Step Number */}
                   <div className="absolute top-6 right-6 text-5xl font-headline font-extrabold text-surface-container-highest/80 select-none">
@@ -330,7 +361,10 @@ export default function LandingPage() {
            ════════════════════════════════════════════ */}
         <section className="py-20 px-8">
           <div className="max-w-[1200px] mx-auto">
-            <div className="text-center mb-16">
+            <div
+              className="text-center mb-16 spawn-fade"
+              style={{ "--spawn-delay": "520ms" } as CSSProperties}
+            >
               <h2 className="font-headline text-2xl md:text-3xl font-bold mb-4">
                 Powerful Features
               </h2>
@@ -365,10 +399,11 @@ export default function LandingPage() {
                   icon: <IconSync size={24} className="text-primary" />,
                   gradient: "from-primary/10 to-transparent",
                 },
-              ].map((feature) => (
+              ].map((feature, index) => (
                 <div
                   key={feature.title}
-                  className={`group p-6 rounded-3xl bg-gradient-to-b ${feature.gradient} border border-outline-variant/10 hover:border-primary/20 transition-all duration-300 hover:-translate-y-1`}
+                  className={`group p-6 rounded-3xl bg-gradient-to-b ${feature.gradient} border border-outline-variant/10 hover:border-primary/20 transition-all duration-300 hover:-translate-y-1 spawn-card`}
+                  style={{ "--spawn-delay": `${600 + index * 80}ms` } as CSSProperties}
                 >
                   <div className="w-12 h-12 rounded-2xl bg-surface-container-highest/50 flex items-center justify-center mb-5">
                     {feature.icon}
@@ -386,7 +421,10 @@ export default function LandingPage() {
            ════════════════════════════════════════════ */}
         <section className="py-20 bg-surface-container-low px-8">
           <div className="max-w-[1200px] mx-auto">
-            <div className="mb-16">
+            <div
+              className="mb-16 spawn-fade"
+              style={{ "--spawn-delay": "680ms" } as CSSProperties}
+            >
               <h2 className="font-headline text-2xl md:text-3xl font-bold mb-4">
                 Strategy Preview
               </h2>
@@ -396,10 +434,11 @@ export default function LandingPage() {
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {strategies.map((s) => (
+              {strategies.map((s, index) => (
                 <div
                   key={s.name}
-                  className={`group relative overflow-hidden rounded-3xl bg-surface-container p-6 flex flex-col justify-between min-h-[280px] border border-outline-variant/10 ${s.borderHover} transition-all duration-300 hover:-translate-y-1`}
+                  className={`group relative overflow-hidden rounded-3xl bg-surface-container p-6 flex flex-col justify-between min-h-[280px] border border-outline-variant/10 ${s.borderHover} transition-all duration-300 hover:-translate-y-1 spawn-card`}
+                  style={{ "--spawn-delay": `${760 + index * 80}ms` } as CSSProperties}
                 >
                   <div>
                     <div className={`w-12 h-12 ${s.bgColor} rounded-2xl flex items-center justify-center mb-5`}>
@@ -429,7 +468,10 @@ export default function LandingPage() {
            ════════════════════════════════════════════ */}
         <section className="py-20 px-8">
           <div className="max-w-[1200px] mx-auto">
-            <div className="text-center mb-16">
+            <div
+              className="text-center mb-16 spawn-fade"
+              style={{ "--spawn-delay": "860ms" } as CSSProperties}
+            >
               <h2 className="font-headline text-2xl md:text-3xl font-bold mb-4">
                 Trust & Security
               </h2>
@@ -458,10 +500,11 @@ export default function LandingPage() {
                   icon: <IconShield size={32} className="text-secondary" />,
                   color: "bg-secondary/15",
                 },
-              ].map((item) => (
+              ].map((item, index) => (
                 <div
                   key={item.title}
-                  className="text-center p-8 rounded-3xl bg-surface-container border border-outline-variant/10 hover:border-primary/20 transition-all duration-300"
+                  className="text-center p-8 rounded-3xl bg-surface-container border border-outline-variant/10 hover:border-primary/20 transition-all duration-300 spawn-card"
+                  style={{ "--spawn-delay": `${940 + index * 90}ms` } as CSSProperties}
                 >
                   <div className={`w-16 h-16 rounded-2xl ${item.color} flex items-center justify-center mx-auto mb-6`}>
                     {item.icon}
@@ -478,7 +521,10 @@ export default function LandingPage() {
             6. CTA SECTION
            ════════════════════════════════════════════ */}
         <section className="py-16 px-8">
-          <div className="max-w-[1200px] mx-auto relative rounded-[2.5rem] bg-gradient-to-br from-primary-container/20 to-secondary-container/20 p-10 md:p-20 overflow-hidden border border-outline-variant/10 text-center">
+          <div
+            className="max-w-[1200px] mx-auto relative rounded-[2.5rem] bg-gradient-to-br from-primary-container/20 to-secondary-container/20 p-10 md:p-20 overflow-hidden border border-outline-variant/10 text-center spawn-rise"
+            style={{ "--spawn-delay": "1080ms" } as CSSProperties}
+          >
             <div className="absolute top-0 left-0 w-full h-full pointer-events-none bg-[radial-gradient(circle_at_50%_50%,rgba(163,166,255,0.1),transparent)]" />
 
             <h2 className="font-headline text-2xl md:text-4xl font-extrabold text-on-surface mb-6 max-w-3xl mx-auto relative z-10">

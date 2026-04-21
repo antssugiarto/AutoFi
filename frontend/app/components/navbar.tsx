@@ -23,8 +23,8 @@ export default function Navbar({ hideNavLinks = false }: { hideNavLinks?: boolea
     <nav className="fixed top-0 w-full z-50 bg-surface/80 backdrop-blur-xl shadow-[0_0_64px_rgba(99,102,241,0.06)]">
       <div className="flex justify-between items-center px-8 h-16 max-w-[1440px] mx-auto">
         {/* Logo */}
-        <Link href="/">
-          <AutoFiLogo />
+        <Link href="/" className="ml-4 flex items-center">
+          <AutoFiLogo className="h-9 md:h-10" />
         </Link>
 
         {/* Desktop Navigation */}
@@ -51,7 +51,7 @@ export default function Navbar({ hideNavLinks = false }: { hideNavLinks?: boolea
 
         {/* Wallet Status / Connect Button */}
         {connected ? (
-          <div className="flex items-center gap-4">
+          <div className="mr-4 flex items-center gap-4">
             <div className="hidden md:flex flex-col text-right">
               <span className="text-xs text-on-surface-variant">Connected</span>
               <span className="font-mono text-sm font-bold text-white">{walletAddress}</span>
@@ -67,7 +67,7 @@ export default function Navbar({ hideNavLinks = false }: { hideNavLinks?: boolea
           <button 
             onClick={() => setVisible(true)}
             disabled={connecting}
-            className="bg-gradient-to-br from-primary to-primary-dim text-on-primary font-bold px-6 py-2.5 rounded-full active:scale-95 duration-200 transition-all shadow-[0_0_20px_rgba(163,166,255,0.2)] hover:shadow-[0_0_32px_rgba(163,166,255,0.4)] disabled:opacity-70 disabled:active:scale-100"
+            className="mr-4 bg-gradient-to-br from-primary to-primary-dim text-on-primary font-bold px-6 py-2.5 rounded-full active:scale-95 duration-200 transition-all shadow-[0_0_20px_rgba(163,166,255,0.2)] hover:shadow-[0_0_32px_rgba(163,166,255,0.4)] disabled:opacity-70 disabled:active:scale-100"
           >
             {connecting ? "Connecting..." : "Connect Wallet"}
           </button>
@@ -76,4 +76,3 @@ export default function Navbar({ hideNavLinks = false }: { hideNavLinks?: boolea
     </nav>
   );
 }
-
