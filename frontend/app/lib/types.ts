@@ -76,3 +76,20 @@ export type NavItem = {
   icon: string;
 };
 
+/* ── Backend Response Types ── */
+
+export interface BacktestResult {
+  shortTermReturn: number;
+  midTermReturn: number;
+  longTermReturn: number;
+  finalScore: number;
+  confidence: number;
+}
+
+export interface StrategyResult {
+  name: string;
+  steps: string[];
+  expectedAPY: number;
+  risk: string;
+}
+

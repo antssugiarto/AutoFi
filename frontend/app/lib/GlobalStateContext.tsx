@@ -1,6 +1,7 @@
-﻿"use client";
+"use client";
 
 import React, { createContext, useContext, useState, ReactNode } from "react";
+import type { BacktestResult, StrategyResult } from "./types";
 
 export type Status = "idle" | "executing" | "success" | "failed";
 
@@ -10,6 +11,8 @@ export interface GlobalState {
   amount: number | null;
   strategy: any | null;
   status: Status;
+  backtestResult: BacktestResult | null;
+  strategyResult: StrategyResult | null;
 }
 
 interface GlobalContextProps {
@@ -19,6 +22,8 @@ interface GlobalContextProps {
   setAmount: (amount: number | null) => void;
   setStrategy: (strategy: any | null) => void;
   setStatus: (status: Status) => void;
+  setBacktestResult: (result: BacktestResult | null) => void;
+  setStrategyResult: (result: StrategyResult | null) => void;
   resetState: () => void;
 }
 
@@ -28,6 +33,8 @@ const initialState: GlobalState = {
   amount: null,
   strategy: null,
   status: "idle",
+  backtestResult: null,
+  strategyResult: null,
 };
 
 const GlobalContext = createContext<GlobalContextProps | undefined>(undefined);
@@ -40,6 +47,8 @@ export function GlobalStateProvider({ children }: { children: ReactNode }) {
   const setAmount = (amount: number | null) => setState((prev) => ({ ...prev, amount }));
   const setStrategy = (strategy: any | null) => setState((prev) => ({ ...prev, strategy }));
   const setStatus = (status: Status) => setState((prev) => ({ ...prev, status }));
+  const setBacktestResult = (result: BacktestResult | null) => setState((prev) => ({ ...prev, backtestResult: result }));
+  const setStrategyResult = (result: StrategyResult | null) => setState((prev) => ({ ...prev, strategyResult: result }));
   const resetState = () => setState(initialState);
 
   return (
@@ -51,6 +60,8 @@ export function GlobalStateProvider({ children }: { children: ReactNode }) {
         setAmount,
         setStrategy,
         setStatus,
+        setBacktestResult,
+        setStrategyResult,
         resetState,
       }}
     >

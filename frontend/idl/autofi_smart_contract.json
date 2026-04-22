@@ -1,5 +1,5 @@
 {
-  "address": "5JNtPMMHqTdcu9SdhSitqmeK2x8QRAKhRxSo83nRBxzq",
+  "address": "EsKBbaZGoCfTyoMKwsnR8bpPUyKXsTMoY4YRCNUffnfi",
   "metadata": {
     "name": "autofi_smart_contract",
     "version": "0.1.0",
@@ -8,22 +8,51 @@
   },
   "instructions": [
     {
-      "name": "execute_intent",
+      "name": "create_vault",
+      "docs": [
+        "Creates a new vault PDA for the user."
+      ],
       "discriminator": [
-        53,
-        130,
-        47,
-        154,
-        227,
-        220,
-        122,
-        212
+        29,
+        237,
+        247,
+        208,
+        193,
+        82,
+        54,
+        135
       ],
       "accounts": [
+        {
+          "name": "vault",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "user"
+              }
+            ]
+          }
+        },
         {
           "name": "user",
           "writable": true,
           "signer": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
         }
       ],
       "args": [
@@ -32,25 +61,203 @@
           "type": "string"
         },
         {
-          "name": "amount",
+          "name": "strategy",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "deposit_sol",
+      "docs": [
+        "Deposits SOL from user wallet into the vault PDA."
+      ],
+      "discriminator": [
+        108,
+        81,
+        78,
+        117,
+        125,
+        155,
+        56,
+        200
+      ],
+      "accounts": [
+        {
+          "name": "vault",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "user"
+              }
+            ]
+          }
+        },
+        {
+          "name": "user",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "owner",
+          "relations": [
+            "vault"
+          ]
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "amount_lamports",
           "type": "u64"
         }
       ]
     },
     {
-      "name": "initialize",
-      "discriminator": [
-        175,
-        175,
-        109,
-        31,
-        13,
-        152,
-        155,
-        237
+      "name": "withdraw_sol",
+      "docs": [
+        "Withdraws SOL from the vault PDA back to the user wallet."
       ],
-      "accounts": [],
-      "args": []
+      "discriminator": [
+        145,
+        131,
+        74,
+        136,
+        65,
+        137,
+        42,
+        38
+      ],
+      "accounts": [
+        {
+          "name": "vault",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "user"
+              }
+            ]
+          }
+        },
+        {
+          "name": "user",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "owner",
+          "relations": [
+            "vault"
+          ]
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "amount_lamports",
+          "type": "u64"
+        }
+      ]
+    }
+  ],
+  "accounts": [
+    {
+      "name": "VaultAccount",
+      "discriminator": [
+        230,
+        251,
+        241,
+        83,
+        139,
+        202,
+        93,
+        28
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "ZeroAmount",
+      "msg": "Amount must be greater than zero"
+    },
+    {
+      "code": 6001,
+      "name": "InsufficientFunds",
+      "msg": "Insufficient funds in vault"
+    },
+    {
+      "code": 6002,
+      "name": "Unauthorized",
+      "msg": "Unauthorized: you are not the vault owner"
+    },
+    {
+      "code": 6003,
+      "name": "Overflow",
+      "msg": "Arithmetic overflow"
+    }
+  ],
+  "types": [
+    {
+      "name": "VaultAccount",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "owner",
+            "type": "pubkey"
+          },
+          {
+            "name": "goal",
+            "type": "string"
+          },
+          {
+            "name": "strategy",
+            "type": "string"
+          },
+          {
+            "name": "amount_lamports",
+            "type": "u64"
+          },
+          {
+            "name": "deployed_at",
+            "type": "i64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
     }
   ]
 }

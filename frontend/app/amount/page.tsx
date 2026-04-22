@@ -1,48 +1,100 @@
 "use client";
 
-import { useState } from "react";
-import Link from "next/link";
-import { AutoFiLogo, IconClose, IconArrowForward, IconVerifiedUser, IconCheckCircle, IconTune } from "@/app/components/icons";
+import { useState, useEffect } from "react";
+import { IconArrowForward, IconVerifiedUser, IconCheckCircle } from "@/app/components/icons";
 import AmbientBackground from "@/app/components/ambient-background";
 import Navbar from "@/app/components/navbar";
 import Footer from "@/app/components/footer";
-import SettingsModal from "@/app/components/settings-modal";
-import { TOKENS } from "@/app/lib/constants";
 import { useGlobalState } from "@/app/lib/GlobalStateContext";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
-import { useWallet } from "@solana/wallet-adapter-react";
+import { useWallet, useConnection } from "@solana/wallet-adapter-react";
+import { submitIntent } from "@/app/lib/api";
+import { mapGoalToStrategy } from "@/app/lib/goalMapping";
+import { getSolBalance } from "@/app/lib/solana";
 
 export default function InvestPage() {
-  const [selectedToken, setSelectedToken] = useState(TOKENS[1]); // Default USDC
   const [localAmount, setLocalAmount] = useState("");
-  const { setAmount, state } = useGlobalState();
+  const [isLoading, setIsLoading] = useState(false);
+  const [solBalance, setSolBalance] = useState<number | null>(null);
+  const [isFetchingBalance, setIsFetchingBalance] = useState(true);
+  const { setAmount, setBacktestResult, setStrategyResult, state } = useGlobalState();
   const router = useRouter();
-  const { publicKey, disconnect } = useWallet();
-  
-  const walletAddress = publicKey ? `${publicKey.toBase58().slice(0, 4)}...${publicKey.toBase58().slice(-4)}` : null;
+  const { publicKey } = useWallet();
+  const { connection } = useConnection();
 
-  const maxBalance = selectedToken.balance;
+  // Fetch real SOL balance on mount
+  useEffect(() => {
+    async function fetchBalance() {
+      if (publicKey && connection) {
+        setIsFetchingBalance(true);
+        const balance = await getSolBalance(connection, publicKey);
+        setSolBalance(balance);
+        setIsFetchingBalance(false);
+      } else {
+        setSolBalance(0);
+        setIsFetchingBalance(false);
+      }
+    }
+    fetchBalance();
+  }, [publicKey, connection]);
+
+  const maxBalance = solBalance ?? 0;
   const numericAmount = parseFloat(localAmount) || 0;
-  const usdValue = (numericAmount * selectedToken.usdPrice).toLocaleString("en-US", {
+  // SOL price estimation (could be fetched from API in production)
+  const solUsdPrice = 178.5;
+  const usdValue = (numericAmount * solUsdPrice).toLocaleString("en-US", {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   });
 
   const setPercentage = (pct: number) => {
     const value = (maxBalance * pct) / 100;
-    setLocalAmount(value.toFixed(2));
+    setLocalAmount(value.toFixed(4));
     if (pct === 100) {
       toast.success("Amount set to Max balance");
+    }
+  };
+
+  const handleReviewStrategy = async () => {
+    if (numericAmount <= 0) {
+      toast.error("Please enter an amount first!");
+      return;
+    }
+    if (numericAmount > maxBalance) {
+      toast.error("Amount exceeds your wallet balance!");
+      return;
+    }
+    if (!publicKey) {
+      toast.error("Wallet not connected!");
+      return;
+    }
+
+    setIsLoading(true);
+    setAmount(numericAmount);
+
+    try {
+      const response = await submitIntent({
+        wallet: publicKey.toBase58(),
+        amount: numericAmount,
+        token: "SOL",
+        strategy: mapGoalToStrategy(state.goal),
+      });
+
+      setStrategyResult(response.strategy);
+      setBacktestResult(response.backtest);
+      router.push("/preview");
+    } catch (err: any) {
+      console.error("Intent API error:", err);
+      toast.error(err.message || "Failed to analyze strategy. Please try again.");
+      setIsLoading(false);
     }
   };
 
   return (
     <>
       <div className="min-h-screen flex flex-col items-center overflow-hidden relative">
-        {/* Minimal Nav */}
         <Navbar hideNavLinks />
-
         <AmbientBackground
           blobs={[
             { color: "secondary", position: "top-left", size: "sm" },
@@ -70,91 +122,63 @@ export default function InvestPage() {
               Enter Amount
             </h1>
             <p className="font-body text-on-surface-variant text-sm max-w-sm mx-auto">
-              Specify the assets you wish to deploy.
+              Specify the SOL you wish to deploy.
             </p>
           </header>
 
           {/* Main Input Canvas */}
           <div className="w-full bg-surface-container-low rounded-3xl p-3 sm:p-4 shadow-[0_0_64px_rgba(99,102,241,0.06)] relative overflow-hidden">
-            {/* Wallet Assets Selection */}
-            <div className="flex flex-col gap-1 mb-2">
+            {/* Wallet Balance Display */}
+            <div className="flex flex-col gap-1 mb-3">
               <label className="font-label text-[10px] uppercase tracking-widest text-on-surface-variant font-bold mb-0.5">
-                Select Asset From Phantom
+                Your Wallet Balance
               </label>
-              <div className="flex flex-col gap-3">
-                {TOKENS.map((token) => {
-                  const isSelected = selectedToken.symbol === token.symbol;
-                  const tokenUsdValue = (token.balance * token.usdPrice).toLocaleString("en-US", {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2,
-                  });
-                  return (
-                    <button
-                      key={token.symbol}
-                      onClick={() => {
-                        setSelectedToken(token);
-                        setLocalAmount(""); // Reset amount when switching tokens
-                      }}
-                      className={`group flex items-center justify-between p-2 rounded-xl transition-all duration-300 text-left active:scale-95 ${
-                        isSelected
-                          ? "bg-primary/10 ring-1 ring-primary/50 border border-transparent shadow-[0_0_20px_rgba(163,166,255,0.05)]"
-                          : "bg-surface-container-highest border border-outline-variant/10 hover:bg-surface-bright"
-                      }`}
-                    >
-                      <div className="flex items-center gap-3">
-                        {/* Token Logo */}
-                        <div
-                          className="w-9 h-9 rounded-full flex items-center justify-center overflow-hidden text-white font-bold text-xs shadow-inner"
-                          style={{ backgroundColor: token.logoColor }}
-                        >
-                          {token.symbol.charAt(0)}
+              <div className="flex items-center justify-between p-3 rounded-xl bg-primary/10 ring-1 ring-primary/50 border border-transparent">
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-full flex items-center justify-center overflow-hidden text-white font-bold text-xs shadow-inner bg-[#9945FF]">
+                    S
+                  </div>
+                  <div>
+                    <div className="font-headline font-bold text-white text-sm">SOL</div>
+                    <div className="font-label text-[10px] text-on-surface-variant">Solana Native</div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3 text-right">
+                  <div>
+                    {isFetchingBalance ? (
+                      <div className="font-mono font-bold text-white text-xs animate-pulse">Loading...</div>
+                    ) : (
+                      <>
+                        <div className="font-mono font-bold text-white text-xs">
+                          {maxBalance.toFixed(4)} SOL
                         </div>
-                        <div>
-                          <div className="font-headline font-bold text-white text-sm">
-                            {token.symbol}
-                          </div>
-                          <div className="font-label text-[10px] text-on-surface-variant">
-                            {token.name}
-                          </div>
+                        <div className="font-label text-[10px] text-on-surface-variant">
+                          ≈ ${(maxBalance * solUsdPrice).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                         </div>
-                      </div>
-                      
-                      <div className="flex items-center gap-4 text-right">
-                        <div>
-                          <div className="font-mono font-bold text-white text-xs">
-                            {token.balance.toLocaleString()} {token.symbol}
-                          </div>
-                          <div className="font-label text-[10px] text-on-surface-variant">
-                            ≈ ${tokenUsdValue}
-                          </div>
-                        </div>
-                        {isSelected ? (
-                          <IconCheckCircle size={22} className="text-primary drop-shadow-[0_0_8px_rgba(163,166,255,0.5)]" />
-                        ) : (
-                          <div className="w-[22px] h-[22px] rounded-full border-2 border-outline-variant/30 group-hover:border-outline-variant/50 transition-colors" />
-                        )}
-                      </div>
-                    </button>
-                  );
-                })}
+                      </>
+                    )}
+                  </div>
+                  <IconCheckCircle size={22} className="text-primary drop-shadow-[0_0_8px_rgba(163,166,255,0.5)]" />
+                </div>
               </div>
             </div>
 
             {/* Large Numeric Input */}
             <div className="relative flex flex-col items-center py-2">
               <div className="absolute top-0 right-0 py-0.5 px-3 bg-surface-container-highest rounded-full text-[10px] font-bold text-primary-dim uppercase tracking-widest">
-                Max: {maxBalance.toLocaleString()} {selectedToken.symbol}
+                Max: {maxBalance.toFixed(4)} SOL
               </div>
-              
+
               <input
                 type="number"
                 value={localAmount}
                 onChange={(e) => setLocalAmount(e.target.value)}
                 placeholder="0.00"
-                className="w-full bg-transparent border-none text-center font-headline text-6xl md:text-7xl font-black tracking-tighter text-white focus:ring-0 focus:outline-none placeholder:text-surface-variant placeholder:opacity-50 mt-1"
+                disabled={isLoading || isFetchingBalance}
+                className="w-full bg-transparent border-none text-center font-headline text-6xl md:text-7xl font-black tracking-tighter text-white focus:ring-0 focus:outline-none placeholder:text-surface-variant placeholder:opacity-50 mt-1 disabled:opacity-50"
               />
               <div className="font-headline text-lg font-bold text-primary mt-1 mb-1 tracking-widest uppercase">
-                {selectedToken.symbol}
+                SOL
               </div>
 
               <div className="mt-1 font-body text-on-surface-variant text-sm flex items-center gap-2 bg-surface-container px-4 py-1.5 rounded-full border border-outline-variant/10">
@@ -168,14 +192,16 @@ export default function InvestPage() {
                 <button
                   key={pct}
                   onClick={() => setPercentage(pct)}
-                  className="px-4 py-2 rounded-full bg-surface-container-highest text-on-surface-variant font-label text-xs hover:bg-surface-bright transition-colors active:scale-90"
+                  disabled={isLoading || isFetchingBalance}
+                  className="px-4 py-2 rounded-full bg-surface-container-highest text-on-surface-variant font-label text-xs hover:bg-surface-bright transition-colors active:scale-90 disabled:opacity-50"
                 >
                   {pct}%
                 </button>
               ))}
               <button
                 onClick={() => setPercentage(100)}
-                className="px-4 py-2 rounded-full bg-surface-container-highest text-on-surface-variant font-label text-xs hover:bg-surface-bright transition-colors active:scale-90"
+                disabled={isLoading || isFetchingBalance}
+                className="px-4 py-2 rounded-full bg-surface-container-highest text-on-surface-variant font-label text-xs hover:bg-surface-bright transition-colors active:scale-90 disabled:opacity-50"
               >
                 MAX
               </button>
@@ -185,22 +211,24 @@ export default function InvestPage() {
           {/* Primary Action CTA */}
           <div className="w-full mt-3 flex flex-col items-center gap-1.5">
             <button
-              onClick={() => {
-                if (numericAmount <= 0) {
-                  toast.error("Please enter an amount first!");
-                  return;
-                }
-                if (numericAmount > maxBalance) {
-                  toast.error("Amount exceeds your wallet balance!");
-                  return;
-                }
-                setAmount(numericAmount);
-                router.push("/preview");
-              }}
-              className="w-full h-14 rounded-full bg-gradient-to-br from-primary to-primary-dim text-on-primary font-body font-bold text-base hover:shadow-[0_0_32px_rgba(163,166,255,0.3)] transition-all duration-300 active:scale-95 flex items-center justify-center gap-2"
+              onClick={handleReviewStrategy}
+              disabled={isLoading || isFetchingBalance}
+              className="w-full h-14 rounded-full bg-gradient-to-br from-primary to-primary-dim text-on-primary font-body font-bold text-base hover:shadow-[0_0_32px_rgba(163,166,255,0.3)] transition-all duration-300 active:scale-95 flex items-center justify-center gap-2 disabled:opacity-60 disabled:pointer-events-none"
             >
-              Review Strategy
-              <IconArrowForward size={18} />
+              {isLoading ? (
+                <>
+                  <svg className="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Analyzing Strategy...
+                </>
+              ) : (
+                <>
+                  Review Strategy
+                  <IconArrowForward size={18} />
+                </>
+              )}
             </button>
             <p className="font-label text-xs text-on-surface-variant flex items-center gap-2">
               <IconVerifiedUser size={14} />
@@ -208,11 +236,8 @@ export default function InvestPage() {
             </p>
           </div>
         </main>
-
       </div>
       <Footer />
     </>
   );
 }
-
-
