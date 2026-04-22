@@ -28,8 +28,10 @@ export default function DashboardLayout({
     <>
       <Navbar />
       <Sidebar />
-      <div className="md:ml-64 min-h-screen flex flex-col">
-        {children}
+      <div className="md:ml-64 flex flex-col">
+        <div className="min-h-screen flex flex-col w-full">
+          {children}
+        </div>
         <Footer />
       </div>
       <MobileNav />

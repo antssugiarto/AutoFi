@@ -3,6 +3,7 @@
 import { IconTrendingUp, IconArrowForward, IconSwapHoriz, IconArrowUpward, IconTrackChanges } from "@/app/components/icons";
 import Link from "next/link";
 import { useGlobalState } from "@/app/lib/GlobalStateContext";
+import AmbientBackground from "@/app/components/ambient-background";
 
 const HISTORY_DATA = [
   { id: "tx-1", type: "Harvest", asset: "USDC", amount: "+$45.20", date: "Today, 14:32", status: "Success", icon: IconTrendingUp, color: "text-tertiary" },
@@ -19,14 +20,29 @@ export default function HistoryPage() {
 
   return (
     <main className="pt-24 pb-12 px-8 flex-1 flex flex-col relative overflow-hidden">
-      <div className="max-w-3xl mx-auto w-full flex-1 flex flex-col animate-in fade-in zoom-in-95 duration-500">
+        <AmbientBackground
+          fixed={false}
+          blobs={[
+            { color: "secondary", position: "top-right", size: "lg" },
+            { color: "tertiary", position: "bottom-left", size: "md" },
+          ]}
+        />
+      <div className="max-w-[1200px] mx-auto w-full flex-1 flex flex-col animate-in fade-in zoom-in-95 duration-500">
+        <header className="mb-8">
+          <span className="text-primary tracking-[0.2em] font-bold uppercase mb-2 block text-xs">
+            Transaction Logs
+          </span>
+          <h1 className="text-3xl md:text-4xl font-headline font-extrabold text-white tracking-tight">
+            History
+          </h1>
+        </header>
+
         {hasStrategy ? (
           <>
-            <header className="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-6">
-        <div>
-          <h1 className="font-headline text-3xl font-extrabold text-white mb-2">Transaction History</h1>
-          <p className="text-on-surface-variant text-sm">Full log of your automated portfolio activities.</p>
-        </div>
+            <div className="mb-6 flex flex-col md:flex-row md:items-end justify-between gap-6">
+              <div>
+                <p className="text-on-surface-variant text-sm">Full log of your automated portfolio activities.</p>
+              </div>
         <div className="flex gap-2">
           {["All", "Deposits", "Yields", "Withdrawals"].map((filter, i) => (
             <button 
@@ -37,7 +53,7 @@ export default function HistoryPage() {
             </button>
           ))}
         </div>
-      </header>
+            </div>
 
       <div className="bg-surface-container-low rounded-3xl border border-outline-variant/10 overflow-hidden">
         <div className="overflow-x-auto">

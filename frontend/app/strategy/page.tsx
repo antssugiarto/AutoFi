@@ -104,15 +104,28 @@ export default function GoalsPage() {
 
   return (
     <>
-      <Navbar />
-
-      <main className="flex-grow pt-24 pb-16 px-6 max-w-[1100px] mx-auto w-full relative">
+      <div className="min-h-screen flex flex-col w-full relative overflow-hidden">
+        <Navbar />
         <AmbientBackground />
+
+        <main className="flex-1 flex flex-col pt-24 pb-16 px-6 max-w-[1100px] mx-auto w-full relative z-10">
+          <div className="w-full flex justify-start mb-6 align-left">
+            <button 
+              onClick={() => router.push('/dashboard')}
+              className="flex items-center gap-2 text-on-surface-variant hover:text-primary transition-colors font-medium text-sm"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="19" y1="12" x2="5" y2="12"></line>
+                <polyline points="12 19 5 12 12 5"></polyline>
+              </svg>
+              Back
+            </button>
+          </div>
 
         {/* Header */}
         <div className="mb-10 text-center md:text-left max-w-xl">
           <h1 className="text-2xl md:text-3xl font-extrabold font-headline tracking-tight mb-3 bg-gradient-to-r from-on-surface to-on-surface-variant bg-clip-text text-transparent">
-            Select Your Goal
+            Select Your Strategy
           </h1>
           <p className="text-sm text-on-surface-variant leading-relaxed">
             Choose how you want to grow your wealth. Our intelligent atmosphere
@@ -235,7 +248,8 @@ export default function GoalsPage() {
             </div>
           </div>
         )}
-      </main>
+        </main>
+      </div>
 
       <Footer />
       <MobileNav />

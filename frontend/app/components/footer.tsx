@@ -1,4 +1,4 @@
-﻿import { AutoFiLogo } from "./icons";
+import { AutoFiLogo } from "./icons";
 
 interface FooterProps {
   variant?: "full" | "minimal";
@@ -20,8 +20,8 @@ export default function Footer({ variant = "full", className = "" }: FooterProps
   }
 
   return (
-    <footer className={`w-full bg-surface pt-12 pb-10 ${className}`}>
-      <div className="w-[calc(100%-2rem)] max-w-[1200px] mx-auto flex flex-col gap-8 md:w-full">
+    <footer className={`w-full bg-surface pb-10 ${className}`}>
+      <div className="w-full px-6 md:px-8 mx-auto flex flex-col gap-8">
         <div className="w-full h-px bg-surface-container-low" />
 
         <div className="grid w-full grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-4">

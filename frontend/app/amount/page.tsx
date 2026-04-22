@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { AutoFiLogo, IconClose, IconArrowForward, IconVerifiedUser, IconCheckCircle, IconTune } from "@/app/components/icons";
 import AmbientBackground from "@/app/components/ambient-background";
+import Navbar from "@/app/components/navbar";
 import Footer from "@/app/components/footer";
 import SettingsModal from "@/app/components/settings-modal";
 import { TOKENS } from "@/app/lib/constants";
@@ -40,26 +41,7 @@ export default function InvestPage() {
     <>
       <div className="min-h-screen flex flex-col items-center overflow-hidden relative">
         {/* Minimal Nav */}
-        <nav className="fixed top-0 w-full z-50 flex justify-between items-center px-8 h-20 max-w-[1440px] mx-auto bg-surface/80 backdrop-blur-xl">
-          <Link href="/">
-            <AutoFiLogo />
-          </Link>
-          <div className="flex items-center gap-4">
-            <div className="hidden md:flex flex-col text-right">
-              <span className="text-xs text-on-surface-variant">Connected</span>
-              <span className="font-mono text-sm font-bold text-white">{walletAddress}</span>
-            </div>
-            <button 
-              onClick={() => {
-                disconnect();
-                router.push("/");
-              }}
-              className="bg-surface-container-highest hover:bg-surface-variant text-on-surface font-bold px-5 py-2.5 rounded-full transition-all text-sm border border-outline-variant/20"
-            >
-              Disconnect
-            </button>
-          </div>
-        </nav>
+        <Navbar hideNavLinks />
 
         <AmbientBackground
           blobs={[
@@ -68,9 +50,9 @@ export default function InvestPage() {
           ]}
         />
 
-        <main className="flex-grow flex flex-col items-center justify-center w-full max-w-xl px-6 relative z-10 pt-24 pb-10">
+        <main className="flex-1 flex flex-col items-center justify-center w-full max-w-xl px-6 relative z-10 pt-24 pb-4">
           <div className="w-full flex justify-start mb-6">
-            <button 
+            <button
               onClick={() => router.push('/strategy')}
               className="flex items-center gap-2 text-on-surface-variant hover:text-primary transition-colors font-medium text-sm"
             >
@@ -83,20 +65,20 @@ export default function InvestPage() {
           </div>
 
           {/* Header */}
-          <header className="text-center mb-8">
-            <h1 className="font-headline text-4xl font-extrabold tracking-tighter mb-3">
+          <header className="text-center mb-2">
+            <h1 className="font-headline text-3xl md:text-4xl font-extrabold tracking-tighter mb-1">
               Enter Amount
             </h1>
-            <p className="font-body text-on-surface-variant text-base max-w-sm mx-auto">
-              Specify the assets you wish to deploy into your automated vault.
+            <p className="font-body text-on-surface-variant text-sm max-w-sm mx-auto">
+              Specify the assets you wish to deploy.
             </p>
           </header>
 
           {/* Main Input Canvas */}
-          <div className="w-full bg-surface-container-low rounded-[2rem] p-6 shadow-[0_0_64px_rgba(99,102,241,0.06)] relative overflow-hidden">
+          <div className="w-full bg-surface-container-low rounded-3xl p-3 sm:p-4 shadow-[0_0_64px_rgba(99,102,241,0.06)] relative overflow-hidden">
             {/* Wallet Assets Selection */}
-            <div className="flex flex-col gap-3 mb-10">
-              <label className="font-label text-xs uppercase tracking-widest text-on-surface-variant font-bold mb-1">
+            <div className="flex flex-col gap-1 mb-2">
+              <label className="font-label text-[10px] uppercase tracking-widest text-on-surface-variant font-bold mb-0.5">
                 Select Asset From Phantom
               </label>
               <div className="flex flex-col gap-3">
@@ -113,36 +95,36 @@ export default function InvestPage() {
                         setSelectedToken(token);
                         setLocalAmount(""); // Reset amount when switching tokens
                       }}
-                      className={`group flex items-center justify-between p-4 rounded-2xl transition-all duration-300 text-left active:scale-95 ${
+                      className={`group flex items-center justify-between p-2 rounded-xl transition-all duration-300 text-left active:scale-95 ${
                         isSelected
                           ? "bg-primary/10 ring-1 ring-primary/50 border border-transparent shadow-[0_0_20px_rgba(163,166,255,0.05)]"
                           : "bg-surface-container-highest border border-outline-variant/10 hover:bg-surface-bright"
                       }`}
                     >
-                      <div className="flex items-center gap-4">
+                      <div className="flex items-center gap-3">
                         {/* Token Logo */}
                         <div
-                          className="w-11 h-11 rounded-full flex items-center justify-center overflow-hidden text-white font-bold text-sm shadow-inner"
+                          className="w-9 h-9 rounded-full flex items-center justify-center overflow-hidden text-white font-bold text-xs shadow-inner"
                           style={{ backgroundColor: token.logoColor }}
                         >
                           {token.symbol.charAt(0)}
                         </div>
                         <div>
-                          <div className="font-headline font-bold text-white text-base">
+                          <div className="font-headline font-bold text-white text-sm">
                             {token.symbol}
                           </div>
-                          <div className="font-label text-xs text-on-surface-variant">
+                          <div className="font-label text-[10px] text-on-surface-variant">
                             {token.name}
                           </div>
                         </div>
                       </div>
                       
-                      <div className="flex items-center gap-5 text-right">
+                      <div className="flex items-center gap-4 text-right">
                         <div>
-                          <div className="font-mono font-bold text-white text-sm">
+                          <div className="font-mono font-bold text-white text-xs">
                             {token.balance.toLocaleString()} {token.symbol}
                           </div>
-                          <div className="font-label text-xs text-on-surface-variant">
+                          <div className="font-label text-[10px] text-on-surface-variant">
                             ≈ ${tokenUsdValue}
                           </div>
                         </div>
@@ -159,8 +141,8 @@ export default function InvestPage() {
             </div>
 
             {/* Large Numeric Input */}
-            <div className="relative flex flex-col items-center py-6">
-              <div className="absolute top-0 right-0 py-1 px-3 bg-surface-container-highest rounded-full text-[10px] font-bold text-primary-dim uppercase tracking-widest">
+            <div className="relative flex flex-col items-center py-2">
+              <div className="absolute top-0 right-0 py-0.5 px-3 bg-surface-container-highest rounded-full text-[10px] font-bold text-primary-dim uppercase tracking-widest">
                 Max: {maxBalance.toLocaleString()} {selectedToken.symbol}
               </div>
               
@@ -169,19 +151,19 @@ export default function InvestPage() {
                 value={localAmount}
                 onChange={(e) => setLocalAmount(e.target.value)}
                 placeholder="0.00"
-                className="w-full bg-transparent border-none text-center font-headline text-6xl md:text-7xl font-black tracking-tighter text-white focus:ring-0 focus:outline-none placeholder:text-surface-variant placeholder:opacity-50 mt-4"
+                className="w-full bg-transparent border-none text-center font-headline text-6xl md:text-7xl font-black tracking-tighter text-white focus:ring-0 focus:outline-none placeholder:text-surface-variant placeholder:opacity-50 mt-1"
               />
-              <div className="font-headline text-xl font-bold text-primary mt-1 mb-2 tracking-widest uppercase">
+              <div className="font-headline text-lg font-bold text-primary mt-1 mb-1 tracking-widest uppercase">
                 {selectedToken.symbol}
               </div>
 
-              <div className="mt-2 font-body text-on-surface-variant text-sm flex items-center gap-2 bg-surface-container px-4 py-1.5 rounded-full border border-outline-variant/10">
+              <div className="mt-1 font-body text-on-surface-variant text-sm flex items-center gap-2 bg-surface-container px-4 py-1.5 rounded-full border border-outline-variant/10">
                 <span>{"≈"} ${usdValue} USD</span>
               </div>
             </div>
 
             {/* Quick Amount Ratios */}
-            <div className="flex justify-center gap-3 mt-4">
+            <div className="flex justify-center gap-2 mt-2">
               {[25, 50, 75].map((pct) => (
                 <button
                   key={pct}
@@ -201,8 +183,8 @@ export default function InvestPage() {
           </div>
 
           {/* Primary Action CTA */}
-          <div className="w-full mt-8 flex flex-col items-center gap-4">
-            <button 
+          <div className="w-full mt-3 flex flex-col items-center gap-1.5">
+            <button
               onClick={() => {
                 if (numericAmount <= 0) {
                   toast.error("Please enter an amount first!");
@@ -227,8 +209,8 @@ export default function InvestPage() {
           </div>
         </main>
 
-        <Footer className="mt-auto" />
       </div>
+      <Footer />
     </>
   );
 }

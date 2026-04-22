@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState } from "react";
 import Link from "next/link";
@@ -56,7 +56,7 @@ export default function WithdrawPage() {
           ]}
         />
 
-        <main className="flex-grow flex flex-col items-center justify-center w-full max-w-2xl px-6 relative z-10 pt-20">
+        <main className="flex-1 flex flex-col items-center justify-center w-full max-w-2xl px-6 relative z-10 pt-20">
           <header className="text-center mb-12">
             <h1 className="font-headline text-5xl font-extrabold tracking-tighter mb-4 text-white">
               Withdraw Funds
@@ -184,13 +184,12 @@ export default function WithdrawPage() {
           </div>
         </main>
 
-        <Footer className="mt-auto" />
-        
-        <SettingsModal 
-          isOpen={isSettingsOpen} 
-          onClose={() => setIsSettingsOpen(false)} 
-        />
       </div>
+      <Footer />
+      <SettingsModal 
+        isOpen={isSettingsOpen} 
+        onClose={() => setIsSettingsOpen(false)} 
+      />
     </>
   );
 }

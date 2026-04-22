@@ -29,13 +29,21 @@ export default function DashboardPage() {
 
         <div className="max-w-[1200px] mx-auto w-full flex-1 flex flex-col">
           {/* Header */}
-          <header className="mb-8">
-            <span className="text-primary tracking-[0.2em] font-bold uppercase mb-2 block text-xs">
-              Atmosphere Dashboard
-            </span>
-            <h1 className="text-3xl md:text-4xl font-headline font-extrabold text-white tracking-tight">
-              System Status: Optimal
-            </h1>
+          <header className="mb-8 flex items-center justify-between">
+            <div>
+              <span className="text-primary tracking-[0.2em] font-bold uppercase mb-2 block text-xs">
+                Atmosphere Dashboard
+              </span>
+              <h1 className="text-3xl md:text-4xl font-headline font-extrabold text-white tracking-tight flex items-center gap-4">
+                Overview
+                {hasStrategy && (
+                  <span className="text-sm font-bold bg-tertiary/10 text-tertiary px-3 py-1.5 rounded-full border border-tertiary/20 tracking-normal inline-flex items-center gap-1.5">
+                    <span className="w-2 h-2 rounded-full bg-tertiary animate-pulse" />
+                    System Status: Optimal
+                  </span>
+                )}
+              </h1>
+            </div>
           </header>
 
           {/* Bento Grid */}

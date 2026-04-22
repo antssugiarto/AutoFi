@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { IconShield, IconHub, IconTrendingUp, IconVerifiedUser, IconTrackChanges } from "@/app/components/icons";
 import { useGlobalState } from "@/app/lib/GlobalStateContext";
+import AmbientBackground from "@/app/components/ambient-background";
 
 export default function StrategyPage() {
   const { state } = useGlobalState();
@@ -10,22 +11,36 @@ export default function StrategyPage() {
 
   return (
     <main className="pt-24 pb-12 px-8 flex-1 flex flex-col relative overflow-hidden">
-      <div className="max-w-3xl mx-auto w-full flex-1 flex flex-col animate-in fade-in zoom-in-95 duration-500">
+        <AmbientBackground
+          fixed={false}
+          blobs={[
+            { color: "secondary", position: "top-right", size: "lg" },
+            { color: "tertiary", position: "bottom-left", size: "md" },
+          ]}
+        />
+      <div className="max-w-[1200px] mx-auto w-full flex-1 flex flex-col animate-in fade-in zoom-in-95 duration-500">
+        <header className="mb-8">
+          <span className="text-primary tracking-[0.2em] font-bold uppercase mb-2 block text-xs">
+            Portfolio Management
+          </span>
+          <h1 className="text-3xl md:text-4xl font-headline font-extrabold text-white tracking-tight">
+            Active Strategy
+          </h1>
+        </header>
+
         {hasStrategy ? (
           <>
-            <header className="mb-10 flex items-center justify-between">
-        <div>
-          <div className="inline-block px-3 py-1 bg-primary/10 text-primary text-xs font-bold rounded-full mb-4 uppercase tracking-widest">
-            Active Vault
-          </div>
-          <h1 className="font-headline text-3xl md:text-4xl font-extrabold text-white mb-2">
-            The Blue-Chip Autopilot
-          </h1>
-          <p className="text-on-surface-variant text-sm max-w-xl leading-relaxed">
-            Automatically rebalancing between ETH, BTC, and top stablecoins to capture market growth while minimizing volatility through advanced yield strategies.
-          </p>
-        </div>
-      </header>
+            <div className="mb-10 bg-surface-container-low rounded-3xl p-6 md:p-8 border border-outline-variant/10">
+              <div className="inline-block px-3 py-1 bg-primary/10 text-primary text-xs font-bold rounded-full mb-4 uppercase tracking-widest">
+                Active Vault
+              </div>
+              <h2 className="font-headline text-2xl md:text-3xl font-extrabold text-white mb-2">
+                The Blue-Chip Autopilot
+              </h2>
+              <p className="text-on-surface-variant text-sm max-w-xl leading-relaxed">
+                Automatically rebalancing between ETH, BTC, and top stablecoins to capture market growth while minimizing volatility through advanced yield strategies.
+              </p>
+            </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
         {/* Main Chart Area */}

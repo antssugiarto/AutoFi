@@ -28,8 +28,10 @@ const SIDEBAR_ITEMS = [
 
 export default function Sidebar() {
   const pathname = usePathname();
-  const { wallet, connected } = useWallet();
-  const walletName = connected && wallet ? wallet.adapter.name : "Not Connected";
+  const { wallet, publicKey, connected } = useWallet();
+  const address = publicKey ? publicKey.toBase58() : "";
+  const shortAddress = address ? `${address.slice(0, 4)}...${address.slice(-4)}` : "Not Connected";
+  const walletName = connected && wallet ? wallet.adapter.name : "Wallet";
 
   return (
     <aside className="h-screen w-64 fixed left-0 top-0 hidden md:flex flex-col py-8 bg-surface-container-low z-40 border-r border-outline-variant/10">
@@ -45,8 +47,8 @@ export default function Sidebar() {
               <div className="w-full h-full bg-gradient-to-br from-primary/40 to-secondary/40" />
             )}
           </div>
-          <div className="text-lg font-headline font-bold text-white leading-tight truncate">
-            {walletName}
+          <div className="text-lg font-mono font-bold text-white leading-tight truncate">
+            {connected ? shortAddress : "Not Connected"}
           </div>
         </div>
 
