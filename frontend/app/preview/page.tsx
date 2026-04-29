@@ -88,47 +88,10 @@ export default function PreviewPage() {
   const risk = hasBackendData ? state.strategyResult!.risk : selectedGoal.risk;
   const confidence = hasBackendData ? state.backtestResult!.confidence : 0.88;
 
-  const handleExecute = async () => {
+  const handleExecute = () => {
     setIsExecuting(true);
-    
-    if (!publicKey || !signTransaction || !signAllTransactions) {
-      toast.error("Wallet not fully connected.");
-      setIsExecuting(false);
-      return;
-    }
-
-    try {
-      const provider = new AnchorProvider(
-        connection,
-        { publicKey, signTransaction, signAllTransactions },
-        { preflightCommitment: "confirmed" }
-      );
-      const program = new Program(idl as unknown as Idl, provider);
-
-      // Memanggil smart contract
-      await program.methods
-        .executeIntent(
-          state.goal || "default_goal", 
-          new BN(state.amount || 0)
-        )
-        .accounts({
-          user: publicKey,
-        })
-        .rpc();
-
-      // Jika berhasil, lanjut ke halaman eksekusi
-      router.push("/execute");
-    } catch (err: any) {
-      console.warn("Transaction error:", err);
-      // Phantom error code 4001: User rejected the request
-      if (err.code === 4001 || err.message?.includes("User rejected")) {
-        setIsExecuting(false);
-        toast.error("Transaction cancelled.");
-      } else {
-        // Jika gagal karena network/program not found (UI testing), tetap lanjut
-        router.push("/execute");
-      }
-    }
+    // Redirect to the execution page which handles the new smart contract logic
+    router.push("/execute");
   };
 
   return (
@@ -153,21 +116,17 @@ export default function PreviewPage() {
 
         <section className="flex flex-col gap-4 md:gap-6 w-full">
           {/* Header */}
-          <div className="flex flex-col gap-1.5 md:gap-2">
-            <div className="flex items-center gap-2 text-primary uppercase tracking-[0.2em] font-bold text-[10px] md:text-xs">
-              <IconMagicButton size={14} />
-              Automated Intelligence
-            </div>
-            <h1 className="text-3xl md:text-4xl font-extrabold font-headline tracking-tighter leading-tight bg-gradient-to-r from-on-surface via-primary to-secondary bg-clip-text text-transparent">
-              Smart Strategy Preview
+          <header className="mb-2">
+            <h1 className="text-3xl md:text-4xl font-extrabold font-headline tracking-tighter mb-1 text-white">
+              Strategy Preview
             </h1>
-            <p className="text-on-surface-variant text-sm md:text-base max-w-xl leading-relaxed">
+            <p className="font-body text-on-surface-variant text-sm max-w-xl leading-relaxed">
               {hasBackendData
                 ? `AutoFi engine selected "${strategyName}" strategy based on your intent.`
                 : "AutoFi has analyzed liquidity depth and yield curves to construct the most efficient path for your capital."
               }
             </p>
-          </div>
+          </header>
 
           {/* Bento Preview Container */}
           <div className="grid grid-cols-1 md:grid-cols-12 gap-3 md:gap-4">
@@ -177,7 +136,7 @@ export default function PreviewPage() {
               <div className="absolute inset-0 bg-gradient-to-b from-primary/5 to-transparent h-1/2 -translate-y-full group-hover:translate-y-[200%] transition-transform duration-[3000ms] pointer-events-none" />
 
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-on-surface-variant font-label text-[10px] md:text-xs uppercase tracking-widest">
+                <h3 className="text-white font-bold font-label text-[10px] md:text-xs uppercase tracking-widest">
                   Proposed Execution Path
                 </h3>
                 {hasBackendData && (
@@ -232,7 +191,7 @@ export default function PreviewPage() {
             <div className="md:col-span-4 flex flex-col">
               <div className="bg-surface-container-highest rounded-2xl p-4 md:p-6 flex flex-col justify-between items-start h-full ring-1 ring-white/5 relative overflow-hidden">
                 <div className="flex flex-col gap-1 md:gap-2">
-                  <span className="text-on-surface-variant font-label text-[10px] md:text-xs uppercase tracking-widest">
+                  <span className="text-white font-bold font-label text-[10px] md:text-xs uppercase tracking-widest">
                     Yield Optimization
                   </span>
                   <div className="text-3xl md:text-4xl font-extrabold tracking-tighter text-primary font-headline">
@@ -271,7 +230,7 @@ export default function PreviewPage() {
               <div className="md:col-span-12 bg-surface-container-low rounded-2xl p-4 md:p-6 shadow-2xl relative overflow-hidden">
                 <div className="flex items-center gap-2 mb-5">
                   <IconTrendingUp size={18} className="text-tertiary" />
-                  <h3 className="text-on-surface-variant font-label text-[10px] md:text-xs uppercase tracking-widest">
+                  <h3 className="text-white font-bold font-label text-[10px] md:text-xs uppercase tracking-widest">
                     Backtest Results — Multi-Window Analysis
                   </h3>
                 </div>
@@ -280,7 +239,7 @@ export default function PreviewPage() {
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                   {/* Short Term */}
                   <div className="bg-surface-container-highest/50 rounded-xl p-4 border border-outline-variant/10 group hover:border-primary/20 transition-all">
-                    <div className="text-[10px] font-label uppercase tracking-widest text-on-surface-variant mb-2">
+                    <div className="text-xs font-label text-on-surface-variant mb-2">
                       Short Term
                     </div>
                     <div className="text-2xl md:text-3xl font-headline font-extrabold text-primary tracking-tight">
@@ -291,7 +250,7 @@ export default function PreviewPage() {
 
                   {/* Mid Term */}
                   <div className="bg-surface-container-highest/50 rounded-xl p-4 border border-outline-variant/10 group hover:border-secondary/20 transition-all">
-                    <div className="text-[10px] font-label uppercase tracking-widest text-on-surface-variant mb-2">
+                    <div className="text-xs font-label text-on-surface-variant mb-2">
                       Mid Term
                     </div>
                     <div className="text-2xl md:text-3xl font-headline font-extrabold text-secondary tracking-tight">
@@ -302,7 +261,7 @@ export default function PreviewPage() {
 
                   {/* Long Term */}
                   <div className="bg-surface-container-highest/50 rounded-xl p-4 border border-outline-variant/10 group hover:border-tertiary/20 transition-all">
-                    <div className="text-[10px] font-label uppercase tracking-widest text-on-surface-variant mb-2">
+                    <div className="text-xs font-label text-on-surface-variant mb-2">
                       Long Term
                     </div>
                     <div className="text-2xl md:text-3xl font-headline font-extrabold text-tertiary tracking-tight">
@@ -314,7 +273,7 @@ export default function PreviewPage() {
                   {/* Final Score */}
                   <div className="bg-gradient-to-br from-primary/10 to-secondary/10 rounded-xl p-4 border border-primary/20 relative overflow-hidden">
                     <div className="absolute -top-6 -right-6 w-20 h-20 bg-primary/10 blur-2xl rounded-full" />
-                    <div className="text-[10px] font-label uppercase tracking-widest text-on-surface-variant mb-2 relative z-10">
+                    <div className="text-xs font-label text-on-surface-variant mb-2 relative z-10">
                       Composite Score
                     </div>
                     <div className="text-2xl md:text-3xl font-headline font-extrabold text-white tracking-tight relative z-10">
@@ -329,7 +288,7 @@ export default function PreviewPage() {
                   <div className="flex items-center justify-between mb-3">
                     <div className="flex items-center gap-2">
                       <IconShield size={14} className="text-primary" />
-                      <span className="text-xs font-label uppercase tracking-widest text-on-surface-variant">
+                      <span className="text-xs font-label uppercase tracking-widest text-white font-bold">
                         Confidence Score
                       </span>
                     </div>
@@ -355,7 +314,7 @@ export default function PreviewPage() {
               {[
                 { icon: <IconLocalAtm className="w-4 h-4 md:w-5 md:h-5" />, title: `${state.amount || "0.00"} ${hasBackendData ? "SOL" : "USDC"}`, desc: "Amount" },
                 { icon: <IconBolt className="w-4 h-4 md:w-5 md:h-5" />, title: hasBackendData ? strategyName : selectedGoal.title, desc: "Strategy" },
-                { icon: <IconVerifiedUser className="w-4 h-4 md:w-5 md:h-5" />, title: "~12 Sec", desc: "Execution" },
+                { icon: <IconVerifiedUser className="w-4 h-4 md:w-5 md:h-5" />, title: `~${strategySteps.length * 3} Sec`, desc: "Execution" },
               ].map((badge) => (
                 <div
                   key={badge.title}
@@ -378,7 +337,7 @@ export default function PreviewPage() {
           </div>
 
           {/* Footer Action Area */}
-          <div className="flex items-center justify-end md:justify-center gap-4 pt-4 mt-2">
+          <div className="flex items-center justify-end md:justify-center gap-4 mt-0">
             {/* Action Buttons */}
             <div className="flex justify-center w-full">
               <button

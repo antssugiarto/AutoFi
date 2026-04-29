@@ -21,6 +21,7 @@ import {
 } from "./components/icons";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { useGlobalState } from "./lib/GlobalStateContext";
+import ScrollReveal from "./components/ScrollReveal";
 
 export default function LandingPage() {
   const { connected, connecting, publicKey, disconnect } = useWallet();
@@ -108,7 +109,7 @@ export default function LandingPage() {
     <>
       {/* ── Scroll-triggered Minimal Topbar ── */}
       <nav
-        className={`fixed top-0 w-full z-50 bg-surface/80 backdrop-blur-xl shadow-[0_0_64px_rgba(99,102,241,0.06)] transition-all duration-300 ${
+        className={`fixed top-0 w-full z-50 bg-surface border-b border-outline-variant/10 shadow-[0_0_64px_rgba(99,102,241,0.06)] transition-all duration-300 ${
           showTopbar
             ? "translate-y-0 opacity-100"
             : "-translate-y-full opacity-0 pointer-events-none"
@@ -176,13 +177,10 @@ export default function LandingPage() {
 
             <div className="w-full flex-1 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center pt-6 md:pt-8">
               {/* Hero Content */}
-              <div
-                className={`lg:col-span-7 flex flex-col items-start gap-7 transition-[opacity,transform,filter] duration-[950ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${
-                  isReady
-                    ? "translate-x-0 translate-y-0 opacity-100 blur-0"
-                    : "-translate-x-12 translate-y-6 opacity-0 blur-[10px]"
-                }`}
-                style={{ transitionDelay: "160ms" }}
+              <ScrollReveal
+                animationClass="spawn-rise"
+                delay={160}
+                className="lg:col-span-7 flex flex-col items-start gap-7"
               >
                 <h1 className="font-headline text-4xl md:text-6xl font-extrabold tracking-tighter leading-[1.05] text-on-surface">
                   Automate Your <br />
@@ -216,16 +214,13 @@ export default function LandingPage() {
                     Read More
                   </Button>
                 </div>
-              </div>
+              </ScrollReveal>
 
               {/* Hero Visual: Glassmorphism Card Stack */}
-              <div
-                className={`lg:col-span-5 relative transition-[opacity,transform,filter] duration-[1050ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${
-                  isReady
-                    ? "translate-x-0 translate-y-0 rotate-0 opacity-100 blur-0"
-                    : "translate-x-14 translate-y-8 rotate-[1.5deg] opacity-0 blur-[12px]"
-                }`}
-                style={{ transitionDelay: "280ms" }}
+              <ScrollReveal
+                animationClass="spawn-card"
+                delay={280}
+                className="lg:col-span-5 relative"
               >
                 <div className="relative z-10 p-8 rounded-3xl bg-surface-bright/30 backdrop-blur-2xl border border-outline-variant/15 shadow-2xl shadow-primary/5">
                   {/* Card Header */}
@@ -289,7 +284,7 @@ export default function LandingPage() {
                 {/* Decorative Glows */}
                 <div className="absolute -top-10 -right-10 w-32 h-32 bg-secondary/20 blur-3xl rounded-full" />
                 <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-primary/20 blur-3xl rounded-full" />
-              </div>
+              </ScrollReveal>
             </div>
           </div>
         </section>
@@ -299,17 +294,14 @@ export default function LandingPage() {
            ════════════════════════════════════════════ */}
         <section id="how-it-works" className="py-20 bg-surface-container-low">
           <div className="max-w-[1200px] mx-auto px-8">
-            <div
-              className="text-center mb-16 spawn-fade"
-              style={{ "--spawn-delay": "320ms" } as CSSProperties}
-            >
+            <ScrollReveal animationClass="spawn-fade" className="text-center mb-16">
               <h2 className="font-headline text-2xl md:text-3xl font-bold mb-4">
                 How It Works
               </h2>
               <p className="text-on-surface-variant text-lg max-w-xl mx-auto">
                 Three simple steps to automate your DeFi journey.
               </p>
-            </div>
+            </ScrollReveal>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {[
@@ -334,11 +326,12 @@ export default function LandingPage() {
                   icon: <IconAutoAwesome size={28} className="text-tertiary" />,
                   color: "bg-tertiary/15",
                 },
-              ].map((item) => (
-                <div
+              ].map((item, index) => (
+                <ScrollReveal
                   key={item.step}
-                  className="relative group p-8 rounded-3xl bg-surface-container border border-outline-variant/10 hover:border-primary/20 transition-all duration-300 spawn-card"
-                  style={{ "--spawn-delay": `${380 + Number(item.step) * 90}ms` } as CSSProperties}
+                  animationClass="spawn-card"
+                  delay={index * 150}
+                  className={`relative group p-8 rounded-3xl bg-surface-container border border-outline-variant/10 hover:border-primary/20 transition-all duration-300`}
                 >
                   {/* Step Number */}
                   <div className="absolute top-6 right-6 text-5xl font-headline font-extrabold text-surface-container-highest/80 select-none">
@@ -350,7 +343,7 @@ export default function LandingPage() {
                   </div>
                   <h3 className="font-headline text-xl font-bold mb-3">{item.title}</h3>
                   <p className="text-on-surface-variant text-sm leading-relaxed">{item.desc}</p>
-                </div>
+                </ScrollReveal>
               ))}
             </div>
           </div>
@@ -361,17 +354,14 @@ export default function LandingPage() {
            ════════════════════════════════════════════ */}
         <section className="py-20 px-8">
           <div className="max-w-[1200px] mx-auto">
-            <div
-              className="text-center mb-16 spawn-fade"
-              style={{ "--spawn-delay": "520ms" } as CSSProperties}
-            >
+            <ScrollReveal animationClass="spawn-fade" className="text-center mb-16">
               <h2 className="font-headline text-2xl md:text-3xl font-bold mb-4">
                 Powerful Features
               </h2>
               <p className="text-on-surface-variant text-lg max-w-xl mx-auto">
                 Everything you need for intelligent, hands-free DeFi management.
               </p>
-            </div>
+            </ScrollReveal>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
               {[
@@ -400,17 +390,18 @@ export default function LandingPage() {
                   gradient: "from-primary/10 to-transparent",
                 },
               ].map((feature, index) => (
-                <div
+                <ScrollReveal
                   key={feature.title}
-                  className={`group p-6 rounded-3xl bg-gradient-to-b ${feature.gradient} border border-outline-variant/10 hover:border-primary/20 transition-all duration-300 hover:-translate-y-1 spawn-card`}
-                  style={{ "--spawn-delay": `${600 + index * 80}ms` } as CSSProperties}
+                  animationClass="spawn-card"
+                  delay={index * 100}
+                  className={`group p-6 rounded-3xl bg-gradient-to-b ${feature.gradient} border border-outline-variant/10 hover:border-primary/20 transition-all duration-300 hover:-translate-y-1`}
                 >
                   <div className="w-12 h-12 rounded-2xl bg-surface-container-highest/50 flex items-center justify-center mb-5">
                     {feature.icon}
                   </div>
                   <h3 className="font-headline text-lg font-bold mb-2">{feature.title}</h3>
                   <p className="text-on-surface-variant text-sm leading-relaxed">{feature.desc}</p>
-                </div>
+                </ScrollReveal>
               ))}
             </div>
           </div>
@@ -421,24 +412,22 @@ export default function LandingPage() {
            ════════════════════════════════════════════ */}
         <section className="py-20 bg-surface-container-low px-8">
           <div className="max-w-[1200px] mx-auto">
-            <div
-              className="mb-16 spawn-fade"
-              style={{ "--spawn-delay": "680ms" } as CSSProperties}
-            >
+            <ScrollReveal animationClass="spawn-fade" className="mb-16">
               <h2 className="font-headline text-2xl md:text-3xl font-bold mb-4">
                 Strategy Preview
               </h2>
               <p className="text-on-surface-variant text-lg max-w-2xl">
                 Pick a strategy that matches your risk appetite and let AutoFi handle the rest.
               </p>
-            </div>
+            </ScrollReveal>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
               {strategies.map((s, index) => (
-                <div
+                <ScrollReveal
                   key={s.name}
-                  className={`group relative overflow-hidden rounded-3xl bg-surface-container p-6 flex flex-col justify-between min-h-[280px] border border-outline-variant/10 ${s.borderHover} transition-all duration-300 hover:-translate-y-1 spawn-card`}
-                  style={{ "--spawn-delay": `${760 + index * 80}ms` } as CSSProperties}
+                  animationClass="spawn-card"
+                  delay={index * 100}
+                  className={`group relative overflow-hidden rounded-3xl bg-surface-container p-6 flex flex-col justify-between min-h-[280px] border border-outline-variant/10 ${s.borderHover} transition-all duration-300 hover:-translate-y-1`}
                 >
                   <div>
                     <div className={`w-12 h-12 ${s.bgColor} rounded-2xl flex items-center justify-center mb-5`}>
@@ -457,7 +446,7 @@ export default function LandingPage() {
                       <span className="text-on-surface text-sm font-semibold">{s.risk}</span>
                     </div>
                   </div>
-                </div>
+                </ScrollReveal>
               ))}
             </div>
           </div>
@@ -468,17 +457,14 @@ export default function LandingPage() {
            ════════════════════════════════════════════ */}
         <section className="py-20 px-8">
           <div className="max-w-[1200px] mx-auto">
-            <div
-              className="text-center mb-16 spawn-fade"
-              style={{ "--spawn-delay": "860ms" } as CSSProperties}
-            >
+            <ScrollReveal animationClass="spawn-fade" className="text-center mb-16">
               <h2 className="font-headline text-2xl md:text-3xl font-bold mb-4">
                 Trust & Security
               </h2>
               <p className="text-on-surface-variant text-lg max-w-xl mx-auto">
                 Your assets are protected by industry-leading security standards.
               </p>
-            </div>
+            </ScrollReveal>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {[
@@ -501,17 +487,18 @@ export default function LandingPage() {
                   color: "bg-secondary/15",
                 },
               ].map((item, index) => (
-                <div
+                <ScrollReveal
                   key={item.title}
-                  className="text-center p-8 rounded-3xl bg-surface-container border border-outline-variant/10 hover:border-primary/20 transition-all duration-300 spawn-card"
-                  style={{ "--spawn-delay": `${940 + index * 90}ms` } as CSSProperties}
+                  animationClass="spawn-card"
+                  delay={index * 150}
+                  className="text-center p-8 rounded-3xl bg-surface-container border border-outline-variant/10 hover:border-primary/20 transition-all duration-300"
                 >
                   <div className={`w-16 h-16 rounded-2xl ${item.color} flex items-center justify-center mx-auto mb-6`}>
                     {item.icon}
                   </div>
                   <h3 className="font-headline text-xl font-bold mb-3">{item.title}</h3>
                   <p className="text-on-surface-variant text-sm leading-relaxed max-w-xs mx-auto">{item.desc}</p>
-                </div>
+                </ScrollReveal>
               ))}
             </div>
           </div>
@@ -521,9 +508,9 @@ export default function LandingPage() {
             6. CTA SECTION
            ════════════════════════════════════════════ */}
         <section className="py-16 px-8">
-          <div
-            className="max-w-[1200px] mx-auto relative rounded-[2.5rem] bg-gradient-to-br from-primary-container/20 to-secondary-container/20 p-10 md:p-20 overflow-hidden border border-outline-variant/10 text-center spawn-rise"
-            style={{ "--spawn-delay": "1080ms" } as CSSProperties}
+          <ScrollReveal
+            animationClass="spawn-rise"
+            className="max-w-[1200px] mx-auto relative rounded-[2.5rem] bg-gradient-to-br from-primary-container/20 to-secondary-container/20 p-10 md:p-20 overflow-hidden border border-outline-variant/10 text-center"
           >
             <div className="absolute top-0 left-0 w-full h-full pointer-events-none bg-[radial-gradient(circle_at_50%_50%,rgba(163,166,255,0.1),transparent)]" />
 
@@ -545,7 +532,7 @@ export default function LandingPage() {
                 </Button>
               )}
             </div>
-          </div>
+          </ScrollReveal>
         </section>
       </main>
 

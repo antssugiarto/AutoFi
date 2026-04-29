@@ -21,9 +21,9 @@ export const GOALS: Goal[] = [
       "Aggressive yields across high-liquidity pools and automated farming vaults.",
     icon: "auto_awesome",
     accentColor: "primary",
-    apy: "18.5%",
+    apy: "14.0%",
     risk: "High",
-    confidence: "78%",
+    confidence: "65%",
   },
   {
     id: "grow_safely",
@@ -32,9 +32,9 @@ export const GOALS: Goal[] = [
       "Prioritize capital preservation using stablecoin strategies and blue-chip assets.",
     icon: "shield",
     accentColor: "secondary",
-    apy: "8.2%",
+    apy: "6.0%",
     risk: "Low",
-    confidence: "95%",
+    confidence: "75%",
   },
   {
     id: "cheapest_swap",
@@ -43,9 +43,9 @@ export const GOALS: Goal[] = [
       "Routing through all major DEXs to find the lowest slippage and zero gas overhead.",
     icon: "bolt",
     accentColor: "tertiary",
-    apy: "0.0%",
-    risk: "Low",
-    confidence: "99%",
+    apy: "8.0%",
+    risk: "Stable",
+    confidence: "72%",
   },
   {
     id: "auto_portfolio",
@@ -54,9 +54,9 @@ export const GOALS: Goal[] = [
       "Set it and forget it. Our AI rebalances your holdings to target your ideal index.",
     icon: "smart_toy",
     accentColor: "on-surface",
-    apy: "12.4%",
+    apy: "10.0%",
     risk: "Medium",
-    confidence: "88%",
+    confidence: "68%",
   },
 ];
 

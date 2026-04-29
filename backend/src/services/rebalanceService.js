@@ -60,4 +60,46 @@ function shouldRebalance({ currentAPY, strategyRisk, dailyBalances, day }) {
   return { triggered: false, reason: null };
 }
 
-module.exports = { shouldRebalance };
+const { generateStrategies } = require("./strategyService");
+const { scoreAndSelect } = require("./scoringService");
+
+/**
+ * Live Market Monitor: Checks if a current strategy is still optimal
+ * compared to other strategies available for the same tier.
+ */
+async function checkLiveRebalance(currentStrategyName, currentTier) {
+  try {
+    // 1. Get current candidates for the same tier
+    const candidates = await generateStrategies(currentTier);
+    
+    // 2. Score them using fresh market data
+    const { all: scoredCandidates } = await scoreAndSelect(candidates);
+    
+    // 3. Find the best current one
+    const bestCurrent = scoredCandidates[0];
+    
+    // 4. Find the strategy the user is currently using
+    const current = scoredCandidates.find(s => s.name === currentStrategyName);
+    
+    if (!current || !bestCurrent) return { triggered: false };
+
+    // 5. Threshold: Only rebalance if new strategy is > 10% better in score
+    const threshold = 1.10;
+    const isBetter = bestCurrent.name !== current.name && bestCurrent.score > (current.score * threshold);
+
+    if (!isBetter) return { triggered: false, reason: null };
+
+    const improvement = ((bestCurrent.score - current.score) / current.score * 100).toFixed(1);
+
+    return {
+      triggered: true,
+      reason: `MARKET ALERT: "${bestCurrent.name}" (APY ${bestCurrent.expectedAPY}%) outperforms your current "${current.name}" by +${improvement}%. Switching is recommended.`,
+      optimalStrategy: bestCurrent,
+    };
+  } catch (error) {
+    console.error("[Rebalance] Live check failed:", error.message);
+    return { triggered: false };
+  }
+}
+
+module.exports = { shouldRebalance, checkLiveRebalance };

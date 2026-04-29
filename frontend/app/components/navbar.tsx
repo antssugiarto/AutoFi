@@ -20,7 +20,7 @@ export default function Navbar({ hideNavLinks = false }: { hideNavLinks?: boolea
   };
 
   return (
-    <nav className="fixed top-0 w-full z-50 bg-surface/80 backdrop-blur-xl shadow-[0_0_64px_rgba(99,102,241,0.06)]">
+    <nav className="fixed top-0 w-full z-50 bg-surface border-b border-outline-variant/10 shadow-[0_0_64px_rgba(99,102,241,0.06)]">
       <div className="flex justify-between items-center pl-8 pr-8 h-16 w-full">
         {/* Logo */}
         <Link href="/" className="flex items-center">

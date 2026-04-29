@@ -6,7 +6,7 @@ resolution = true
 skip-lint = false
 
 [programs.localnet]
-autofi_smart_contract = "5JNtPMMHqTdcu9SdhSitqmeK2x8QRAKhRxSo83nRBxzq"
+autofi_smart_contract = "51HEFeJUbmRSwsnU66UZPSfwSM7WZTfpdj28DW3Ezwc4"
 
 [registry]
 url = "https://api.apr.dev"

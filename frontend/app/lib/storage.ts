@@ -13,6 +13,7 @@ const HISTORY_KEY = "autofi_history";
 export interface Vault {
   id: string;
   strategyName: string;
+  tier: string; // Added for Stage 10 rebalancing
   steps: string[];
   expectedAPY: number;
   risk: string;
@@ -28,7 +29,7 @@ export interface Vault {
 
 export interface Transaction {
   id: string;
-  type: "Deploy" | "Withdraw";
+  type: "Deploy" | "Withdraw" | "Rebalance";
   strategyName: string;
   amount: number;
   token: string;
@@ -58,6 +59,34 @@ export function saveVault(vault: Omit<Vault, "id">): Vault {
 export function removeVault(id: string): void {
   const vaults = getVaults().filter((v) => v.id !== id);
   localStorage.setItem(VAULTS_KEY, JSON.stringify(vaults));
+}
+
+export function updateVault(updatedVault: Vault): void {
+  const vaults = getVaults();
+  const index = vaults.findIndex((v) => v.id === updatedVault.id);
+  if (index !== -1) {
+    vaults[index] = updatedVault;
+    localStorage.setItem(VAULTS_KEY, JSON.stringify(vaults));
+  }
+}
+
+export function hardReset(): void {
+  if (typeof window === "undefined") return;
+  localStorage.removeItem(VAULTS_KEY);
+  localStorage.removeItem(HISTORY_KEY);
+}
+
+
+
+export function updateVaultAmount(id: string, newAmount: number): void {
+  const vaults = getVaults();
+  const vault = vaults.find((v) => v.id === id);
+  if (vault) {
+    vault.amount = newAmount;
+    // Reset deployedAt so yield calculation restarts from new amount
+    vault.deployedAt = Date.now();
+    localStorage.setItem(VAULTS_KEY, JSON.stringify(vaults));
+  }
 }
 
 export function getVaultById(id: string): Vault | undefined {
@@ -96,10 +125,10 @@ export function calculateGrowth(vault: Vault): {
 } {
   const now = Date.now();
   const msElapsed = now - vault.deployedAt;
+  const yearsElapsed = msElapsed / (1000 * 60 * 60 * 24 * 365.25);
+  const profit = vault.amount * (vault.expectedAPY / 100) * yearsElapsed;
+  const currentValue = vault.amount + profit;
   const daysElapsed = msElapsed / (1000 * 60 * 60 * 24);
-  const growthFactor = 1 + (vault.expectedAPY / 100) * (daysElapsed / 365);
-  const currentValue = vault.amount * growthFactor;
-  const profit = currentValue - vault.amount;
   return { currentValue, profit, daysElapsed };
 }
 

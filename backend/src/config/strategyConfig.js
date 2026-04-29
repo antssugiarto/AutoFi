@@ -69,7 +69,7 @@ const STRATEGY_CANDIDATES = [
  * Pattern: realistic DeFi APY fluctuation between ~3% and ~15%
  * with occasional dips and spikes to test rebalancing triggers.
  */
-const HISTORICAL_APY = [
+const HISTORICAL_APY_BASE = [
   // Week 1-2 (Days 1-14): Stable period
   7.2, 7.5, 7.1, 6.8, 7.3, 7.0, 6.9,
   7.4, 7.6, 7.2, 6.5, 7.1, 7.3, 7.0,
@@ -93,6 +93,20 @@ const HISTORICAL_APY = [
 ];
 
 /**
+ * Returns historical APY data with small random noise (±0.5%)
+ * so that each backtest run produces slightly different results.
+ */
+function getHistoricalAPY() {
+  return HISTORICAL_APY_BASE.map(apy => {
+    const noise = (Math.random() - 0.5) * 1.0; // ±0.5% variation
+    return Math.max(0.1, parseFloat((apy + noise).toFixed(2)));
+  });
+}
+
+// For backward compatibility, export as getter
+const HISTORICAL_APY = HISTORICAL_APY_BASE;
+
+/**
  * Multi-window backtest configuration.
  * 
  * Each window defines:
@@ -113,5 +127,6 @@ module.exports = {
   VALID_STRATEGIES,
   STRATEGY_CANDIDATES,
   HISTORICAL_APY,
+  getHistoricalAPY,
   BACKTEST_WINDOWS,
 };

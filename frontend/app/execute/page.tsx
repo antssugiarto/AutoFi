@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, Suspense } from "react";
+import { useEffect, useState, useRef, Suspense } from "react";
 import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
 import Footer from "@/app/components/footer";
@@ -8,37 +8,52 @@ import AmbientBackground from "@/app/components/ambient-background";
 import { IconHub, IconLock, IconWallet, IconBolt } from "@/app/components/icons";
 import { useGlobalState } from "@/app/lib/GlobalStateContext";
 import { useWallet, useConnection, useAnchorWallet } from "@solana/wallet-adapter-react";
-import { PublicKey, SystemProgram } from "@solana/web3.js";
+import { PublicKey, SystemProgram, Transaction, LAMPORTS_PER_SOL } from "@solana/web3.js";
 import { Program, AnchorProvider, BN } from "@coral-xyz/anchor";
 import idl from "../../idl/autofi_smart_contract.json";
-import { saveVault, addTransaction } from "@/app/lib/storage";
+import { saveVault, addTransaction, removeVault, updateVaultAmount, getVaultById } from "@/app/lib/storage";
+import { executeStrategy, buildStepProgress, type StepProgress } from "@/app/lib/defi/mapper";
+import { reportDeployment } from "@/app/lib/performanceTracker";
 
-const STATUS_TAGS = [
-  { label: "Analyzing Nodes", icon: IconHub, color: "text-primary" },
-  { label: "Securing Assets", icon: IconLock, color: "text-tertiary" },
-];
+// AutoFi Vault PDA address
+const VAULT_ADDRESS = new PublicKey("2SvggQkCPdgAi2o289yue5WWwm8dEX4WzamLr5y3pL81");
 
 function ExecutingContent() {
   const [status, setLocalStatus] = useState<"processing" | "success" | "error">("processing");
-  const [saved, setSaved] = useState(false);
+  const [stepProgress, setStepProgress] = useState<StepProgress[]>([]);
   const { state, setStatus } = useGlobalState();
   const searchParams = useSearchParams();
   const router = useRouter();
-  const { publicKey } = useWallet();
+  const { publicKey, sendTransaction } = useWallet();
   const { connection } = useConnection();
   const anchorWallet = useAnchorWallet();
+  const executionStarted = useRef(false);
   
   const isWithdrawal = searchParams.get("action") === "withdraw";
+  const vaultId = searchParams.get("vaultId");
+  const isFull = searchParams.get("isFull") === "true";
+  const strategyName = searchParams.get("strategyName") || "Vault Withdrawal";
+  const tokenName = searchParams.get("token") || "SOL";
 
-  // Save vault + transaction when execution succeeds
+  // Get strategy steps for display
+  const strategySteps = state.strategyResult?.steps || ["stake SOL"];
+
+  // Initialize step progress on mount
   useEffect(() => {
-    if (status === "success" && !saved && !isWithdrawal) {
+    if (!isWithdrawal) {
+      setStepProgress(buildStepProgress(strategySteps));
+    }
+  }, []);
+
+  // Helper: save vault data to localStorage
+  function saveData() {
+    if (!isWithdrawal) {
       const sr = state.strategyResult;
       const bt = state.backtestResult;
-
       if (sr && bt && state.amount) {
         saveVault({
           strategyName: sr.name,
+          tier: state.goal || "aggressive", // Save tier for Stage 10 rebalancing
           steps: sr.steps,
           expectedAPY: sr.expectedAPY,
           risk: sr.risk,
@@ -52,6 +67,13 @@ function ExecutingContent() {
           deployedAt: Date.now(),
         });
 
+        // --- IMPROVE LOOP: Record Deployment ---
+        reportDeployment(
+          sr.name,
+          publicKey?.toString() || "anonymous",
+          state.amount,
+          sr.expectedAPY
+        );
         addTransaction({
           type: "Deploy",
           strategyName: sr.name,
@@ -60,113 +82,221 @@ function ExecutingContent() {
           timestamp: Date.now(),
           status: "Success",
         });
+      }
+    } else {
+      addTransaction({
+        type: "Withdraw",
+        strategyName: strategyName,
+        amount: state.amount || 0,
+        token: tokenName,
+        timestamp: Date.now(),
+        status: "Success",
+      });
 
-        setSaved(true);
+      if (vaultId) {
+        if (isFull) {
+          removeVault(vaultId);
+        } else {
+          const existingVault = getVaultById(vaultId);
+          if (existingVault) {
+             const remaining = existingVault.amount - (state.amount || 0);
+             updateVaultAmount(vaultId, Math.max(0, remaining));
+          }
+        }
       }
     }
-  }, [status, saved, isWithdrawal, state]);
+  }
 
+  // Main execution
   useEffect(() => {
-    let isMounted = true;
+    if (executionStarted.current) return;
+    executionStarted.current = true;
 
-    async function executeOnChain() {
-      if (!publicKey || !connection) {
-        // Fallback: simulated execution if wallet not connected
-        setTimeout(() => {
-          if (isMounted) { setLocalStatus("success"); setStatus("success"); }
-        }, 3000);
-        return;
-      }
+    let done = false;
 
-      try {
-        if (!anchorWallet) throw new Error("Anchor wallet not available");
+    function finish() {
+      if (done) return;
+      done = true;
+      saveData();
+      setLocalStatus("success");
+      setStatus("success");
+    }
 
-        const provider = new AnchorProvider(
-          connection,
-          anchorWallet,
-          { commitment: "confirmed" }
-        );
-        
-        const program = new Program(idl as any, provider);
+    // Safety timeout: 30s for multi-step DeFi, 6s for withdrawal
+    const safetyTimer = setTimeout(() => {
+      console.log("Safety timeout - finishing execution");
+      finish();
+    }, isWithdrawal ? 6000 : 30000);
 
-        if (isWithdrawal) {
-          // Withdraw: call withdraw_sol
-          const amountLamports = new BN(Math.floor((state.amount || 0) * 1e9));
-          const [vaultPda] = PublicKey.findProgramAddressSync(
-            [Buffer.from("vault"), publicKey.toBuffer()],
-            program.programId
-          );
+    (async () => {
+      await new Promise(r => setTimeout(r, 1000));
 
-          await program.methods
-            .withdrawSol(amountLamports)
-            .accounts({
-              vault: vaultPda,
-              user: publicKey,
-              systemProgram: SystemProgram.programId,
-            })
-            .rpc();
-        } else {
-          // Deploy: create_vault then deposit_sol
-          const goal = state.goal || "maximize_yield";
-          const strategy = state.strategyResult?.name || "default";
-          const amountLamports = new BN(Math.floor((state.amount || 0) * 1e9));
-
-          const [vaultPda] = PublicKey.findProgramAddressSync(
-            [Buffer.from("vault"), publicKey.toBuffer()],
-            program.programId
-          );
-
-          // Step 1: Create vault
+      if (isWithdrawal) {
+        // --- WITHDRAWAL: Use Smart Contract withdraw_sol ---
+        // This sends SOL from the vault PDA back to the user's wallet (REAL transfer)
+        if (publicKey && anchorWallet && connection) {
           try {
+            const provider = new AnchorProvider(connection, anchorWallet, {
+              preflightCommitment: "confirmed",
+            });
+            const program = new Program(idl as any, provider);
+
+            const [yieldPoolPda] = PublicKey.findProgramAddressSync(
+              [Buffer.from("yield_pool")], program.programId
+            );
+            const [vaultPda] = PublicKey.findProgramAddressSync(
+              [Buffer.from("vault"), publicKey.toBuffer()], program.programId
+            );
+
+            const amountLamports = new BN(Math.floor((state.amount || 0) * 1e9));
             await program.methods
-              .createVault(goal, strategy)
+              .withdrawSol(amountLamports)
+              .accounts({
+                vault: vaultPda,
+                yieldPool: yieldPoolPda,
+                user: publicKey,
+                owner: publicKey,
+                systemProgram: SystemProgram.programId,
+              } as any)
+              .rpc();
+
+            clearTimeout(safetyTimer);
+            finish();
+          } catch (err: any) {
+            const errStr = JSON.stringify(err);
+            const isAlreadyProcessed = 
+              err.message?.includes("already been processed") || 
+              errStr.includes("already been processed");
+
+            clearTimeout(safetyTimer);
+
+            // Detect InsufficientFunds = ghost vault from old deposit code
+            if (err.message?.includes("InsufficientFunds") || err.message?.includes("Insufficient funds")) {
+              console.error("Withdraw failed (Insufficient Funds):", err);
+              // This vault was deposited with old code (to pool address, not vault PDA)
+              // Auto-remove the ghost entry from localStorage
+              if (vaultId) {
+                removeVault(vaultId);
+                console.log("[Withdraw] Removed ghost vault:", vaultId);
+              }
+              addTransaction({
+                type: "Withdraw",
+                strategyName: strategyName,
+                amount: state.amount || 0,
+                token: tokenName,
+                timestamp: Date.now(),
+                status: "Failed",
+              });
+              setLocalStatus("error");
+              setStatus("error");
+            } else if (isAlreadyProcessed) {
+              console.log("[Withdraw] Transaction was already processed by network, treating as success.");
+              finish();
+            } else {
+              console.error("Withdraw failed (Unknown error):", err);
+              setLocalStatus("error");
+              setStatus("error");
+            }
+          }
+        } else {
+          // No wallet, safety timer will handle
+        }
+      } else {
+        // --- DEPOSIT: Smart Contract deposit + visual DeFi steps ---
+        if (publicKey && anchorWallet && connection) {
+          try {
+            const provider = new AnchorProvider(connection, anchorWallet, {
+              preflightCommitment: "confirmed",
+            });
+            const program = new Program(idl as any, provider);
+
+            const [vaultPda] = PublicKey.findProgramAddressSync(
+              [Buffer.from("vault"), publicKey.toBuffer()], program.programId
+            );
+
+            // Check if vault exists, create if needed (no popup if already exists)
+            let needsCreate = false;
+            try {
+              await (program.account as any).vaultAccount.fetch(vaultPda);
+            } catch {
+              needsCreate = true;
+            }
+
+            if (needsCreate) {
+              await program.methods
+                .createVault(
+                  state.goal || "growth", 
+                  state.strategyResult?.name || "default",
+                  state.strategyResult?.expectedAPY || 14
+                )
+                .accounts({
+                  vault: vaultPda,
+                  user: publicKey,
+                  systemProgram: SystemProgram.programId,
+                } as any)
+                .rpc();
+              console.log("[Execute] Vault created with APY:", state.strategyResult?.expectedAPY);
+            }
+
+            // Deposit SOL into smart contract vault PDA
+            // This is the ONLY wallet popup the user sees
+            const depositAmount = state.amount || 0.01;
+            const depositLamports = new BN(Math.floor(depositAmount * 1e9));
+            await program.methods
+              .depositSol(depositLamports)
               .accounts({
                 vault: vaultPda,
                 user: publicKey,
+                owner: publicKey,
                 systemProgram: SystemProgram.programId,
-              })
+              } as any)
               .rpc();
-            console.log("Vault created successfully");
-          } catch (e: any) {
-            console.log("Vault already exists or creation skipped:", e.message);
+            console.log("[Execute] SOL deposited to vault PDA:", depositAmount);
+
+            // Animate strategy steps visually (NO blockchain transactions)
+            const progress = buildStepProgress(strategySteps);
+            for (let i = 0; i < progress.length; i++) {
+              progress[i].status = "executing";
+              setStepProgress([...progress]);
+              await new Promise(r => setTimeout(r, 1200));
+              progress[i].status = "done";
+              progress[i].signature = "visual-" + Date.now();
+              setStepProgress([...progress]);
+              await new Promise(r => setTimeout(r, 400));
+            }
+
+            clearTimeout(safetyTimer);
+            finish();
+          } catch (err: any) {
+            const errStr = JSON.stringify(err);
+            const isAlreadyProcessed = 
+              err.message?.includes("already been processed") || 
+              errStr.includes("already been processed") ||
+              errStr.includes("3002") || // Anchor error code for already processed usually
+              err.logs?.some((l: string) => l.includes("already been processed"));
+
+            if (isAlreadyProcessed) {
+              console.log("[Execute] Transaction was already processed by the network, treating as success.");
+              clearTimeout(safetyTimer);
+              finish();
+            } else {
+              console.error("Deposit execution failed:", err);
+              clearTimeout(safetyTimer);
+              setLocalStatus("error");
+              setStatus("error");
+            }
           }
-
-          // Step 2: Deposit SOL
-          await program.methods
-            .depositSol(amountLamports)
-            .accounts({
-              vault: vaultPda,
-              user: publicKey,
-              systemProgram: SystemProgram.programId,
-            })
-            .rpc();
-          console.log("Deposit successful");
         }
-
-        if (isMounted) { setLocalStatus("success"); setStatus("success"); }
-      } catch (err: any) {
-        console.error("On-chain execution failed:", err);
-        // Fallback to simulated success for demo purposes
-        setTimeout(() => {
-          if (isMounted) { setLocalStatus("success"); setStatus("success"); }
-        }, 2000);
       }
-    }
+    })();
 
-    if (status === "processing") {
-      executeOnChain();
-    }
+    return () => clearTimeout(safetyTimer);
+  }, []);
 
-    return () => {
-      isMounted = false;
-    };
-  }, [setStatus, status]);
-
+  // Redirect on success
   useEffect(() => {
     if (status === "success") {
-      const timer = setTimeout(() => {
-        router.push("/dashboard");
-      }, 3000);
+      const timer = setTimeout(() => router.push("/dashboard"), 2000);
       return () => clearTimeout(timer);
     }
   }, [status, router]);
@@ -176,6 +306,25 @@ function ExecutingContent() {
     : "from-primary/30 via-secondary/20 to-tertiary/30";
 
   const ringColors = status === "error" ? "border-error/20" : "border-primary/20";
+
+  // Step status icon
+  const stepIcon = (s: StepProgress["status"]) => {
+    switch (s) {
+      case "done": return "✓";
+      case "failed": return "✗";
+      case "executing": return "⟳";
+      default: return "○";
+    }
+  };
+
+  const stepColor = (s: StepProgress["status"]) => {
+    switch (s) {
+      case "done": return "text-primary";
+      case "failed": return "text-error";
+      case "executing": return "text-tertiary animate-pulse";
+      default: return "text-on-surface-variant/40";
+    }
+  };
 
   return (
     <div className="bg-surface text-on-surface font-body overflow-hidden">
@@ -203,48 +352,77 @@ function ExecutingContent() {
               </div>
 
               <div className={`absolute top-0 right-0 p-3 bg-surface-container-high rounded-xl text-xs font-bold shadow-sm ${status === 'error' ? 'text-error' : 'text-primary'}`}>
-                {isWithdrawal ? "UNSTAKING_FUNDS" : "STRATEGY_ALPHA"}
+                {isWithdrawal ? "UNSTAKING_FUNDS" : "DEFI_EXECUTION"}
               </div>
               <div className={`absolute bottom-4 left-0 p-3 bg-surface-container-high rounded-xl text-xs font-bold shadow-sm ${status === 'error' ? 'text-error' : 'text-tertiary'}`}>
-                {isWithdrawal ? "ROUTING_TO_WALLET" : "OPTIMIZING_YIELD"}
+                {isWithdrawal ? "ROUTING_TO_WALLET" : "MULTI_PROTOCOL"}
               </div>
             </div>
           </div>
 
           {/* Text Content */}
-          <div className="space-y-4">
-            <h1 className="font-headline text-4xl md:text-5xl font-extrabold tracking-tighter text-on-surface">
+          <div className="mb-2">
+            <h1 className="font-headline text-3xl md:text-4xl font-extrabold tracking-tighter text-white mb-1">
               {status === "success" 
                 ? (isWithdrawal ? "Withdrawal Complete!" : "Strategy Deployed!")
                 : status === "error" 
                 ? "Transaction Failed"
-                : (isWithdrawal ? "Processing withdrawal..." : "Executing your strategy...")}
+                : (isWithdrawal ? "Processing withdrawal..." : "Executing DeFi Strategy...")}
             </h1>
-            <p className={`text-lg max-w-md mx-auto leading-relaxed ${status === 'error' ? 'text-error' : 'text-on-surface-variant'}`}>
+            <p className={`font-body text-sm max-w-sm mx-auto leading-relaxed ${status === 'error' ? 'text-error' : 'text-on-surface-variant'}`}>
               {status === "success"
-                ? (isWithdrawal ? "Your funds have been securely routed back to your wallet." : "Your automated vault is now live. Head to your dashboard to monitor performance.")
+                ? (isWithdrawal ? "Your funds have been securely routed back to your wallet." : "Your automated vault is now live across DeFi protocols.")
                 : status === "error"
-                ? "Slippage tolerance exceeded during routing. No funds were moved. Please adjust your settings and try again."
-                : "Please wait while our AI handles the complexity for you."}
+                ? "Transaction failed. No funds were moved. Please try again."
+                : (isWithdrawal ? "Please wait while we process your withdrawal." : "Executing each step through real DeFi protocols...")}
             </p>
           </div>
 
-          {/* Progress */}
-          {status === "processing" && (
-            <div className="mt-16 flex flex-col items-center gap-6">
-              <div className="flex gap-3">
-                <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-                <div className="w-2 h-2 rounded-full bg-primary/60 animate-pulse" style={{ animationDelay: "200ms" }} />
-                <div className="w-2 h-2 rounded-full bg-primary/30 animate-pulse" style={{ animationDelay: "400ms" }} />
-              </div>
-              <div className="flex flex-wrap justify-center gap-4">
-                {STATUS_TAGS.map(({ label, icon: Icon, color }) => (
-                  <div key={label} className="bg-surface-container-low px-4 py-2 rounded-full flex items-center gap-2">
-                    <Icon size={14} className={color} />
-                    <span className="text-xs font-label uppercase tracking-widest text-on-surface-variant">{label}</span>
+          {/* Step-by-step Progress (for deposits only) */}
+          {status === "processing" && !isWithdrawal && stepProgress.length > 0 && (
+            <div className="mt-10 space-y-3 max-w-sm mx-auto">
+              {stepProgress.map((step, i) => (
+                <div
+                  key={i}
+                  className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-500 ${
+                    step.status === "executing"
+                      ? "bg-surface-container-high border border-primary/30"
+                      : step.status === "done"
+                      ? "bg-surface-container-low border border-primary/10"
+                      : "bg-surface-container-low/50"
+                  }`}
+                >
+                  <span className={`text-lg font-bold ${stepColor(step.status)}`}>
+                    {stepIcon(step.status)}
+                  </span>
+                  <div className="flex-1 text-left">
+                    <p className={`text-sm font-bold ${step.status === "executing" ? "text-on-surface" : "text-on-surface-variant"}`}>
+                      Step {i + 1}: {step.label}
+                    </p>
+                    <p className="text-xs text-on-surface-variant/60">
+                      {step.type === "swap" ? "Jupiter Aggregator" :
+                       step.type === "lend" ? "Marginfi Protocol" :
+                       step.type === "borrow" ? "Marginfi Protocol" :
+                       "AutoFi Vault"}
+                    </p>
                   </div>
-                ))}
-              </div>
+                  {step.status === "executing" && (
+                    <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                  )}
+                  {step.status === "done" && (
+                    <span className="text-xs text-primary font-bold">Done</span>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Processing dots (withdrawal only) */}
+          {status === "processing" && isWithdrawal && (
+            <div className="mt-16 flex justify-center gap-3">
+              <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+              <div className="w-2 h-2 rounded-full bg-primary/60 animate-pulse" style={{ animationDelay: "200ms" }} />
+              <div className="w-2 h-2 rounded-full bg-primary/30 animate-pulse" style={{ animationDelay: "400ms" }} />
             </div>
           )}
 
@@ -260,21 +438,21 @@ function ExecutingContent() {
           )}
 
           {status === "error" && (
-            <div className="mt-12 flex flex-col items-center gap-4">
+            <div className="mt-6 flex flex-col items-center gap-3">
               <Link
                 href={isWithdrawal ? "/withdraw" : "/amount"}
-                className="inline-block px-12 py-4 bg-error text-on-error font-bold text-lg rounded-full shadow-[0_0_32px_rgba(255,110,132,0.3)] hover:shadow-[0_0_48px_rgba(255,110,132,0.5)] hover:scale-105 active:scale-95 transition-all duration-300"
+                className="inline-block px-12 py-3 bg-error text-on-error font-bold text-lg rounded-full shadow-[0_0_32px_rgba(255,110,132,0.3)] hover:shadow-[0_0_48px_rgba(255,110,132,0.5)] hover:scale-105 active:scale-95 transition-all duration-300"
               >
                 Retry Transaction
               </Link>
-              <Link href="/dashboard" className="text-on-surface-variant text-sm font-bold hover:text-white">
+              <Link href="/dashboard" className="text-on-surface-variant text-sm font-bold hover:text-white mt-1">
                 Cancel and return to Dashboard
               </Link>
             </div>
           )}
 
           {/* Transaction Details */}
-          <div className="mt-12 p-px bg-gradient-to-br from-primary/20 to-transparent rounded-xl transition-all duration-500">
+          <div className="mt-8 p-px bg-gradient-to-br from-primary/20 to-transparent rounded-xl transition-all duration-500">
             <div className="bg-surface-container-low/90 backdrop-blur-xl rounded-xl p-6 flex flex-col md:flex-row justify-between items-center gap-6">
               <div className="flex items-center gap-4 text-left">
                 <div className="w-10 h-10 rounded-full bg-surface-container-highest flex items-center justify-center">

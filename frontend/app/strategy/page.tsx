@@ -92,6 +92,7 @@ function GoalCard({ goal, onSelect }: { goal: Goal; onSelect: () => void }) {
 
 export default function GoalsPage() {
   const [selectedGoal, setSelectedGoal] = useState<Goal | null>(null);
+  const [isClosing, setIsClosing] = useState(false);
   const { setGoal } = useGlobalState();
   const router = useRouter();
 
@@ -100,6 +101,14 @@ export default function GoalsPage() {
       setGoal(selectedGoal.id);
       router.push("/amount");
     }
+  };
+
+  const handleClose = () => {
+    setIsClosing(true);
+    setTimeout(() => {
+      setSelectedGoal(null);
+      setIsClosing(false);
+    }, 200); // 200ms duration matches the exit animation
   };
 
   return (
@@ -124,10 +133,10 @@ export default function GoalsPage() {
 
         {/* Header */}
         <div className="mb-10 text-center md:text-left max-w-xl">
-          <h1 className="text-2xl md:text-3xl font-extrabold font-headline tracking-tight mb-3 bg-gradient-to-r from-on-surface to-on-surface-variant bg-clip-text text-transparent">
+          <h1 className="text-3xl md:text-4xl font-extrabold font-headline tracking-tighter mb-1 text-white">
             Select Your Strategy
           </h1>
-          <p className="text-sm text-on-surface-variant leading-relaxed">
+          <p className="font-body text-on-surface-variant text-sm leading-relaxed">
             Choose how you want to grow your wealth. Our intelligent atmosphere
             handles the complexity, you define the destination.
           </p>
@@ -147,16 +156,16 @@ export default function GoalsPage() {
         {/* Strategy Details Modal */}
         {selectedGoal && (
           <div
-            className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200"
-            onClick={() => setSelectedGoal(null)}
+            className={`fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm ${isClosing ? "animate-modal-fade-out" : "animate-modal-fade-in"}`}
+            onClick={handleClose}
           >
             <div
-              className="bg-surface-container-high w-full max-w-md rounded-3xl p-8 shadow-2xl relative border border-outline-variant/20 animate-in zoom-in-95 duration-200"
+              className={`bg-surface-container-high w-full max-w-sm rounded-3xl p-6 shadow-2xl relative border border-outline-variant/20 ${isClosing ? "animate-modal-sink-out" : "animate-modal-rise-in"}`}
               onClick={(e) => e.stopPropagation()}
             >
               {/* Close */}
               <button
-                onClick={() => setSelectedGoal(null)}
+                onClick={handleClose}
                 className="absolute top-5 right-5 w-8 h-8 flex items-center justify-center rounded-full bg-surface-container-highest text-on-surface-variant hover:text-white hover:bg-surface-variant transition-all"
               >
                 <IconClose size={18} />
@@ -182,34 +191,34 @@ export default function GoalsPage() {
               <div className="space-y-5">
                 {/* Description */}
                 <div>
-                  <p className="text-xs font-label uppercase tracking-widest text-on-surface-variant mb-2">
+                  <p className="text-xs font-label uppercase tracking-widest font-bold text-white mb-1.5">
                     Strategy Overview
                   </p>
-                  <p className="text-on-surface text-sm leading-relaxed">
+                  <p className="text-on-surface-variant text-sm leading-relaxed">
                     {selectedGoal.description}
                   </p>
                 </div>
 
                 {/* Stats grid */}
-                <div className="grid grid-cols-3 gap-3">
-                  <div className="bg-surface-container-highest p-3 rounded-xl border border-outline-variant/10 text-center">
-                    <p className="text-[10px] text-on-surface-variant uppercase tracking-widest mb-1">
-                      APY
+                <div className="flex items-center justify-center gap-8">
+                  <div className="text-center">
+                    <p className="text-sm text-on-surface-variant capitalize mb-0.5">
+                      Apy
                     </p>
                     <p className="text-base font-bold text-tertiary">
                       {selectedGoal.apy}
                     </p>
                   </div>
-                  <div className="bg-surface-container-highest p-3 rounded-xl border border-outline-variant/10 text-center">
-                    <p className="text-[10px] text-on-surface-variant uppercase tracking-widest mb-1">
+                  <div className="text-center">
+                    <p className="text-sm text-on-surface-variant capitalize mb-0.5">
                       Risk
                     </p>
                     <p className="text-base font-bold text-secondary">
                       {selectedGoal.risk}
                     </p>
                   </div>
-                  <div className="bg-surface-container-highest p-3 rounded-xl border border-outline-variant/10 text-center">
-                    <p className="text-[10px] text-on-surface-variant uppercase tracking-widest mb-1">
+                  <div className="text-center">
+                    <p className="text-sm text-on-surface-variant capitalize mb-0.5">
                       Confidence
                     </p>
                     <p className="text-base font-bold text-primary">
@@ -220,19 +229,12 @@ export default function GoalsPage() {
 
                 {/* Protocols */}
                 <div>
-                  <p className="text-xs font-label uppercase tracking-widest text-on-surface-variant mb-2">
+                  <p className="text-xs font-label uppercase tracking-widest font-bold text-white mb-1.5">
                     Protocols Used
                   </p>
-                  <div className="flex gap-2 flex-wrap">
-                    {["Solend", "Raydium", "Jupiter"].map((p) => (
-                      <span
-                        key={p}
-                        className="px-3 py-1 bg-surface-container-highest rounded-full text-xs font-bold border border-outline-variant/20"
-                      >
-                        {p}
-                      </span>
-                    ))}
-                  </div>
+                  <p className="text-on-surface-variant text-sm leading-relaxed">
+                    Solend, Raydium, Jupiter
+                  </p>
                 </div>
               </div>
 

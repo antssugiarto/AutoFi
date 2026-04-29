@@ -1,5 +1,5 @@
 {
-  "address": "EsKBbaZGoCfTyoMKwsnR8bpPUyKXsTMoY4YRCNUffnfi",
+  "address": "51HEFeJUbmRSwsnU66UZPSfwSM7WZTfpdj28DW3Ezwc4",
   "metadata": {
     "name": "autofi_smart_contract",
     "version": "0.1.0",
@@ -63,6 +63,10 @@
         {
           "name": "strategy",
           "type": "string"
+        },
+        {
+          "name": "apy",
+          "type": "u8"
         }
       ]
     },
@@ -128,9 +132,60 @@
       ]
     },
     {
+      "name": "initialize_yield_pool",
+      "docs": [
+        "Initializes the global Yield Pool."
+      ],
+      "discriminator": [
+        32,
+        7,
+        57,
+        189,
+        201,
+        125,
+        93,
+        149
+      ],
+      "accounts": [
+        {
+          "name": "yield_pool",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  121,
+                  105,
+                  101,
+                  108,
+                  100,
+                  95,
+                  112,
+                  111,
+                  111,
+                  108
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "admin",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": []
+    },
+    {
       "name": "withdraw_sol",
       "docs": [
-        "Withdraws SOL from the vault PDA back to the user wallet."
+        "Withdraws SOL from the vault PDA back to the user wallet, including accrued interest."
       ],
       "discriminator": [
         145,
@@ -161,6 +216,29 @@
               {
                 "kind": "account",
                 "path": "user"
+              }
+            ]
+          }
+        },
+        {
+          "name": "yield_pool",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  121,
+                  105,
+                  101,
+                  108,
+                  100,
+                  95,
+                  112,
+                  111,
+                  111,
+                  108
+                ]
               }
             ]
           }
@@ -202,6 +280,19 @@
         93,
         28
       ]
+    },
+    {
+      "name": "YieldPool",
+      "discriminator": [
+        118,
+        216,
+        37,
+        206,
+        197,
+        189,
+        27,
+        100
+      ]
     }
   ],
   "errors": [
@@ -224,6 +315,11 @@
       "code": 6003,
       "name": "Overflow",
       "msg": "Arithmetic overflow"
+    },
+    {
+      "code": 6004,
+      "name": "InsufficientYieldPoolFunds",
+      "msg": "Yield Pool has insufficient funds to pay interest"
     }
   ],
   "types": [
@@ -249,9 +345,25 @@
             "type": "u64"
           },
           {
+            "name": "apy",
+            "type": "u8"
+          },
+          {
             "name": "deployed_at",
             "type": "i64"
           },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "YieldPool",
+      "type": {
+        "kind": "struct",
+        "fields": [
           {
             "name": "bump",
             "type": "u8"

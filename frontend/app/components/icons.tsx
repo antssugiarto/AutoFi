@@ -1,4 +1,4 @@
-﻿/* ============================================================
+/* ============================================================
    AutoFi â€” SVG Icon Library
    Replaces Material Symbols CDN with inline SVGs for
    better performance and zero external dependencies.
@@ -95,6 +95,22 @@ export const IconArrowUpward = createFilledIcon([
 
 export const IconAdd = createFilledIcon([
   "M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z",
+]);
+
+export const IconChevronLeft = createFilledIcon([
+  "M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z",
+]);
+
+export const IconChevronRight = createFilledIcon([
+  "M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z",
+]);
+
+export const IconCalendarMonth = createFilledIcon([
+  "M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zM9 14H7v-2h2v2zm4 0h-2v-2h2v2zm4 0h-2v-2h2v2zm-8 4H7v-2h2v2zm4 0h-2v-2h2v2zm4 0h-2v-2h2v2z",
+]);
+
+export const IconFileDownload = createFilledIcon([
+  "M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z",
 ]);
 
 // â”€â”€ DeFi & Finance â”€â”€

@@ -8,6 +8,13 @@
 const express = require("express");
 const cors = require("cors");
 const { handleIntent } = require("./controllers/intentController");
+const {
+  handleDeploy,
+  handleCheck,
+  handleGetConfidence,
+  handleGetHistory,
+} = require("./controllers/performanceController");
+const { handleCheck: handleRebalanceCheck } = require("./controllers/rebalanceController");
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -21,6 +28,15 @@ app.use(express.json());
 
 // --- Routes ---
 app.post("/intent", handleIntent);
+
+// --- Performance / Improve Loop Routes ---
+app.post("/performance/deploy", handleDeploy);
+app.post("/performance/check", handleCheck);
+app.get("/performance/confidence", handleGetConfidence);
+app.get("/performance/history/:strategy", handleGetHistory);
+
+// --- Rebalance Monitor Routes ---
+app.get("/rebalance/check", handleRebalanceCheck);
 
 // --- Health check ---
 app.get("/health", (req, res) => {

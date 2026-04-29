@@ -12,6 +12,7 @@ const { generateStrategies } = require("../services/strategyService");
 const { scoreAndSelect } = require("../services/scoringService");
 const { runBacktest } = require("../services/backtestService");
 const { calculateMultiWindowMetrics } = require("../utils/metricsCalculator");
+const { getStrategyConfidence } = require("../services/performanceService");
 
 /**
  * POST /intent
@@ -19,32 +20,30 @@ const { calculateMultiWindowMetrics } = require("../utils/metricsCalculator");
  * Accepts user intent, runs the full DeFi strategy pipeline
  * with multi-window backtesting, and returns the best strategy
  * with composite performance metrics.
+ * 
+ * Confidence is now DYNAMIC — it improves or degrades based on
+ * historical accuracy from the Improve Loop.
  */
 async function handleIntent(req, res) {
   try {
-    // Step 1: Validate intent
     const validatedIntent = await validateIntent(req.body);
-
-    // Step 2: Generate strategy candidates for the selected tier
     const candidates = await generateStrategies(validatedIntent.strategy);
-
-    // Step 3: Score all candidates and select the best
     const { all: scoredStrategies, best: bestStrategy } = await scoreAndSelect(candidates);
 
-    // Step 4: Run multi-window backtest (short/mid/long) with rebalancing
     const backtestResult = await runBacktest(
       validatedIntent.amount,
       bestStrategy,
       candidates
     );
 
-    // Step 5: Calculate multi-window metrics
     const metrics = calculateMultiWindowMetrics(
       validatedIntent.amount,
       backtestResult
     );
 
-    // Step 6: Return strict JSON response
+    // Use DYNAMIC confidence from Improve Loop (overrides static backtest)
+    const dynamicConfidence = getStrategyConfidence(bestStrategy.name);
+
     return res.json({
       strategy: {
         name: bestStrategy.name,
@@ -57,11 +56,10 @@ async function handleIntent(req, res) {
         midTermReturn: metrics.midTermReturn,
         longTermReturn: metrics.longTermReturn,
         finalScore: metrics.finalScore,
-        confidence: metrics.confidence,
+        confidence: dynamicConfidence, // ← Dynamic from Improve Loop
       },
     });
   } catch (error) {
-    // Return validation/processing errors as structured JSON
     return res.status(400).json({
       error: error.message,
     });

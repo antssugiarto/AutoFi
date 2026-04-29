@@ -49,10 +49,16 @@ export default function InvestPage() {
   });
 
   const setPercentage = (pct: number) => {
-    const value = (maxBalance * pct) / 100;
-    setLocalAmount(value.toFixed(4));
+    let value = (maxBalance * pct) / 100;
     if (pct === 100) {
-      toast.success("Amount set to Max balance");
+      // Leave 0.005 SOL for transaction fees to prevent WalletSendTransactionError
+      value = Math.max(0, maxBalance - 0.005);
+    }
+    // Always round down to 4 decimal places to prevent exceeding balance due to rounding
+    const roundedDown = Math.floor(value * 10000) / 10000;
+    setLocalAmount(roundedDown.toString());
+    if (pct === 100) {
+      toast.success("Amount set to Max (reserved 0.005 SOL for gas)");
     }
   };
 
@@ -90,6 +96,14 @@ export default function InvestPage() {
       setIsLoading(false);
     }
   };
+
+  if (isLoading) {
+    return (
+      <main className="fixed inset-0 z-[100] flex items-center justify-center bg-surface animate-in fade-in duration-500">
+        <div className="w-16 h-16 rounded-full border-4 border-surface-container-highest border-t-primary animate-spin" />
+      </main>
+    );
+  }
 
   return (
     <>
@@ -129,7 +143,7 @@ export default function InvestPage() {
           {/* Main Input Canvas */}
           <div className="w-full bg-surface-container-low rounded-3xl p-3 sm:p-4 shadow-[0_0_64px_rgba(99,102,241,0.06)] relative overflow-hidden">
             {/* Wallet Balance Display */}
-            <div className="flex flex-col gap-1 mb-3">
+            <div className="flex flex-col gap-1 mb-2">
               <label className="font-label text-[10px] uppercase tracking-widest text-on-surface-variant font-bold mb-0.5">
                 Your Wallet Balance
               </label>
@@ -164,7 +178,7 @@ export default function InvestPage() {
             </div>
 
             {/* Large Numeric Input */}
-            <div className="relative flex flex-col items-center py-2">
+            <div className="relative flex flex-col items-center py-1">
               <div className="absolute top-0 right-0 py-0.5 px-3 bg-surface-container-highest rounded-full text-[10px] font-bold text-primary-dim uppercase tracking-widest">
                 Max: {maxBalance.toFixed(4)} SOL
               </div>
@@ -175,9 +189,9 @@ export default function InvestPage() {
                 onChange={(e) => setLocalAmount(e.target.value)}
                 placeholder="0.00"
                 disabled={isLoading || isFetchingBalance}
-                className="w-full bg-transparent border-none text-center font-headline text-6xl md:text-7xl font-black tracking-tighter text-white focus:ring-0 focus:outline-none placeholder:text-surface-variant placeholder:opacity-50 mt-1 disabled:opacity-50"
+                className="w-full bg-transparent border-none text-center font-headline text-5xl md:text-6xl font-black tracking-tighter text-white focus:ring-0 focus:outline-none placeholder:text-surface-variant placeholder:opacity-50 mt-1 disabled:opacity-50"
               />
-              <div className="font-headline text-lg font-bold text-primary mt-1 mb-1 tracking-widest uppercase">
+              <div className="font-headline text-base font-bold text-primary mb-1 tracking-widest uppercase">
                 SOL
               </div>
 
@@ -226,7 +240,6 @@ export default function InvestPage() {
               ) : (
                 <>
                   Review Strategy
-                  <IconArrowForward size={18} />
                 </>
               )}
             </button>

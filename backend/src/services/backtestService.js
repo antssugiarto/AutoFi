@@ -12,7 +12,7 @@
  * Formula: balance *= (1 + apy / 365)
  */
 
-const { HISTORICAL_APY, BACKTEST_WINDOWS } = require("../config/strategyConfig");
+const { HISTORICAL_APY, getHistoricalAPY, BACKTEST_WINDOWS } = require("../config/strategyConfig");
 const { shouldRebalance } = require("./rebalanceService");
 const { scoreAndSelect } = require("./scoringService");
 
@@ -117,7 +117,9 @@ function getWindowData(fullData, days) {
  * @param {Array<number>} [historicalData] - Full APY dataset (defaults to config)
  * @returns {Object} Multi-window backtest results with final composite score
  */
-async function runBacktest(initialBalance, strategy, allStrategies, historicalData = HISTORICAL_APY) {
+async function runBacktest(initialBalance, strategy, allStrategies, historicalData = null) {
+  // Use noisy data by default for realistic variation
+  if (!historicalData) historicalData = getHistoricalAPY();
   const windowResults = {};
   let totalRebalanceEvents = [];
 

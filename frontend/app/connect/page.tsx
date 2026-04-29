@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { useWalletModal } from "@solana/wallet-adapter-react-ui";
@@ -14,10 +14,15 @@ export default function ConnectPage() {
   const { connected, connecting, wallets } = useWallet();
   const { setVisible } = useWalletModal();
   const router = useRouter();
+  const [isRedirecting, setIsRedirecting] = useState(false);
 
   useEffect(() => {
     if (connected) {
-      router.push("/dashboard");
+      setIsRedirecting(true);
+      const timer = setTimeout(() => {
+        router.push("/dashboard");
+      }, 300); // 0.3s ultra-fast loading
+      return () => clearTimeout(timer);
     }
   }, [connected, router]);
 
@@ -32,6 +37,14 @@ export default function ConnectPage() {
     
     setVisible(true);
   };
+
+  if (isRedirecting) {
+    return (
+      <main className="fixed inset-0 z-[100] flex items-center justify-center bg-surface animate-in fade-in duration-500">
+        <div className="w-16 h-16 rounded-full border-4 border-surface-container-highest border-t-primary animate-spin" />
+      </main>
+    );
+  }
 
   return (
     <>
