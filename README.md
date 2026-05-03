@@ -162,6 +162,3 @@ anchor deploy
 
 ---
 
-## 📄 License
-
-ISC © AutoFi Team
