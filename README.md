@@ -97,7 +97,7 @@ AutoFi/
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/your-username/AutoFi.git
+https://github.com/antssugiarto/AutoFi.git
 cd AutoFi
 ```
 
