@@ -1,36 +1,33 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { IconArrowUpward } from "./icons";
 
+/**
+ * ScrollToTopButton — Floating action button that appears when the user scrolls down.
+ * Smoothly scrolls back to the top of the page when clicked.
+ */
 export default function ScrollToTopButton() {
-  const [isVisible, setIsVisible] = useState(false);
+  const [show, setShow] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsVisible(window.scrollY > 360);
+      setShow(window.scrollY > 300);
     };
-
-    handleScroll();
     window.addEventListener("scroll", handleScroll, { passive: true });
-
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  if (!show) return null;
 
   return (
     <button
-      type="button"
-      aria-label="Scroll to top"
       onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-      className={`fixed bottom-24 right-4 z-[60] flex h-12 w-12 items-center justify-center rounded-full border border-outline-variant/20 bg-gradient-to-br from-primary to-primary-dim text-on-primary shadow-[0_0_24px_rgba(163,166,255,0.25)] transition-all duration-300 hover:shadow-[0_0_36px_rgba(163,166,255,0.35)] md:bottom-8 md:right-6 ${
-        isVisible
-          ? "translate-y-0 opacity-100"
-          : "pointer-events-none translate-y-4 opacity-0"
-      }`}
+      className="fixed bottom-6 right-6 z-50 w-10 h-10 rounded-full bg-primary/20 border border-primary/30 text-primary flex items-center justify-center hover:bg-primary/30 transition-all duration-300 backdrop-blur-sm"
+      aria-label="Scroll to top"
     >
-      <IconArrowUpward size={20} />
+      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <polyline points="18 15 12 9 6 15"></polyline>
+      </svg>
     </button>
   );
 }

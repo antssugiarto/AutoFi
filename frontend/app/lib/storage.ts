@@ -61,6 +61,17 @@ export function removeVault(id: string): void {
   localStorage.setItem(VAULTS_KEY, JSON.stringify(vaults));
 }
 
+/**
+ * EMERGENCY RECOVERY: Re-adds a vault if it was accidentally removed.
+ */
+export function restoreVault(vault: Vault): void {
+  const vaults = getVaults();
+  if (!vaults.find(v => v.id === vault.id)) {
+    vaults.push(vault);
+    localStorage.setItem(VAULTS_KEY, JSON.stringify(vaults));
+  }
+}
+
 export function updateVault(updatedVault: Vault): void {
   const vaults = getVaults();
   const index = vaults.findIndex((v) => v.id === updatedVault.id);

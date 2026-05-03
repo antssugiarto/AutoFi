@@ -1,0 +1,26 @@
+# Dependencies
+node_modules/
+
+# Environment
+.env
+.env.*
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Debug logs
+npm-debug.log*
+yarn-debug.log*
+
+# Runtime Data
+backend/data/
+**/data/
+*.json
+!package.json
+!tsconfig.json
+!**/idl/*.json

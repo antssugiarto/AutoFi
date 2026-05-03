@@ -98,7 +98,11 @@ const HISTORICAL_APY_BASE = [
  */
 function getHistoricalAPY() {
   return HISTORICAL_APY_BASE.map(apy => {
-    const noise = (Math.random() - 0.5) * 1.0; // ±0.5% variation
+    // Increase noise to ±2.0% for more visible variation
+    // and add a small "drift" based on Date.now()
+    const drift = (Math.sin(Date.now() / 1000000) * 0.5);
+    const noise = (Math.random() - 0.5) * 4.0 + drift; 
+    
     return Math.max(0.1, parseFloat((apy + noise).toFixed(2)));
   });
 }

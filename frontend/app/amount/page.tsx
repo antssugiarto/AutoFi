@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import WalletGuard from "@/app/components/wallet-guard";
 import { IconArrowForward, IconVerifiedUser, IconCheckCircle } from "@/app/components/icons";
 import AmbientBackground from "@/app/components/ambient-background";
 import Navbar from "@/app/components/navbar";
@@ -22,6 +23,13 @@ export default function InvestPage() {
   const router = useRouter();
   const { publicKey } = useWallet();
   const { connection } = useConnection();
+
+  // Hydrate localAmount from global state if it exists (for back navigation)
+  useEffect(() => {
+    if (state.amount && state.amount > 0 && !localAmount) {
+      setLocalAmount(state.amount.toString());
+    }
+  }, [state.amount, localAmount]);
 
   // Fetch real SOL balance on mount
   useEffect(() => {
@@ -99,25 +107,31 @@ export default function InvestPage() {
 
   if (isLoading) {
     return (
+      <WalletGuard>
       <main className="fixed inset-0 z-[100] flex items-center justify-center bg-surface animate-in fade-in duration-500">
         <div className="w-16 h-16 rounded-full border-4 border-surface-container-highest border-t-primary animate-spin" />
       </main>
+      </WalletGuard>
     );
   }
 
   return (
+    <WalletGuard>
     <>
-      <div className="min-h-screen flex flex-col items-center overflow-hidden relative">
+    <div className="h-screen overflow-hidden flex flex-col w-full relative bg-surface">
+      <div className="h-16 shrink-0 relative z-50">
         <Navbar hideNavLinks />
-        <AmbientBackground
-          blobs={[
-            { color: "secondary", position: "top-left", size: "sm" },
-            { color: "primary", position: "bottom-right", size: "lg" },
-          ]}
-        />
+      </div>
+      <AmbientBackground
+        blobs={[
+          { color: "secondary", position: "top-left", size: "sm" },
+          { color: "primary", position: "bottom-right", size: "lg" },
+        ]}
+      />
 
-        <main className="flex-1 flex flex-col items-center justify-center w-full max-w-xl px-6 relative z-10 pt-24 pb-4">
-          <div className="w-full flex justify-start mb-6">
+      <main className="flex-1 flex flex-col w-full relative z-10 overflow-y-auto pt-4 md:pt-8 pb-4 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
+        <div className="w-full max-w-xl mx-auto px-4 md:px-6 flex flex-col items-center justify-start">
+          <div className="w-full flex justify-start mb-10">
             <button
               onClick={() => router.push('/strategy')}
               className="flex items-center gap-2 text-on-surface-variant hover:text-primary transition-colors font-medium text-sm"
@@ -243,14 +257,11 @@ export default function InvestPage() {
                 </>
               )}
             </button>
-            <p className="font-label text-xs text-on-surface-variant flex items-center gap-2">
-              <IconVerifiedUser size={14} />
-              Automated execution secured by AutoFi Engine
-            </p>
           </div>
+        </div>
         </main>
       </div>
-      <Footer />
     </>
+    </WalletGuard>
   );
 }

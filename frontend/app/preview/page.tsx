@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import WalletGuard from "@/app/components/wallet-guard";
 import Navbar from "@/app/components/navbar";
 import Footer from "@/app/components/footer";
 import AmbientBackground from "@/app/components/ambient-background";
@@ -67,14 +68,48 @@ export default function PreviewPage() {
   const { connection } = useConnection();
   const router = useRouter();
   const [isExecuting, setIsExecuting] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   const hasBackendData = state.strategyResult && state.backtestResult;
+  const [liveAPY, setLiveAPY] = useState<string>("");
+  const [liveConfidence, setLiveConfidence] = useState<number>(0);
+
+  useEffect(() => {
+    if (hasBackendData) {
+      // Add instant noise for the first render
+      const noise = (Math.random() * 0.1 - 0.05);
+      const initialAPY = (state.strategyResult!.expectedAPY + noise).toFixed(2);
+      
+      setLiveAPY(initialAPY);
+      setLiveConfidence(state.backtestResult!.confidence);
+    }
+  }, [hasBackendData, state.strategyResult, state.backtestResult]);
+
+  // Live Market Noise Effect
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (hasBackendData) {
+        // Add tiny ±0.05% fluctuation to the display
+        const noise = (Math.random() * 0.1 - 0.05);
+        const currentBase = state.strategyResult!.expectedAPY;
+        setLiveAPY((currentBase + noise).toFixed(2));
+      }
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [hasBackendData, state.strategyResult]);
+
 
   useEffect(() => {
     if (!state.amount || state.amount <= 0) {
       router.push("/amount");
     }
   }, [state.amount, router]);
+
+  if (!isMounted) return null;
 
   const walletAddress = publicKey ? publicKey.toString() : "Not Connected";
   const displayAddress = publicKey ? `${walletAddress.slice(0, 4)}...${walletAddress.slice(-4)}` : "0x00...00";
@@ -84,9 +119,10 @@ export default function PreviewPage() {
   // Use backend data if available, otherwise fallback to mock
   const strategyName = hasBackendData ? state.strategyResult!.name : selectedGoal.title;
   const strategySteps = hasBackendData ? state.strategyResult!.steps : ["swap SOL → USDC", "lend USDC"];
-  const expectedAPY = hasBackendData ? `${state.strategyResult!.expectedAPY}%` : selectedGoal.apy;
+  const expectedAPYDisplay = hasBackendData ? `${liveAPY}%` : selectedGoal.apy;
   const risk = hasBackendData ? state.strategyResult!.risk : selectedGoal.risk;
-  const confidence = hasBackendData ? state.backtestResult!.confidence : 0.88;
+  const confidenceDisplay = hasBackendData ? liveConfidence : 0.88;
+
 
   const handleExecute = () => {
     setIsExecuting(true);
@@ -95,13 +131,17 @@ export default function PreviewPage() {
   };
 
   return (
+    <WalletGuard>
     <>
-      <div className="min-h-screen flex flex-col w-full relative overflow-hidden">
+    <div className="h-screen overflow-hidden flex flex-col w-full relative bg-surface">
+      <div className="h-16 shrink-0 relative z-50">
         <Navbar hideNavLinks />
-        <AmbientBackground />
+      </div>
+      <AmbientBackground />
 
-        <main className="flex-1 flex flex-col items-center justify-start pt-24 pb-4 px-6 max-w-3xl mx-auto w-full relative z-10">
-          <div className="w-full flex justify-start mb-4">
+      <main className="flex-1 flex flex-col w-full relative z-10 overflow-y-auto pt-4 md:pt-8 pb-4 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
+        <div className="w-full max-w-3xl mx-auto px-4 md:px-6 flex flex-col items-center justify-start">
+          <div className="w-full flex justify-start mb-10">
             <button
               onClick={() => router.push('/amount')}
               className="flex items-center gap-2 text-on-surface-variant hover:text-primary transition-colors font-medium text-sm"
@@ -116,35 +156,55 @@ export default function PreviewPage() {
 
         <section className="flex flex-col gap-4 md:gap-6 w-full">
           {/* Header */}
-          <header className="mb-2">
+          <header className="text-left max-w-xl">
             <h1 className="text-3xl md:text-4xl font-extrabold font-headline tracking-tighter mb-1 text-white">
               Strategy Preview
             </h1>
-            <p className="font-body text-on-surface-variant text-sm max-w-xl leading-relaxed">
+            <p className="font-body text-on-surface-variant text-sm leading-relaxed">
               {hasBackendData
                 ? `AutoFi engine selected "${strategyName}" strategy based on your intent.`
                 : "AutoFi has analyzed liquidity depth and yield curves to construct the most efficient path for your capital."
               }
             </p>
           </header>
+          
+          {/* Info Badges Row (Top) */}
+          <div className="grid grid-cols-2 gap-3 md:gap-4">
+            {[
+              { icon: <IconLocalAtm className="w-4 h-4 md:w-5 md:h-5" />, title: `${state.amount || "0.00"} ${hasBackendData ? "SOL" : "USDC"}`, desc: "Amount" },
+              { icon: <IconBolt className="w-4 h-4 md:w-5 md:h-5" />, title: hasBackendData ? strategyName : selectedGoal.title, desc: "Strategy" },
+            ].map((badge) => (
+              <div
+                key={badge.title}
+                className="bg-surface-container-low rounded-xl p-3 md:p-5 flex items-center gap-2 md:gap-3 transition-colors border border-white/5 shadow-lg"
+              >
+                <span className="text-on-surface-variant transition-colors">
+                  {badge.icon}
+                </span>
+                <div className="flex flex-col">
+                  <span className="text-on-surface font-bold text-xs md:text-sm capitalize">
+                    {badge.title}
+                  </span>
+                  <span className="text-on-surface-variant text-[10px] md:text-xs">
+                    {badge.desc}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
 
           {/* Bento Preview Container */}
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-3 md:gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-3 md:gap-4 -mt-1 md:-mt-2">
             {/* Main Execution Flow */}
-            <div className="md:col-span-8 bg-surface-container-low rounded-2xl p-4 md:p-6 shadow-2xl relative overflow-hidden group">
-              {/* Scan Effect */}
-              <div className="absolute inset-0 bg-gradient-to-b from-primary/5 to-transparent h-1/2 -translate-y-full group-hover:translate-y-[200%] transition-transform duration-[3000ms] pointer-events-none" />
+            <div className="md:col-span-8 bg-surface-container-low/90 backdrop-blur-xl rounded-2xl p-4 md:p-6 shadow-2xl relative overflow-hidden group border border-white/5">
 
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-white font-bold font-label text-[10px] md:text-xs uppercase tracking-widest">
-                  Proposed Execution Path
-                </h3>
-                {hasBackendData && (
-                  <span className="text-[10px] font-bold bg-tertiary/10 text-tertiary px-2.5 py-1 rounded-full border border-tertiary/20 flex items-center gap-1">
-                    <span className="w-1.5 h-1.5 rounded-full bg-tertiary animate-pulse" />
-                    LIVE DATA
-                  </span>
-                )}
+                <div className="flex items-center gap-2">
+                  <IconMagicButton size={16} className="text-primary" />
+                  <h3 className="text-white font-bold font-label text-[10px] md:text-xs uppercase tracking-widest">
+                    Proposed Execution Path
+                  </h3>
+                </div>
               </div>
 
               <div className="flex flex-col gap-4 md:gap-5 relative">
@@ -175,27 +235,20 @@ export default function PreviewPage() {
                 })}
               </div>
 
-              {/* Decorative Star */}
-              <div className="absolute -bottom-10 -right-10 opacity-10 pointer-events-none hidden md:block">
-                <svg width="150" height="150" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path
-                    d="M100 0L105.5 94.5L200 100L105.5 105.5L100 200L94.5 105.5L0 100L94.5 94.5L100 0Z"
-                    fill="currentColor"
-                    className="text-primary"
-                  />
-                </svg>
-              </div>
             </div>
 
             {/* Metrics Card */}
             <div className="md:col-span-4 flex flex-col">
-              <div className="bg-surface-container-highest rounded-2xl p-4 md:p-6 flex flex-col justify-between items-start h-full ring-1 ring-white/5 relative overflow-hidden">
+              <div className="bg-surface-container-low/90 backdrop-blur-xl rounded-2xl p-4 md:p-6 flex flex-col justify-between items-start h-full border border-white/5 relative overflow-hidden shadow-2xl">
                 <div className="flex flex-col gap-1 md:gap-2">
-                  <span className="text-white font-bold font-label text-[10px] md:text-xs uppercase tracking-widest">
-                    Yield Optimization
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <IconVerifiedUser size={14} className="text-tertiary" />
+                    <span className="text-white font-bold font-label text-[10px] md:text-xs uppercase tracking-widest">
+                      Yield Optimization
+                    </span>
+                  </div>
                   <div className="text-3xl md:text-4xl font-extrabold tracking-tighter text-primary font-headline">
-                    {expectedAPY}
+                    {expectedAPYDisplay}
                   </div>
                   <span className="text-tertiary font-bold text-sm">
                     Expected APY
@@ -207,27 +260,25 @@ export default function PreviewPage() {
                     <span className={`font-bold capitalize ${getRiskColor(risk)}`}>{risk}</span>
                   </div>
                   <div className="w-full h-1 bg-surface-container-low rounded-full overflow-hidden">
-                    <div className={`bg-gradient-to-r ${getConfidenceColor(confidence)} h-full transition-all duration-1000`} style={{ width: `${Math.min(100, (risk.toLowerCase() === 'low' ? 33 : risk.toLowerCase() === 'medium' ? 66 : 100))}%` }} />
+                    <div className={`bg-gradient-to-r ${getConfidenceColor(confidenceDisplay)} h-full transition-all duration-1000`} style={{ width: `${Math.min(100, (risk.toLowerCase() === 'low' ? 33 : risk.toLowerCase() === 'medium' ? 66 : 100))}%` }} />
                   </div>
                   
                   <div className="flex justify-between items-center text-sm mt-2">
                     <span className="text-on-surface-variant">Confidence</span>
-                    <span className="text-primary font-bold">{(confidence * 100).toFixed(1)}%</span>
+                    <span className="text-primary font-bold">{(confidenceDisplay * 100).toFixed(1)}%</span>
                   </div>
                   <div className="w-full h-1 bg-surface-container-low rounded-full overflow-hidden">
-                    <div className={`bg-gradient-to-r ${getConfidenceColor(confidence)} h-full transition-all duration-1000`} style={{ width: `${(confidence * 100).toFixed(0)}%` }} />
+                    <div className={`bg-gradient-to-r ${getConfidenceColor(confidenceDisplay)} h-full transition-all duration-1000`} style={{ width: `${(confidenceDisplay * 100).toFixed(0)}%` }} />
                   </div>
                 </div>
-                {/* Glow */}
-                <div className="absolute -top-10 -right-10 w-24 h-24 md:w-32 md:h-32 bg-primary/20 blur-[40px] rounded-full" />
-              </div>
+                </div>
             </div>
 
             {/* ═══════════════════════════════════════════
                 BACKTEST RESULTS — Multi-Window Analysis
                ═══════════════════════════════════════════ */}
             {hasBackendData && state.backtestResult && (
-              <div className="md:col-span-12 bg-surface-container-low rounded-2xl p-4 md:p-6 shadow-2xl relative overflow-hidden">
+              <div className="md:col-span-12 bg-surface-container-low/90 backdrop-blur-xl rounded-2xl p-4 md:p-6 shadow-2xl relative overflow-hidden border border-white/5">
                 <div className="flex items-center gap-2 mb-5">
                   <IconTrendingUp size={18} className="text-tertiary" />
                   <h3 className="text-white font-bold font-label text-[10px] md:text-xs uppercase tracking-widest">
@@ -238,7 +289,7 @@ export default function PreviewPage() {
                 {/* 3 Window Cards + Final Score */}
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                   {/* Short Term */}
-                  <div className="bg-surface-container-highest/50 rounded-xl p-4 border border-outline-variant/10 group hover:border-primary/20 transition-all">
+                  <div className="bg-surface-container-highest/30 rounded-xl p-4 border border-outline-variant/10 transition-all">
                     <div className="text-xs font-label text-on-surface-variant mb-2">
                       Short Term
                     </div>
@@ -249,7 +300,7 @@ export default function PreviewPage() {
                   </div>
 
                   {/* Mid Term */}
-                  <div className="bg-surface-container-highest/50 rounded-xl p-4 border border-outline-variant/10 group hover:border-secondary/20 transition-all">
+                  <div className="bg-surface-container-highest/30 rounded-xl p-4 border border-outline-variant/10 transition-all">
                     <div className="text-xs font-label text-on-surface-variant mb-2">
                       Mid Term
                     </div>
@@ -260,7 +311,7 @@ export default function PreviewPage() {
                   </div>
 
                   {/* Long Term */}
-                  <div className="bg-surface-container-highest/50 rounded-xl p-4 border border-outline-variant/10 group hover:border-tertiary/20 transition-all">
+                  <div className="bg-surface-container-highest/30 rounded-xl p-4 border border-outline-variant/10 transition-all">
                     <div className="text-xs font-label text-on-surface-variant mb-2">
                       Long Term
                     </div>
@@ -283,57 +334,9 @@ export default function PreviewPage() {
                   </div>
                 </div>
 
-                {/* Confidence Bar */}
-                <div className="mt-5 bg-surface-container-highest/50 rounded-xl p-4 border border-outline-variant/10">
-                  <div className="flex items-center justify-between mb-3">
-                    <div className="flex items-center gap-2">
-                      <IconShield size={14} className="text-primary" />
-                      <span className="text-xs font-label uppercase tracking-widest text-white font-bold">
-                        Confidence Score
-                      </span>
-                    </div>
-                    <span className="text-sm font-headline font-bold text-primary">
-                      {(confidence * 100).toFixed(1)}%
-                    </span>
-                  </div>
-                  <div className="w-full h-2 bg-surface-container-low rounded-full overflow-hidden">
-                    <div
-                      className={`h-full rounded-full bg-gradient-to-r ${getConfidenceColor(confidence)} transition-all duration-1000 ease-out`}
-                      style={{ width: `${(confidence * 100).toFixed(0)}%` }}
-                    />
-                  </div>
-                  <p className="text-[10px] text-on-surface-variant mt-2">
-                    Based on return consistency across all backtest windows. Higher = more stable growth.
-                  </p>
-                </div>
               </div>
             )}
 
-            {/* Info Badges Row */}
-            <div className="md:col-span-12 grid md:grid-cols-3 gap-3 md:gap-4">
-              {[
-                { icon: <IconLocalAtm className="w-4 h-4 md:w-5 md:h-5" />, title: `${state.amount || "0.00"} ${hasBackendData ? "SOL" : "USDC"}`, desc: "Amount" },
-                { icon: <IconBolt className="w-4 h-4 md:w-5 md:h-5" />, title: hasBackendData ? strategyName : selectedGoal.title, desc: "Strategy" },
-                { icon: <IconVerifiedUser className="w-4 h-4 md:w-5 md:h-5" />, title: `~${strategySteps.length * 3} Sec`, desc: "Execution" },
-              ].map((badge) => (
-                <div
-                  key={badge.title}
-                  className="bg-surface-container/50 rounded-xl p-3 md:p-5 flex items-center gap-2 md:gap-3 group hover:bg-surface-variant transition-colors"
-                >
-                  <span className="text-on-surface-variant group-hover:text-primary transition-colors">
-                    {badge.icon}
-                  </span>
-                  <div className="flex flex-col">
-                    <span className="text-on-surface font-bold text-xs md:text-sm capitalize">
-                      {badge.title}
-                    </span>
-                    <span className="text-on-surface-variant text-[10px] md:text-xs">
-                      {badge.desc}
-                    </span>
-                  </div>
-                </div>
-              ))}
-            </div>
           </div>
 
           {/* Footer Action Area */}
@@ -350,10 +353,10 @@ export default function PreviewPage() {
             </div>
           </div>
         </section>
-        </main>
       </div>
-
-      <Footer />
-    </>
-  );
+    </main>
+    </div>
+  </>
+  </WalletGuard>
+);
 }

@@ -42,7 +42,10 @@ export default function StrategyPage() {
       // 2. Fetch performance history
       fetchPerformanceHistory(v.strategyName).then(data => {
         if (data && data.records) {
-          setPerformanceHistory(data.records);
+          // Sort records descending by checkedAt (newest first)
+          // Create a new array with spread to ensure React detects the state change
+          const sortedRecords = [...data.records].sort((a: PerformanceRecord, b: PerformanceRecord) => b.checkedAt - a.checkedAt);
+          setPerformanceHistory(sortedRecords);
         }
       });
     }
@@ -90,7 +93,7 @@ export default function StrategyPage() {
   };
 
   return (
-    <main className="pt-20 pb-6 px-8 flex-1 flex flex-col relative overflow-hidden">
+    <main className="pt-4 pb-20 md:pb-6 px-4 md:px-8 flex-1 flex flex-col relative overflow-hidden">
       <AmbientBackground
         fixed={false}
         blobs={[
@@ -104,7 +107,7 @@ export default function StrategyPage() {
             <span className="text-primary tracking-[0.2em] font-bold uppercase mb-2 block text-xs">
               Portfolio Management
             </span>
-            <h1 className="text-3xl md:text-4xl font-headline font-extrabold text-white tracking-tight">
+            <h1 className="text-2xl md:text-4xl font-headline font-extrabold text-white tracking-tight">
               Active Strategy
             </h1>
           </ScrollReveal>
@@ -124,7 +127,7 @@ export default function StrategyPage() {
                 <div key={vault.id}>
                   {/* Vault Header */}
                   <ScrollReveal animationClass="spawn-rise" delay={200 + idx * 100}>
-                    <div className="mb-4 bg-surface-container-low rounded-3xl p-5 md:p-6 border border-outline-variant/10">
+                    <div className="mb-4 bg-surface-container-high rounded-3xl p-5 md:p-6 border border-outline-variant/10">
                       <div className="flex items-center justify-between mb-4">
                         <div className="inline-block px-3 py-1 bg-primary/10 text-primary text-xs font-bold rounded-full uppercase tracking-widest">
                           Active Vault
@@ -133,7 +136,7 @@ export default function StrategyPage() {
                           Deployed {new Date(vault.deployedAt).toLocaleDateString()} · {growth.daysElapsed.toFixed(1)} days ago
                         </span>
                       </div>
-                      <h2 className="font-headline text-2xl md:text-3xl font-extrabold text-white mb-2 capitalize">
+                      <h2 className="font-headline text-xl md:text-3xl font-extrabold text-white mb-2 capitalize">
                         {vault.strategyName}
                       </h2>
                       <p className="text-on-surface-variant text-sm max-w-xl leading-relaxed">
@@ -147,8 +150,8 @@ export default function StrategyPage() {
                     <ScrollReveal animationClass="spawn-rise" delay={250 + idx * 100}>
                       <div className="mb-4 bg-gradient-to-r from-secondary/20 to-primary/10 border border-secondary/30 rounded-2xl p-4 flex flex-col md:flex-row items-center justify-between gap-4 animate-in slide-in-from-top duration-700">
                         <div className="flex items-center gap-4">
-                          <div className="w-12 h-12 rounded-full bg-secondary/20 flex items-center justify-center text-secondary animate-pulse">
-                            <IconHub size={24} />
+                          <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-secondary/20 flex items-center justify-center text-secondary animate-pulse">
+                            <IconHub size={20} className="md:w-6 md:h-6" />
                           </div>
                           <div>
                             <h4 className="text-white font-bold text-sm md:text-base">Optimization Opportunity!</h4>
@@ -160,7 +163,7 @@ export default function StrategyPage() {
                         <button
                           onClick={handleAutoRebalance}
                           disabled={isRebalancing}
-                          className="px-6 py-2 bg-secondary text-white text-xs font-bold rounded-full hover:scale-105 transition-transform disabled:opacity-50 disabled:pointer-events-none flex items-center gap-2"
+                          className="px-5 py-2 md:px-6 md:py-2 bg-secondary text-white text-[10px] md:text-xs font-bold rounded-full hover:scale-105 transition-transform disabled:opacity-50 disabled:pointer-events-none flex items-center gap-2"
                         >
                           {isRebalancing ? (
                             <>
@@ -179,13 +182,13 @@ export default function StrategyPage() {
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 mb-4">
                       {/* Performance Chart (Left Column) */}
                       <div className="lg:col-span-2 bg-surface-container-high rounded-3xl p-5 md:p-6 border border-outline-variant/5 flex flex-col">
-                        <div className="flex-1">
+                        <div className="lg:h-[195px]">
                           <div className="flex items-center gap-3 mb-4 text-white">
                             <IconTrendingUp size={20} className="text-primary" />
                             <h3 className="font-bold text-sm uppercase tracking-wider">Performance</h3>
                           </div>
                           <div className="flex items-baseline gap-3">
-                            <span className="text-4xl font-headline font-extrabold text-white">
+                            <span className="text-3xl md:text-4xl font-headline font-extrabold text-white">
                               {profitPercent >= 0 ? "+" : ""}{profitPercent.toFixed(4)}%
                             </span>
                             <span className="text-tertiary text-sm font-bold bg-tertiary/10 px-2 py-1 rounded-md flex items-center gap-1">
@@ -194,7 +197,7 @@ export default function StrategyPage() {
                           </div>
 
                           {/* Balance Details */}
-                          <div className="mt-4 grid grid-cols-3 gap-3">
+                          <div className="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-3">
                             <div className="text-center">
                               <p className="text-sm text-on-surface-variant capitalize">Deposited</p>
                               <p className="text-sm font-bold text-white">{vault.amount.toFixed(4)} SOL</p>
@@ -210,7 +213,7 @@ export default function StrategyPage() {
                           </div>
 
                           {/* Backtest Recap */}
-                          <div className="mt-4 grid grid-cols-4 gap-2">
+                          <div className="mt-4 grid grid-cols-2 sm:grid-cols-4 gap-2">
                             <div className="text-center">
                               <p className="text-sm text-on-surface-variant capitalize">7d Return</p>
                               <p className="text-sm font-bold text-primary">{vault.shortTermReturn.toFixed(3)}%</p>
@@ -230,80 +233,59 @@ export default function StrategyPage() {
                           </div>
                         </div>
 
-                        <hr className="my-5 border-outline-variant/10" />
+                        <hr className="my-4 border-outline-variant/10" />
 
                         {/* Performance History */}
-                        <div className="h-[155px]">
-                          <div className="flex items-center justify-between mb-4">
-                            <h3 className="flex items-center gap-3 text-white font-bold text-sm uppercase tracking-wider">
-                              <IconHistory size={20} className="text-primary" />
-                              Performance History
-                            </h3>
+                        <div className="w-full">
+                          <div className="flex items-center gap-3 mb-4 text-white">
+                            <IconHistory size={18} className="text-primary" />
+                            <h3 className="font-bold text-sm uppercase tracking-wider">Performance History</h3>
                           </div>
                           
-                          <div className="overflow-x-auto overflow-y-auto max-h-[115px] pr-2">
-                            <table className="w-full text-left text-sm">
-                              <thead>
-                                <tr className="text-on-surface-variant border-b border-outline-variant/10">
-                                <th className="pb-3 capitalize text-sm text-on-surface-variant font-medium">Check Date</th>
-                                <th className="pb-3 capitalize text-sm text-on-surface-variant font-medium">Expected Profit</th>
-                                <th className="pb-3 capitalize text-sm text-on-surface-variant font-medium">Actual Profit</th>
-                                <th className="pb-3 capitalize text-sm text-on-surface-variant font-medium">Accuracy</th>
-                                <th className="pb-3 capitalize text-sm text-on-surface-variant font-medium text-right">Status</th>
-                                </tr>
-                              </thead>
-                              <tbody className="divide-y divide-outline-variant/5">
-                                {performanceHistory.length > 0 ? (
-                                  performanceHistory.map((record, i) => (
-                                    <tr key={i} className="group hover:bg-white/5 transition-colors">
-                                      <td className="py-3 text-on-surface-variant text-sm">
-                                        {new Date(record.checkedAt).toLocaleDateString()}
-                                      </td>
-                                      <td className="py-3 font-mono text-sm">
-                                        {record.expectedProfit.toFixed(6)} SOL
-                                      </td>
-                                      <td className="py-3 font-mono text-tertiary text-sm">
-                                        +{record.actualProfit.toFixed(6)} SOL
-                                      </td>
-                                      <td className="py-3">
-                                        <div className="flex items-center gap-2">
-                                          <div className="flex-1 h-1.5 bg-surface-container-highest rounded-full overflow-hidden max-w-[60px]">
-                                            <div 
-                                              className={`h-full ${record.accuracy >= 0.8 ? 'bg-primary' : record.accuracy >= 0.5 ? 'bg-secondary' : 'bg-error'} rounded-full`} 
-                                              style={{ width: `${(record.accuracy * 100).toFixed(0)}%` }} 
-                                            />
-                                          </div>
-                                          <span className="text-sm font-bold">{(record.accuracy * 100).toFixed(0)}%</span>
-                                        </div>
-                                      </td>
-                                      <td className="py-3 text-right">
-                                        <span className={`px-2 py-1 ${record.accuracy >= 0.8 ? 'bg-tertiary/10 text-tertiary' : record.accuracy >= 0.5 ? 'bg-secondary/10 text-secondary' : 'bg-error/10 text-error'} text-[10px] font-bold rounded-md`}>
-                                          {record.accuracy >= 0.8 ? 'STABLE' : record.accuracy >= 0.5 ? 'ADJUSTED' : 'DEVIATED'}
-                                        </span>
-                                      </td>
-                                    </tr>
-                                  ))
-                                ) : (
-                                  <tr className="group hover:bg-white/5 transition-colors">
-                                    <td className="py-6 text-center text-on-surface-variant text-xs italic" colSpan={5}>
-                                      No performance records yet. AI is monitoring your strategy...
-                                    </td>
-                                  </tr>
-                                )}
-                              </tbody>
-                            </table>
+                          {/* Header */}
+                          <div className="grid grid-cols-[1fr_1.7fr_1.7fr_0.9fr_0.7fr] gap-1 text-[13px] text-on-surface-variant font-medium border-b border-outline-variant/10 pb-3 pr-[18px]">
+                            <div className="capitalize">Date</div>
+                            <div className="capitalize">Expected</div>
+                            <div className="capitalize">Actual</div>
+                            <div className="capitalize">Accuracy</div>
+                            <div className="capitalize text-center">Status</div>
+                          </div>
+                          
+                          {/* Body */}
+                          <div className="overflow-y-auto max-h-[125px] pr-2 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
+                            <div className="divide-y divide-outline-variant/5">
+                              {performanceHistory && performanceHistory.length > 0 ? (
+                                performanceHistory.map((record, rIdx) => (
+                                  <div key={rIdx} className="grid grid-cols-[1fr_1.7fr_1.7fr_0.9fr_0.7fr] gap-1 py-2 items-center group hover:bg-white/5 transition-colors">
+                                    <div className="text-on-surface-variant/80 text-[12px] whitespace-nowrap">{new Date(record.checkedAt).toLocaleDateString()}</div>
+                                    <div className="text-white font-mono text-xs whitespace-nowrap">{(record.expectedProfit || 0).toFixed(6)} SOL</div>
+                                    <div className="text-tertiary font-mono text-xs whitespace-nowrap">+{(record.actualProfit || 0).toFixed(6)} SOL</div>
+                                    <div className="text-white font-bold text-xs">{(record.accuracy * 100).toFixed(0)}%</div>
+                                    <div className="text-center">
+                                      <span className={`px-1.5 py-0.5 ${record.accuracy >= 0.8 ? 'bg-tertiary/10 text-tertiary' : record.accuracy >= 0.5 ? 'bg-secondary/10 text-secondary' : 'bg-error/10 text-error'} text-[10px] font-bold rounded-md uppercase tracking-wider`}>
+                                        {record.accuracy >= 0.8 ? 'OK' : record.accuracy >= 0.5 ? 'ADJ' : 'DEV'}
+                                      </span>
+                                    </div>
+                                  </div>
+                                ))
+                              ) : (
+                                <div className="py-10 text-center text-on-surface-variant text-xs italic">
+                                  No performance records yet. AI is monitoring your strategy...
+                                </div>
+                              )}
+                            </div>
                           </div>
                         </div>
                       </div>
 
                       {/* Strategy Metrics Sidebar (Right Column) */}
                       <div className="bg-surface-container-high rounded-3xl p-5 md:p-6 border border-outline-variant/5 flex flex-col">
-                        <div className="flex-1">
+                        <div className="lg:h-[195px]">
                           <div className="flex items-center gap-3 mb-4 text-white">
                             <IconHub size={20} className="text-primary" />
                             <h3 className="font-bold text-sm uppercase tracking-wider">Execution Steps</h3>
                           </div>
-                          <div className="space-y-3">
+                          <div className="space-y-1.5">
                             {vault.steps.map((step, i) => (
                               <div key={i} className="flex items-center gap-3">
                                 <div className="w-6 h-6 rounded-full bg-primary/20 text-primary text-xs font-bold flex items-center justify-center">{i + 1}</div>
@@ -313,9 +295,9 @@ export default function StrategyPage() {
                           </div>
                         </div>
 
-                        <hr className="my-5 border-outline-variant/10" />
+                        <hr className="my-4 border-outline-variant/10" />
 
-                        <div className="h-[155px]">
+                        <div className="h-auto md:h-[155px] pb-5 md:pb-0">
                           <div className="flex items-center gap-3 mb-4 text-white">
                             <IconShield size={20} className="text-primary" />
                             <h3 className="font-bold text-sm uppercase tracking-wider">Risk Profile</h3>
@@ -343,16 +325,16 @@ export default function StrategyPage() {
           </div>
         ) : (
           <div className="flex-1 flex flex-col items-center justify-center py-12 text-center">
-            <div className="w-20 h-20 mb-5 rounded-full bg-surface-container-highest flex items-center justify-center text-primary">
-              <IconTrackChanges size={40} />
+            <div className="w-16 h-16 md:w-20 md:h-20 mb-5 rounded-full bg-surface-container-highest flex items-center justify-center text-primary">
+              <IconTrackChanges size={32} />
             </div>
-            <h2 className="text-2xl font-headline font-bold text-white mb-3">No Active Strategies</h2>
-            <p className="text-sm text-on-surface-variant max-w-md mb-6">
+            <h2 className="text-xl md:text-2xl font-headline font-bold text-white mb-3">No Active Strategies</h2>
+            <p className="text-xs md:text-sm text-on-surface-variant max-w-md mb-6">
               You haven&apos;t set up any automated DeFi strategies yet. Choose a goal and let AutoFi handle the rest.
             </p>
             <Link
               href="/strategy"
-              className="px-6 py-3 bg-gradient-to-r from-primary to-primary-dim text-white text-sm font-bold rounded-full shadow-[0_0_24px_rgba(163,166,255,0.3)] hover:shadow-[0_0_32px_rgba(163,166,255,0.5)] transition-all"
+              className="px-8 py-3.5 md:px-10 md:py-4 bg-gradient-to-r from-primary to-primary-dim text-on-primary text-[15px] md:text-base font-bold rounded-full shadow-[0_0_24px_rgba(163,166,255,0.3)] hover:shadow-[0_0_32px_rgba(163,166,255,0.5)] transition-all"
             >
               Select a Strategy
             </Link>

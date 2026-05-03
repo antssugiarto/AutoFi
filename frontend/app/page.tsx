@@ -65,9 +65,9 @@ export default function LandingPage() {
   const strategies = [
     {
       name: "Aggressive Yield",
-      desc: "High returns with optimized DeFi allocation",
-      apy: "10% – 18%",
-      risk: "Medium-High",
+      desc: "Maximize returns through recursive staking and high-yield lending loops.",
+      apy: "14%",
+      risk: "High",
       color: "text-secondary",
       bgColor: "bg-secondary/20",
       borderHover: "hover:border-secondary/50",
@@ -75,9 +75,9 @@ export default function LandingPage() {
     },
     {
       name: "Stable Growth",
-      desc: "Steady returns with low volatility",
-      apy: "6% – 10%",
-      risk: "Low – Medium",
+      desc: "Consistent growth using low-volatility lending and delta-neutral strategies.",
+      apy: "8%",
+      risk: "Medium",
       color: "text-primary",
       bgColor: "bg-primary/20",
       borderHover: "hover:border-primary/50",
@@ -85,8 +85,8 @@ export default function LandingPage() {
     },
     {
       name: "Low Risk Safe",
-      desc: "Protect your funds with minimal exposure",
-      apy: "3% – 6%",
+      desc: "Preserve capital using top-tier liquid staking and blue-chip protocols.",
+      apy: "6%",
       risk: "Low",
       color: "text-tertiary",
       bgColor: "bg-tertiary/20",
@@ -95,8 +95,8 @@ export default function LandingPage() {
     },
     {
       name: "Balanced Optimizer",
-      desc: "Smart balance between risk and reward",
-      apy: "8% – 12%",
+      desc: "An optimal mix of staking rewards and moderate lending yields.",
+      apy: "10%",
       risk: "Medium",
       color: "text-on-surface",
       bgColor: "bg-primary/10",
@@ -115,7 +115,7 @@ export default function LandingPage() {
             : "-translate-y-full opacity-0 pointer-events-none"
         }`}
       >
-        <div className="flex h-16 w-[calc(100%-2rem)] max-w-[1200px] items-center justify-between mx-auto md:w-full">
+        <div className="flex h-16 w-full max-w-[1200px] items-center justify-between mx-auto px-4 md:px-8">
           {/* Left: Logo */}
           <Link href="/" className="flex shrink-0 items-center">
             <AutoFiLogo className="h-9 md:h-10" />
@@ -138,7 +138,7 @@ export default function LandingPage() {
           ) : (
             <Link
               href="/connect"
-              className="inline-flex shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-primary to-primary-dim px-8 py-3 text-[15px] font-bold leading-none text-on-primary transition-all duration-200 active:scale-95 shadow-[0_0_20px_rgba(163,166,255,0.15)] hover:shadow-[0_0_40px_rgba(163,166,255,0.3)]"
+              className="inline-flex shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-primary to-primary-dim px-6 py-2.5 text-sm md:px-8 md:py-3 md:text-[15px] font-bold leading-none text-on-primary transition-all duration-200 active:scale-95 shadow-[0_0_20px_rgba(163,166,255,0.15)] hover:shadow-[0_0_40px_rgba(163,166,255,0.3)]"
             >
               Connect Wallet
             </Link>
@@ -152,7 +152,7 @@ export default function LandingPage() {
            ════════════════════════════════════════════ */}
         <section
           ref={heroRef}
-          className="relative min-h-[700px] md:min-h-screen flex flex-col overflow-hidden px-8 py-8"
+          className="relative min-h-[700px] md:min-h-screen flex flex-col overflow-hidden px-4 md:px-8 py-8"
         >
           <div
             className={`pointer-events-none absolute inset-0 z-20 bg-surface transition-opacity duration-700 ${
@@ -185,28 +185,29 @@ export default function LandingPage() {
                 <h1 className="font-headline text-4xl md:text-6xl font-extrabold tracking-tighter leading-[1.05] text-on-surface">
                   Automate Your <br />
                   <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-tertiary">
-                    DeFi Strategy
+                    Solana Yields
                   </span>{" "}
-                  in One Click
+                  with AI
                 </h1>
 
                 <p className="text-lg md:text-xl text-on-surface-variant max-w-xl leading-relaxed">
-                  Let AutoFi optimize, execute, and grow your crypto automatically.
+                  AutoFi intelligently routes your assets through Jupiter, Marginfi, and top staking protocols to maximize your DeFi returns automatically.
                 </p>
 
-                <div className="flex flex-wrap gap-4 pt-4">
+                <div className="flex flex-col sm:flex-row gap-4 pt-4 w-full sm:w-auto">
                   {connected ? (
-                    <Button size="lg">
-                      <Link href="/dashboard">Go to Dashboard</Link>
+                    <Button size="lg" className="w-full sm:w-auto">
+                      <Link href="/dashboard" className="w-full text-center">Go to Dashboard</Link>
                     </Button>
                   ) : (
-                    <Button size="lg">
-                      <Link href="/connect">Connect Wallet</Link>
+                    <Button size="lg" className="w-full sm:w-auto">
+                      <Link href="/connect" className="w-full text-center">Connect Wallet</Link>
                     </Button>
                   )}
                   <Button
                     variant="secondary"
                     size="lg"
+                    className="w-full sm:w-auto"
                     onClick={() => {
                       document.getElementById("how-it-works")?.scrollIntoView({ behavior: "smooth" });
                     }}
@@ -293,7 +294,7 @@ export default function LandingPage() {
             2. HOW IT WORKS
            ════════════════════════════════════════════ */}
         <section id="how-it-works" className="py-20 bg-surface-container-low">
-          <div className="max-w-[1200px] mx-auto px-8">
+          <div className="max-w-[1200px] mx-auto px-4 md:px-8">
             <ScrollReveal animationClass="spawn-fade" className="text-center mb-16">
               <h2 className="font-headline text-2xl md:text-3xl font-bold mb-4">
                 How It Works
@@ -303,7 +304,7 @@ export default function LandingPage() {
               </p>
             </ScrollReveal>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 pb-6">
               {[
                 {
                   step: "01",
@@ -314,15 +315,15 @@ export default function LandingPage() {
                 },
                 {
                   step: "02",
-                  title: "Choose Strategy",
-                  desc: "Pick a strategy that fits your risk profile and investment goals.",
+                  title: "Set Your Goal",
+                  desc: "Define your risk appetite and target returns. Our AI will craft a custom multi-step strategy.",
                   icon: <IconSwapHoriz size={28} className="text-secondary" />,
                   color: "bg-secondary/15",
                 },
                 {
                   step: "03",
-                  title: "Earn Automatically",
-                  desc: "Sit back and let AutoFi optimize and grow your portfolio.",
+                  title: "One-Click Execute",
+                  desc: "Approve the automated sequence and watch your portfolio grow with smart rebalancing.",
                   icon: <IconAutoAwesome size={28} className="text-tertiary" />,
                   color: "bg-tertiary/15",
                 },
@@ -331,18 +332,25 @@ export default function LandingPage() {
                   key={item.step}
                   animationClass="spawn-card"
                   delay={index * 150}
-                  className={`relative group p-8 rounded-3xl bg-surface-container border border-outline-variant/10 hover:border-primary/20 transition-all duration-300`}
+                  className="h-full overflow-visible p-2"
                 >
-                  {/* Step Number */}
-                  <div className="absolute top-6 right-6 text-5xl font-headline font-extrabold text-surface-container-highest/80 select-none">
-                    {item.step}
-                  </div>
+                  <div className="relative group rounded-3xl bg-surface-container border border-outline-variant/10 hover:border-primary/20 transition-all duration-300 hover:-translate-y-1 h-full">
+                    <div className="p-8 h-full relative overflow-hidden rounded-3xl">
+                      {/* Step Number */}
+                      <div className="absolute top-6 right-6 text-5xl font-headline font-extrabold text-surface-container-highest/80 select-none">
+                        {item.step}
+                      </div>
 
-                  <div className={`w-14 h-14 rounded-2xl ${item.color} flex items-center justify-center mb-6`}>
-                    {item.icon}
+                      <div className={`w-14 h-14 rounded-2xl ${item.color} flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300`}>
+                        {item.icon}
+                      </div>
+                      <h3 className="font-headline text-xl font-bold mb-3">{item.title}</h3>
+                      <p className="text-on-surface-variant text-sm leading-relaxed">{item.desc}</p>
+
+                      {/* Hover glow - inside overflow container */}
+                      <div className="absolute top-0 right-0 w-28 h-28 bg-primary/5 blur-3xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                    </div>
                   </div>
-                  <h3 className="font-headline text-xl font-bold mb-3">{item.title}</h3>
-                  <p className="text-on-surface-variant text-sm leading-relaxed">{item.desc}</p>
                 </ScrollReveal>
               ))}
             </div>
@@ -352,7 +360,7 @@ export default function LandingPage() {
         {/* ════════════════════════════════════════════
             3. FEATURES
            ════════════════════════════════════════════ */}
-        <section className="py-20 px-8">
+        <section className="py-20 px-4 md:px-8">
           <div className="max-w-[1200px] mx-auto">
             <ScrollReveal animationClass="spawn-fade" className="text-center mb-16">
               <h2 className="font-headline text-2xl md:text-3xl font-bold mb-4">
@@ -363,44 +371,51 @@ export default function LandingPage() {
               </p>
             </ScrollReveal>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 pb-6">
               {[
                 {
-                  title: "Auto Optimization",
-                  desc: "AI-driven engine continuously seeks the best yield opportunities across protocols.",
+                  title: "AI Yield Harvesting",
+                  desc: "Real-time protocol monitoring ensures your capital is always positioned in the highest APY pools.",
                   icon: <IconAutoAwesome size={24} className="text-primary" />,
-                  gradient: "from-primary/10 to-transparent",
+                  gradient: "from-primary/10 to-surface-container",
                 },
                 {
-                  title: "Smart Strategy Allocation",
-                  desc: "Intelligent fund distribution across multiple strategies for maximum returns.",
+                  title: "Multi-Step Routing",
+                  desc: "Execute complex DeFi sequences across Jupiter and Marginfi in a single automated transaction.",
                   icon: <IconTrendingUp size={24} className="text-secondary" />,
-                  gradient: "from-secondary/10 to-transparent",
+                  gradient: "from-secondary/10 to-surface-container",
                 },
                 {
-                  title: "Secure & Non-Custodial",
-                  desc: "Your funds stay in your wallet. We never hold your assets — full control, always.",
+                  title: "Non-Custodial Security",
+                  desc: "Your keys, your crypto. All strategies execute through secure, auditable Solana smart contracts.",
                   icon: <IconShield size={24} className="text-tertiary" />,
-                  gradient: "from-tertiary/10 to-transparent",
+                  gradient: "from-tertiary/10 to-surface-container",
                 },
                 {
-                  title: "Auto Rebalancing",
-                  desc: "Automatic portfolio rebalancing to maintain optimal allocation as markets move.",
+                  title: "Smart Rebalancing",
+                  desc: "AutoFi automatically adjusts your positions as market conditions and lending rates shift.",
                   icon: <IconSync size={24} className="text-primary" />,
-                  gradient: "from-primary/10 to-transparent",
+                  gradient: "from-primary/10 to-surface-container",
                 },
               ].map((feature, index) => (
                 <ScrollReveal
                   key={feature.title}
                   animationClass="spawn-card"
                   delay={index * 100}
-                  className={`group p-6 rounded-3xl bg-gradient-to-b ${feature.gradient} border border-outline-variant/10 hover:border-primary/20 transition-all duration-300 hover:-translate-y-1`}
+                  className="h-full overflow-visible p-2"
                 >
-                  <div className="w-12 h-12 rounded-2xl bg-surface-container-highest/50 flex items-center justify-center mb-5">
-                    {feature.icon}
+                  <div className={`group rounded-3xl bg-gradient-to-b ${feature.gradient} border border-outline-variant/10 hover:border-primary/20 transition-all duration-300 hover:-translate-y-1 relative h-full`}>
+                    <div className="p-6 h-full relative overflow-hidden rounded-3xl">
+                      <div className="w-12 h-12 rounded-2xl bg-surface-container-highest/50 flex items-center justify-center mb-5 group-hover:scale-110 transition-transform duration-300">
+                        {feature.icon}
+                      </div>
+                      <h3 className="font-headline text-lg font-bold mb-2">{feature.title}</h3>
+                      <p className="text-on-surface-variant text-sm leading-relaxed">{feature.desc}</p>
+
+                      {/* Hover glow */}
+                      <div className="absolute top-0 right-0 w-28 h-28 bg-primary/5 blur-3xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                    </div>
                   </div>
-                  <h3 className="font-headline text-lg font-bold mb-2">{feature.title}</h3>
-                  <p className="text-on-surface-variant text-sm leading-relaxed">{feature.desc}</p>
                 </ScrollReveal>
               ))}
             </div>
@@ -410,7 +425,7 @@ export default function LandingPage() {
         {/* ════════════════════════════════════════════
             4. STRATEGY PREVIEW
            ════════════════════════════════════════════ */}
-        <section className="py-20 bg-surface-container-low px-8">
+        <section className="py-20 bg-surface-container-low px-4 md:px-8">
           <div className="max-w-[1200px] mx-auto">
             <ScrollReveal animationClass="spawn-fade" className="mb-16">
               <h2 className="font-headline text-2xl md:text-3xl font-bold mb-4">
@@ -421,29 +436,35 @@ export default function LandingPage() {
               </p>
             </ScrollReveal>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 pb-6">
               {strategies.map((s, index) => (
                 <ScrollReveal
                   key={s.name}
                   animationClass="spawn-card"
                   delay={index * 100}
-                  className={`group relative overflow-hidden rounded-3xl bg-surface-container p-6 flex flex-col justify-between min-h-[280px] border border-outline-variant/10 ${s.borderHover} transition-all duration-300 hover:-translate-y-1`}
+                  className="h-full overflow-visible p-2"
                 >
-                  <div>
-                    <div className={`w-12 h-12 ${s.bgColor} rounded-2xl flex items-center justify-center mb-5`}>
-                      {s.icon}
-                    </div>
-                    <h3 className="text-lg font-headline font-bold mb-2">{s.name}</h3>
-                    <p className="text-on-surface-variant text-sm leading-relaxed mb-4">{s.desc}</p>
-                  </div>
-                  <div>
-                    <div className="flex justify-between items-center mb-3 pb-3 border-b border-outline-variant/10">
-                      <span className="text-xs text-on-surface-variant uppercase tracking-widest">APY</span>
-                      <span className={`font-headline font-bold ${s.color}`}>{s.apy}</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-xs text-on-surface-variant uppercase tracking-widest">Risk</span>
-                      <span className="text-on-surface text-sm font-semibold">{s.risk}</span>
+                  <div className={`group relative rounded-3xl bg-surface-container border border-outline-variant/10 ${s.borderHover} transition-all duration-300 hover:-translate-y-1 h-full`}>
+                    <div className="p-6 flex flex-col justify-between h-full min-h-[280px] relative overflow-hidden rounded-3xl">
+                      <div>
+                        <div className={`w-12 h-12 ${s.bgColor} rounded-2xl flex items-center justify-center mb-5 group-hover:scale-110 transition-transform duration-300`}>
+                          {s.icon}
+                        </div>
+                        <h3 className="text-lg font-headline font-bold mb-2">{s.name}</h3>
+                        <p className="text-on-surface-variant text-sm leading-relaxed mb-4">{s.desc}</p>
+                      </div>
+                      <div>
+                        <div className="flex justify-between items-center mb-2 pb-2 border-b border-outline-variant/10">
+                          <span className="text-xs text-on-surface-variant uppercase tracking-widest">APY</span>
+                          <span className={`font-headline font-bold ${s.color}`}>{s.apy}</span>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span className="text-xs text-on-surface-variant uppercase tracking-widest">Risk</span>
+                          <span className="text-on-surface text-sm font-semibold">{s.risk}</span>
+                        </div>
+                      </div>
+                      {/* Hover glow */}
+                      <div className="absolute top-0 right-0 w-28 h-28 bg-primary/5 blur-3xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                     </div>
                   </div>
                 </ScrollReveal>
@@ -455,18 +476,18 @@ export default function LandingPage() {
         {/* ════════════════════════════════════════════
             5. TRUST & SECURITY
            ════════════════════════════════════════════ */}
-        <section className="py-20 px-8">
+        <section className="py-16 md:py-20 px-4 md:px-8">
           <div className="max-w-[1200px] mx-auto">
             <ScrollReveal animationClass="spawn-fade" className="text-center mb-16">
               <h2 className="font-headline text-2xl md:text-3xl font-bold mb-4">
                 Trust & Security
               </h2>
               <p className="text-on-surface-variant text-lg max-w-xl mx-auto">
-                Your assets are protected by industry-leading security standards.
+                Your assets are protected by Solana's leading security standards.
               </p>
             </ScrollReveal>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 pb-6">
               {[
                 {
                   title: "Non-Custodial",
@@ -491,13 +512,20 @@ export default function LandingPage() {
                   key={item.title}
                   animationClass="spawn-card"
                   delay={index * 150}
-                  className="text-center p-8 rounded-3xl bg-surface-container border border-outline-variant/10 hover:border-primary/20 transition-all duration-300"
+                  className="h-full overflow-visible p-2"
                 >
-                  <div className={`w-16 h-16 rounded-2xl ${item.color} flex items-center justify-center mx-auto mb-6`}>
-                    {item.icon}
+                  <div className="group rounded-3xl bg-surface-container border border-outline-variant/10 hover:border-primary/20 transition-all duration-300 hover:-translate-y-1 relative h-full">
+                    <div className="text-center p-8 h-full relative overflow-hidden rounded-3xl">
+                      <div className={`w-16 h-16 rounded-2xl ${item.color} flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300`}>
+                        {item.icon}
+                      </div>
+                      <h3 className="font-headline text-xl font-bold mb-3">{item.title}</h3>
+                      <p className="text-on-surface-variant text-sm leading-relaxed max-w-xs mx-auto">{item.desc}</p>
+
+                      {/* Hover glow */}
+                      <div className="absolute top-0 right-0 w-28 h-28 bg-primary/5 blur-3xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                    </div>
                   </div>
-                  <h3 className="font-headline text-xl font-bold mb-3">{item.title}</h3>
-                  <p className="text-on-surface-variant text-sm leading-relaxed max-w-xs mx-auto">{item.desc}</p>
                 </ScrollReveal>
               ))}
             </div>
@@ -507,10 +535,10 @@ export default function LandingPage() {
         {/* ════════════════════════════════════════════
             6. CTA SECTION
            ════════════════════════════════════════════ */}
-        <section className="py-16 px-8">
+        <section className="py-16 px-4 md:px-8">
           <ScrollReveal
             animationClass="spawn-rise"
-            className="max-w-[1200px] mx-auto relative rounded-[2.5rem] bg-gradient-to-br from-primary-container/20 to-secondary-container/20 p-10 md:p-20 overflow-hidden border border-outline-variant/10 text-center"
+            className="max-w-[1200px] mx-auto relative rounded-2xl md:rounded-[2.5rem] bg-gradient-to-br from-primary-container/20 to-secondary-container/20 p-8 md:p-20 overflow-hidden border border-outline-variant/10 text-center"
           >
             <div className="absolute top-0 left-0 w-full h-full pointer-events-none bg-[radial-gradient(circle_at_50%_50%,rgba(163,166,255,0.1),transparent)]" />
 
@@ -521,14 +549,14 @@ export default function LandingPage() {
               Join thousands of users who have automated their financial future.
               Secure, transparent, and non-custodial by design.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center relative z-10">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center relative z-10 w-full sm:w-auto max-w-sm mx-auto sm:max-w-none">
               {connected ? (
-                <Button size="lg" className="shadow-xl">
-                  <Link href="/dashboard">Go to Dashboard</Link>
+                <Button size="lg" className="shadow-xl w-full sm:w-auto">
+                  <Link href="/dashboard" className="w-full text-center">Go to Dashboard</Link>
                 </Button>
               ) : (
-                <Button size="lg" className="shadow-xl">
-                  <Link href="/connect">Connect Wallet</Link>
+                <Button size="lg" className="shadow-xl w-full sm:w-auto">
+                  <Link href="/connect" className="w-full text-center">Connect Wallet</Link>
                 </Button>
               )}
             </div>

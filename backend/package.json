@@ -1,22 +1,18 @@
 {
-  "name": "backend",
+  "name": "autofi-backend",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "AutoFi DeFi Strategy Engine — AI-powered intent processing, performance tracking, and rebalance monitoring",
   "scripts": {
     "start": "node src/app.js",
     "dev": "node src/app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
+  "keywords": ["solana", "defi", "ai", "strategy-engine"],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
     "cors": "^2.8.6",
     "express": "^5.2.1"
-  },
-  "devDependencies": {
-    "pdf-parse": "^2.4.5"
   }
 }

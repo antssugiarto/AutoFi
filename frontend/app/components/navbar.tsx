@@ -21,7 +21,7 @@ export default function Navbar({ hideNavLinks = false }: { hideNavLinks?: boolea
 
   return (
     <nav className="fixed top-0 w-full z-50 bg-surface border-b border-outline-variant/10 shadow-[0_0_64px_rgba(99,102,241,0.06)]">
-      <div className="flex justify-between items-center pl-8 pr-8 h-16 w-full">
+      <div className="flex justify-between items-center px-4 md:px-8 h-16 w-full">
         {/* Logo */}
         <Link href="/" className="flex items-center">
           <AutoFiLogo className="h-9 md:h-10" />
@@ -51,10 +51,15 @@ export default function Navbar({ hideNavLinks = false }: { hideNavLinks?: boolea
 
         {/* Wallet Status / Connect Button */}
         {connected ? (
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 md:gap-4">
+            {/* Wallet Address - Mobile & Tablet only (Plain Text) */}
+            <div className="flex md:hidden items-center">
+              <span className="text-xs font-bold font-headline text-on-surface-variant tracking-tight">{walletAddress}</span>
+            </div>
+
             <button 
               onClick={handleDisconnect}
-              className="bg-surface-container-highest hover:bg-red-900/40 hover:text-red-400 hover:border-red-500/30 text-on-surface font-bold px-5 py-2.5 rounded-full transition-all text-sm border border-outline-variant/20"
+              className="bg-surface-container-highest hover:bg-red-900/40 hover:text-red-400 hover:border-red-500/30 text-on-surface font-bold px-4 py-2 md:px-5 md:py-2.5 rounded-full transition-all text-xs md:text-sm border border-outline-variant/20"
             >
               Disconnect
             </button>

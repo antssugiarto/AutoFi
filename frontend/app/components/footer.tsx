@@ -24,8 +24,8 @@ export default function Footer({ variant = "full", className = "" }: FooterProps
       <div className="w-full px-6 md:px-8 mx-auto flex flex-col gap-8">
         <div className="w-full h-px bg-surface-container-low" />
 
-        <div className="grid w-full grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-4">
-          <div className="justify-self-start">
+        <div className="flex flex-col md:grid md:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-4">
+          <div className="justify-self-start hidden md:block">
             <AutoFiLogo className="h-9" />
           </div>
 
@@ -33,7 +33,7 @@ export default function Footer({ variant = "full", className = "" }: FooterProps
             © {currentYear} AutoFi
           </p>
 
-          <div aria-hidden="true" className="justify-self-end h-9 w-[128px]" />
+          <div aria-hidden="true" className="hidden md:block justify-self-end h-9 w-[128px]" />
         </div>
       </div>
     </footer>

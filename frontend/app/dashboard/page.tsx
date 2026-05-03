@@ -138,7 +138,7 @@ export default function DashboardPage() {
   const recentTx = transactions.slice(0, 2);
 
   return (
-    <main className="pt-20 pb-6 px-8 flex-1 flex flex-col relative overflow-hidden">
+    <main className="pt-4 pb-20 md:pb-6 px-4 md:px-8 flex-1 flex flex-col relative overflow-hidden">
       <AmbientBackground
         fixed={false}
         blobs={[
@@ -155,11 +155,11 @@ export default function DashboardPage() {
               <span className="text-primary tracking-[0.2em] font-bold uppercase mb-2 block text-xs">
                 Atmosphere Dashboard
               </span>
-              <h1 className="text-3xl md:text-4xl font-headline font-extrabold text-white tracking-tight flex items-center gap-4">
+              <h1 className="text-2xl md:text-4xl font-headline font-extrabold text-white tracking-tight flex items-center gap-4">
                 Overview
                 {hasVaults && (
-                  <span className="text-sm font-bold bg-tertiary/10 text-tertiary px-3 py-1.5 rounded-full border border-tertiary/20 tracking-normal inline-flex items-center gap-1.5">
-                    <span className="w-2 h-2 rounded-full bg-tertiary animate-pulse" />
+                  <span className="text-[10px] md:text-sm font-bold bg-tertiary/10 text-tertiary px-2.5 py-1 md:px-3 md:py-1.5 rounded-full border border-tertiary/20 tracking-normal inline-flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full bg-tertiary animate-pulse" />
                     {vaults.length} Active Vault{vaults.length > 1 ? "s" : ""}
                   </span>
                 )}
@@ -200,14 +200,14 @@ export default function DashboardPage() {
                         </div>
                       </div>
                       <div className="flex items-baseline gap-3">
-                        <span className="text-4xl md:text-5xl font-headline font-extrabold text-white text-glow">
+                        <span className="text-3xl md:text-5xl font-headline font-extrabold text-white text-glow">
                           {(totalStaked + availableBalance).toFixed(6)}
                         </span>
-                        <span className="text-on-surface-variant text-lg">SOL</span>
+                        <span className="text-on-surface-variant text-base md:text-lg">SOL</span>
                       </div>
                     </div>
 
-                    <div className="mt-6 grid grid-cols-3 gap-6">
+                    <div className="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6">
                       <div>
                         <p className="text-xs text-on-surface-variant uppercase tracking-widest mb-1">Staked</p>
                         <p className="text-lg font-bold text-white">{totalStaked.toFixed(6)} SOL</p>
@@ -232,10 +232,10 @@ export default function DashboardPage() {
                         Earnings Growth
                       </span>
                       <div className="mt-2">
-                        <span className="text-2xl font-headline font-bold text-white">
+                        <span className="text-xl md:text-2xl font-headline font-bold text-white">
                           +{totalProfit.toFixed(6)}
                         </span>
-                        <p className="text-xs text-on-surface-variant mt-1">SOL Total Profit</p>
+                        <p className="text-[10px] md:text-xs text-on-surface-variant mt-1">SOL Total Profit</p>
                       </div>
                     </div>
                     <div className="absolute bottom-0 left-0 w-full h-32 opacity-40">
@@ -295,10 +295,10 @@ export default function DashboardPage() {
                             </div>
                           </div>
                           <div className="flex gap-2">
-                            <Link href="/dashboard/strategy" className="flex-1 py-3 rounded-xl bg-surface-container-highest text-center text-sm font-bold hover:bg-surface-bright transition-colors border border-outline-variant/10">
+                            <Link href="/dashboard/strategy" className="flex-1 py-2.5 md:py-3 rounded-xl bg-surface-container-highest text-center text-sm font-bold hover:bg-surface-bright transition-colors border border-outline-variant/10">
                               View Details
                             </Link>
-                            <Link href={`/withdraw?id=${v.id}`} className="px-6 py-3 rounded-xl bg-gradient-to-r from-primary to-primary-dim text-center text-on-primary text-sm font-bold active:scale-95 transition-transform">
+                            <Link href={`/withdraw?id=${v.id}`} className="px-5 md:px-6 py-2.5 md:py-3 rounded-xl bg-gradient-to-r from-primary to-primary-dim text-center text-on-primary text-sm font-bold active:scale-95 transition-transform">
                               Withdraw
                             </Link>
                           </div>
@@ -313,7 +313,7 @@ export default function DashboardPage() {
                   <ScrollReveal animationClass="spawn-rise" delay={700}>
                     <div className="flex items-center justify-between mb-4">
                       <h2 className="text-lg font-headline font-bold text-white">Recent Activity</h2>
-                      <div className="flex items-center gap-4">
+                      <div className="flex items-center gap-2 md:gap-4 flex-wrap">
                         <button 
                           onClick={handleInitialize}
                           disabled={isInitializing}
@@ -363,16 +363,16 @@ export default function DashboardPage() {
               </div>
             ) : (
               <ScrollReveal animationClass="spawn-rise" delay={300} className="flex-1 flex flex-col items-center justify-center py-12 text-center">
-                <div className="w-20 h-20 mb-5 rounded-full bg-surface-container-highest flex items-center justify-center text-primary">
-                  <IconTrackChanges size={40} />
+                <div className="w-16 h-16 md:w-20 md:h-20 mb-5 rounded-full bg-surface-container-highest flex items-center justify-center text-primary">
+                  <IconTrackChanges size={32} />
                 </div>
-                <h2 className="text-2xl font-headline font-bold text-white mb-3">No Active Strategies</h2>
-                <p className="text-sm text-on-surface-variant max-w-md mb-6">
+                <h2 className="text-xl md:text-2xl font-headline font-bold text-white mb-3">No Active Strategies</h2>
+                <p className="text-xs md:text-sm text-on-surface-variant max-w-md mb-6">
                   You haven&apos;t set up any automated DeFi strategies yet. Choose a goal and let AutoFi handle the rest.
                 </p>
                 <Link
                   href="/strategy"
-                  className="px-6 py-3 bg-gradient-to-r from-primary to-primary-dim text-white text-sm font-bold rounded-full shadow-[0_0_24px_rgba(163,166,255,0.3)] hover:shadow-[0_0_32px_rgba(163,166,255,0.5)] transition-all"
+                  className="px-8 py-3.5 md:px-10 md:py-4 bg-gradient-to-r from-primary to-primary-dim text-on-primary text-[15px] md:text-base font-bold rounded-full shadow-[0_0_24px_rgba(163,166,255,0.3)] hover:shadow-[0_0_32px_rgba(163,166,255,0.5)] transition-all"
                 >
                   Select a Strategy
                 </Link>

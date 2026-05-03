@@ -46,7 +46,7 @@ export default function HistoryPage() {
   const totalPages = Math.ceil(filtered.length / entriesPerPage) || 1;
   const currentEntries = filtered.slice((currentPage - 1) * entriesPerPage, currentPage * entriesPerPage);
 
-  const formatDate = (dateStr: string | null) => {
+  const formatDate = (dateStr: string | number | null) => {
     if (!dateStr) return "dd/mm/tttt";
     const d = new Date(dateStr);
     const day = String(d.getDate()).padStart(2, '0');
@@ -56,7 +56,7 @@ export default function HistoryPage() {
   };
 
   return (
-    <main className="pt-20 pb-6 px-8 flex-1 flex flex-col relative overflow-hidden">
+    <main className="pt-4 pb-20 md:pb-6 px-4 md:px-8 flex-1 flex flex-col relative overflow-hidden">
       <AmbientBackground
         fixed={false}
         blobs={[
@@ -86,7 +86,7 @@ export default function HistoryPage() {
             <ScrollReveal animationClass="spawn-rise" delay={200}>
               <div className="mb-6 space-y-4">
                 {/* Row 1: Filter Tabs */}
-                <div className="flex bg-surface-container-low rounded-2xl overflow-hidden border border-outline-variant/5 self-start w-fit">
+                <div className="flex bg-surface-container-low rounded-2xl overflow-x-auto border border-outline-variant/5 self-start w-fit">
                   {["All", "Deposits", "Withdrawals", "Rebalancing"].map((f) => (
                     <button
                       key={f}
@@ -94,7 +94,7 @@ export default function HistoryPage() {
                         setFilter(f);
                         setCurrentPage(1);
                       }}
-                      className={`px-4 py-1.5 text-sm font-bold transition-all ${filter === f ? "bg-surface-bright text-white" : "text-on-surface-variant hover:text-white"}`}
+                      className={`px-3 md:px-4 py-1.5 text-xs md:text-sm font-bold transition-all whitespace-nowrap ${filter === f ? "bg-surface-bright text-white" : "text-on-surface-variant hover:text-white"}`}
                     >
                       {f}
                     </button>
@@ -103,28 +103,28 @@ export default function HistoryPage() {
 
 
                 {/* Row 2: Showing (Left) and Date (Right) */}
-                <div className="flex items-center justify-between">
+                <div className="flex flex-row items-center justify-between gap-2 overflow-x-auto pb-1">
                   {/* Showing dropdown */}
-                  <div className="flex items-center gap-3">
-                    <span className="text-sm text-on-surface-variant capitalize font-medium">Showing</span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[13px] text-on-surface-variant capitalize font-medium">Show</span>
                     <select 
                       value={entriesPerPage}
                       onChange={(e) => {
                         setEntriesPerPage(Number(e.target.value));
                         setCurrentPage(1);
                       }}
-                      className="bg-surface-container-low border border-outline-variant/10 rounded-xl px-3 py-1.5 text-sm font-bold text-white focus:outline-none focus:border-primary transition-colors cursor-pointer"
+                      className="bg-surface-container-low border border-outline-variant/10 rounded-xl px-2 md:px-3 py-1.5 text-xs md:text-sm font-bold text-white focus:outline-none focus:border-primary transition-colors cursor-pointer"
                     >
                       {[5, 10, 25, 50].map(n => (
                         <option key={n} value={n}>{n}</option>
                       ))}
                     </select>
-                    <span className="text-sm text-on-surface-variant capitalize font-medium">Per Page</span>
+                    <span className="text-[13px] text-on-surface-variant capitalize font-medium hidden sm:inline">Per Page</span>
                   </div>
 
                   {/* Date Selection */}
-                  <div className="flex items-center gap-3">
-                    <span className="text-sm text-on-surface-variant capitalize font-medium">Date</span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[13px] text-on-surface-variant capitalize font-medium">Date</span>
                     <div className="flex items-center gap-2">
                       <div 
                         className="flex items-center gap-2 bg-surface-container-low border border-outline-variant/10 rounded-xl px-4 py-1.5 text-sm font-bold text-white transition-all hover:border-primary/50 hover:bg-surface-container cursor-pointer relative"
@@ -167,10 +167,10 @@ export default function HistoryPage() {
                       <table className="w-full text-left border-collapse">
                         <thead>
                           <tr className="bg-surface-container-highest/10 border-b border-outline-variant/5">
-                            <th className="px-6 py-4 capitalize text-sm text-on-surface-variant font-medium">Transaction</th>
-                            <th className="px-6 py-4 capitalize text-sm text-on-surface-variant font-medium">Amount</th>
-                            <th className="px-6 py-4 capitalize text-sm text-on-surface-variant font-medium">Date</th>
-                            <th className="px-6 py-4 capitalize text-sm text-on-surface-variant font-medium text-right">Status</th>
+                            <th className="px-4 md:px-6 py-4 capitalize text-sm text-on-surface-variant font-medium">Transaction</th>
+                            <th className="px-4 md:px-6 py-4 capitalize text-sm text-on-surface-variant font-medium">Amount</th>
+                            <th className="px-4 md:px-6 py-4 capitalize text-sm text-on-surface-variant font-medium hidden sm:table-cell">Date</th>
+                            <th className="px-4 md:px-6 py-4 capitalize text-sm text-on-surface-variant font-medium text-right">Status</th>
                           </tr>
                         </thead>
                         <tbody className="divide-y divide-outline-variant/5">
@@ -186,13 +186,16 @@ export default function HistoryPage() {
                                       {tx.type === "Deploy" ? "Deposit" : tx.type === "Withdraw" ? "Withdrawal" : "Rebalance"}
                                     </div>
                                     <div className="text-xs text-on-surface-variant capitalize">{tx.strategyName}</div>
+                                    <div className="text-[10px] text-on-surface-variant/60 mt-1 sm:hidden">
+                                      {formatDate(tx.timestamp)}
+                                    </div>
                                   </div>
                                 </div>
                               </td>
-                              <td className="px-6 py-5 font-mono text-sm font-bold text-white">
+                              <td className="px-4 md:px-6 py-5 font-mono text-sm font-bold text-white">
                                 {tx.type === "Deploy" ? "+" : "-"}{tx.amount.toFixed(4)} {tx.token}
                               </td>
-                              <td className="px-6 py-5 text-sm text-on-surface-variant">
+                              <td className="px-4 md:px-6 py-5 text-sm text-on-surface-variant hidden sm:table-cell">
                                 {formatDate(tx.timestamp)}
                               </td>
                               <td className="px-6 py-5 text-right">
@@ -222,7 +225,7 @@ export default function HistoryPage() {
                             <button
                               key={i + 1}
                               onClick={() => setCurrentPage(i + 1)}
-                              className={`w-8 h-8 rounded-full text-xs font-bold transition-all ${currentPage === i + 1 ? "bg-primary text-white shadow-lg shadow-primary/20" : "text-on-surface-variant hover:text-white hover:bg-surface-container"}`}
+                              className={`w-8 h-8 rounded-full text-xs font-bold transition-all ${currentPage === i + 1 ? "bg-primary text-on-primary shadow-lg shadow-primary/20" : "text-on-surface-variant hover:text-white hover:bg-surface-container"}`}
                             >
                               {i + 1}
                             </button>

@@ -1,4 +1,4 @@
-﻿interface BlobConfig {
+interface BlobConfig {
   color: "primary" | "secondary" | "tertiary";
   position: "top-left" | "top-right" | "bottom-left" | "bottom-right" | "center";
   size?: "sm" | "md" | "lg";
@@ -24,9 +24,9 @@ const POSITION_MAP = {
 };
 
 const SIZE_MAP = {
-  sm: "w-[300px] h-[300px] blur-[100px]",
-  md: "w-[400px] h-[400px] blur-[120px]",
-  lg: "w-[600px] h-[600px] blur-[160px]",
+  sm: "w-[200px] md:w-[300px] h-[200px] md:h-[300px] blur-[80px] md:blur-[100px]",
+  md: "w-[300px] md:w-[400px] h-[300px] md:h-[400px] blur-[100px] md:blur-[120px]",
+  lg: "w-[400px] md:w-[600px] h-[400px] md:h-[600px] blur-[130px] md:blur-[160px]",
 };
 
 const DEFAULT_BLOBS: BlobConfig[] = [

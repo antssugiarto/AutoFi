@@ -1,4 +1,4 @@
-﻿import { type ButtonHTMLAttributes } from "react";
+import { type ButtonHTMLAttributes } from "react";
 
 type ButtonVariant = "primary" | "secondary" | "ghost";
 type ButtonSize = "sm" | "md" | "lg" | "xl";
@@ -22,8 +22,8 @@ const VARIANT_CLASSES: Record<ButtonVariant, string> = {
 const SIZE_CLASSES: Record<ButtonSize, string> = {
   sm: "px-4 py-2 text-sm",
   md: "px-6 py-2.5 text-sm",
-  lg: "px-10 py-4 text-base",
-  xl: "px-12 py-5 text-lg",
+  lg: "px-7 py-3 md:px-10 md:py-4 text-[15px] md:text-base",
+  xl: "px-10 py-4 md:px-12 md:py-5 text-base md:text-lg",
 };
 
 export default function Button({
@@ -52,4 +52,3 @@ export default function Button({
     </button>
   );
 }
-
