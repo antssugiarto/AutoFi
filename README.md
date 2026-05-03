@@ -160,4 +160,8 @@ anchor deploy
 | `backend/src/services/performanceService.js` | Accuracy tracking & confidence calculation |
 | `backend/data/performance.json` | Persistent performance history storage |
 
+---
 
+## 📄 License
+
+ISC © AutoFi Team
