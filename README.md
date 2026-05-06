@@ -61,18 +61,18 @@ AutoFi/
 
 ```
 ┌─────────────┐     ┌──────────────┐     ┌────────────────┐     ┌──────────────┐
-│  User picks  │ ──→ │  AI Engine    │ ──→ │  Strategy      │ ──→ │  On-Chain     │
-│  a Goal      │     │  scores &     │     │  Preview &     │     │  Execution    │
-│  (Intent)    │     │  backtests    │     │  Confirmation  │     │  via Anchor   │
+│  User picks │ ──→ │  AI Engine   │ ──→ │  Strategy      │ ──→ │  On-Chain    │
+│  a Goal     │     │  scores &    │     │  Preview &     │     │  Execution   │
+│  (Intent)   │     │  backtests   │     │  Confirmation  │     │  via Anchor  │
 └─────────────┘     └──────────────┘     └────────────────┘     └──────────────┘
                                                                         │
-                          ┌──────────────────────────────────────────────┘
+                          ┌─────────────────────────────────────────────┘
                           ▼
                    ┌──────────────┐     ┌──────────────┐
-                   │  Performance  │ ──→ │  Rebalance    │
-                   │  Monitoring   │     │  Suggestions  │
-                   │  (Accuracy,   │     │  (Auto-swap   │
-                   │   Confidence) │     │   strategy)   │
+                   │  Performance │ ──→ │  Rebalance   │
+                   │  Monitoring  │     │  Suggestions │
+                   │  (Accuracy,  │     │  (Auto-swap  │
+                   │   Confidence)│     │   strategy)  │
                    └──────────────┘     └──────────────┘
 ```
 
@@ -97,7 +97,7 @@ AutoFi/
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/your-username/AutoFi.git
+https://github.com/antssugiarto/AutoFi.git
 cd AutoFi
 ```
 
