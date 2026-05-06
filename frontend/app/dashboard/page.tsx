@@ -13,10 +13,7 @@ import {
 import { useGlobalState } from "@/app/lib/GlobalStateContext";
 import ScrollReveal from "@/app/components/ScrollReveal";
 import { useRouter } from "next/navigation";
-import { useWallet, useConnection, useAnchorWallet } from "@solana/wallet-adapter-react";
-import { Program, AnchorProvider } from "@coral-xyz/anchor";
-import idl from "../../idl/autofi_smart_contract.json";
-import { PublicKey } from "@solana/web3.js";
+import { useWallet, useConnection } from "@solana/wallet-adapter-react";
 import { getVaults, getTransactions, calculateGrowth, hardReset, type Vault, type Transaction } from "@/app/lib/storage";
 import { getSolBalance } from "@/app/lib/solana";
 import { reportActualProfit } from "@/app/lib/performanceTracker";
@@ -32,8 +29,6 @@ export default function DashboardPage() {
   const [availableBalance, setAvailableBalance] = useState(0);
   const [, setTick] = useState(0); // for re-render growth
   const [isLoaded, setIsLoaded] = useState(false);
-  const [isInitializing, setIsInitializing] = useState(false);
-  const anchorWallet = useAnchorWallet();
 
   // Load data on mount and whenever wallet connection changes
   useEffect(() => {
@@ -80,41 +75,7 @@ export default function DashboardPage() {
     return () => clearInterval(interval);
   }, []);
 
-  const handleReset = () => {
-    if (confirm("Clear all local strategy data? This will not affect your on-chain funds but will reset your dashboard view.")) {
-      hardReset();
-      window.location.reload();
-    }
-  };
 
-  const handleInitialize = async () => {
-    if (!anchorWallet || !connection) return;
-    setIsInitializing(true);
-    try {
-      const provider = new AnchorProvider(connection, anchorWallet, { preflightCommitment: "confirmed" });
-      const program = new Program(idl as any, provider);
-      
-      const [yieldPoolPda] = PublicKey.findProgramAddressSync(
-        [Buffer.from("yield_pool")],
-        program.programId
-      );
-
-      await program.methods
-        .initializeYieldPool()
-        .accounts({
-          yieldPool: yieldPoolPda,
-          admin: anchorWallet.publicKey,
-        } as any)
-        .rpc();
-
-      alert("System Initialized Successfully!");
-    } catch (e: any) {
-      console.error("Initialization failed:", e);
-      alert("Initialization failed: " + e.message);
-    } finally {
-      setIsInitializing(false);
-    }
-  };
 
 
 
@@ -314,19 +275,6 @@ export default function DashboardPage() {
                     <div className="flex items-center justify-between mb-4">
                       <h2 className="text-lg font-headline font-bold text-white">Recent Activity</h2>
                       <div className="flex items-center gap-2 md:gap-4 flex-wrap">
-                        <button 
-                          onClick={handleInitialize}
-                          disabled={isInitializing}
-                          className="text-primary/60 text-[10px] font-bold uppercase tracking-widest hover:text-primary transition-colors disabled:opacity-50"
-                        >
-                          {isInitializing ? "Initializing..." : "Initialize System"}
-                        </button>
-                        <button 
-                          onClick={handleReset}
-                          className="text-error/60 text-[10px] font-bold uppercase tracking-widest hover:text-error transition-colors"
-                        >
-                          System Reset
-                        </button>
                         <Link href="/dashboard/history" className="text-primary text-sm font-bold hover:underline">View All</Link>
                       </div>
                     </div>
