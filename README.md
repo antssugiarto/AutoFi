@@ -1,8 +1,8 @@
 <div align="center">
 
-# 🚀 AutoFi — Automated DeFi Strategy Engine
+# AutoFi
 
-**AI-Powered Intent-Based DeFi Portfolio Automation on Solana**
+**Automated DeFi Strategy Engine**
 
 [![Solana](https://img.shields.io/badge/Solana-Devnet-9945FF?logo=solana&logoColor=white)](https://solana.com)
 [![Next.js](https://img.shields.io/badge/Next.js-15-black?logo=next.js)](https://nextjs.org)
@@ -13,20 +13,20 @@
 
 ---
 
-## 📖 Overview
+## Overview
 
 AutoFi eliminates the complexity of DeFi by transforming user **intents** (e.g., "Maximize my profit" or "Grow safely") into optimized, multi-step on-chain strategies — all automated by an AI engine.
 
 **Key Features:**
-- 🧠 **Intent-Based Execution** — Users pick a goal, not a protocol. The AI engine selects the optimal DeFi path.
-- 📊 **Live Performance Tracking** — Continuously monitors deployed strategies with accuracy scoring and confidence metrics.
-- ⚖️ **Smart Rebalancing** — Detects underperforming vaults and suggests optimal strategy swaps.
-- 🔐 **On-Chain Vaults** — Funds are secured via Anchor smart contracts on Solana Devnet.
-- 💳 **Full Wallet Session Protection** — All app pages require an active wallet connection.
+- **Intent-Based Execution** — Users pick a goal, not a protocol. The AI engine selects the optimal DeFi path.
+- **Live Performance Tracking** — Continuously monitors deployed strategies with accuracy scoring and confidence metrics.
+- **Smart Rebalancing** — Detects underperforming vaults and suggests optimal strategy swaps.
+- **On-Chain Vaults** — Funds are secured via Anchor smart contracts on Solana Devnet.
+- **Full Wallet Session Protection** — All app pages require an active wallet connection.
 
 ---
 
-## 🏗️ Architecture
+## Architecture
 
 ```
 AutoFi/
@@ -57,7 +57,7 @@ AutoFi/
 
 ---
 
-## ⚙️ How It Works
+## How It Works
 
 ```
 ┌─────────────┐     ┌──────────────┐     ┌────────────────┐     ┌──────────────┐
@@ -85,7 +85,7 @@ AutoFi/
 
 ---
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Prerequisites
 
@@ -137,7 +137,7 @@ anchor deploy
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 | Layer | Technology |
 |---|---|
@@ -149,7 +149,7 @@ anchor deploy
 
 ---
 
-## 📁 Key Files
+## Key Files
 
 | File | Purpose |
 |---|---|
@@ -162,6 +162,6 @@ anchor deploy
 
 ---
 
-## 📄 License
+## License
 
 ISC © AutoFi Team
