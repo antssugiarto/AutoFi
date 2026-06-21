@@ -12,7 +12,37 @@ import type {
   AssetHolding,
 } from "./types";
 
-// â”€â”€ Goals â”€â”€
+// ── Network Configuration ──
+export type SolanaNetwork = "devnet" | "mainnet-beta";
+
+export const NETWORK_CONFIG: Record<
+  SolanaNetwork,
+  {
+    label: string;
+    rpcEndpoint: string;
+    programId: string;
+    vaultAddress: string;
+  }
+> = {
+  devnet: {
+    label: "Devnet",
+    rpcEndpoint: "https://api.devnet.solana.com",
+    // AutoFi smart contract deployed on Devnet
+    programId: "51HEFeJUbmRSwsnU66UZPSfwSM7WZTfpdj28DW3Ezwc4",
+    vaultAddress: "2SvggQkCPdgAi2o289yue5WWwm8dEX4WzamLr5y3pL81",
+  },
+  "mainnet-beta": {
+    label: "Mainnet",
+    // Proxy internal Next.js — browser → server kita → Solana (tanpa CORS)
+    rpcEndpoint: "/api/rpc",
+    // TODO: Ganti dengan Program ID hasil deploy ke Mainnet
+    programId: "MAINNET_PROGRAM_ID_PLACEHOLDER",
+    vaultAddress: "MAINNET_VAULT_ADDRESS_PLACEHOLDER",
+  },
+
+};
+
+// ── Goals ──
 export const GOALS: Goal[] = [
   {
     id: "maximize_profit",

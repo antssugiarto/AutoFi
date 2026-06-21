@@ -15,9 +15,7 @@ import idl from "../../idl/autofi_smart_contract.json";
 import { saveVault, addTransaction, removeVault, updateVaultAmount, getVaultById, calculateGrowth } from "@/app/lib/storage";
 import { executeStrategy, buildStepProgress, type StepProgress } from "@/app/lib/defi/mapper";
 import { reportDeployment } from "@/app/lib/performanceTracker";
-
-// AutoFi Vault PDA address
-const VAULT_ADDRESS = new PublicKey("2SvggQkCPdgAi2o289yue5WWwm8dEX4WzamLr5y3pL81");
+import { useNetwork } from "@/app/lib/NetworkContext";
 
 function ExecutingContent() {
   const [status, setLocalStatus] = useState<"processing" | "success" | "error">("processing");
@@ -29,6 +27,16 @@ function ExecutingContent() {
   const { connection } = useConnection();
   const anchorWallet = useAnchorWallet();
   const executionStarted = useRef(false);
+
+  // ── Network-aware config (auto-detected from Phantom wallet) ──
+  const { networkConfig, networkLabel, isMainnet } = useNetwork();
+  let VAULT_ADDRESS: PublicKey;
+  try {
+    VAULT_ADDRESS = new PublicKey(networkConfig.vaultAddress);
+  } catch {
+    // Fallback sementara agar tidak crash jika address masih berupa placeholder (MAINNET_VAULT_ADDRESS_PLACEHOLDER)
+    VAULT_ADDRESS = new PublicKey("11111111111111111111111111111111");
+  }
   
   const isWithdrawal = searchParams.get("action") === "withdraw";
   const vaultId = searchParams.get("vaultId");
@@ -483,35 +491,59 @@ function ExecutingContent() {
             </div>
           )}
 
-          <div className="mt-4 md:mt-6 bg-surface-container-low/90 backdrop-blur-xl border border-white/10 rounded-3xl overflow-hidden shadow-2xl w-full">
-            <div className="p-5 md:px-6 md:py-6 flex flex-col sm:flex-row items-center justify-between gap-6 sm:gap-4">
+          <div className="mt-4 md:mt-6 bg-surface-container-low/90 backdrop-blur-xl border border-white/10 rounded-[32px] overflow-hidden shadow-2xl inline-block max-w-full">
+            <div className="p-4 md:px-6 md:py-4 flex flex-col sm:flex-row items-center justify-center gap-6 md:gap-8">
               
-              <div className="flex flex-row items-center justify-between sm:justify-start gap-4 md:gap-8 w-full sm:w-auto">
+              <div className="flex flex-row items-center justify-center gap-3 md:gap-6 w-full sm:w-auto">
                 {/* Wallet Info */}
-                <div className="flex items-center gap-3 md:gap-4">
-                  <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl md:rounded-2xl bg-secondary/10 flex items-center justify-center border border-secondary/20 shadow-inner shrink-0">
-                    <IconWallet size={18} className="text-secondary md:w-6 md:h-6" />
+                <div className="flex items-center gap-2 md:gap-3">
+                  <div className="w-8 h-8 md:w-10 md:h-10 rounded-xl md:rounded-2xl bg-secondary/10 flex items-center justify-center border border-secondary/20 shadow-inner shrink-0">
+                    <IconWallet size={16} className="text-secondary md:w-5 md:h-5" />
                   </div>
                   <div className="text-left">
-                    <p className="text-[10px] md:text-[11px] text-on-surface-variant font-bold uppercase tracking-widest mb-0.5 md:mb-1 whitespace-nowrap">Target Wallet</p>
-                    <p className="text-sm md:text-base font-bold font-headline text-white leading-none whitespace-nowrap">
+                    <p className="text-[9px] md:text-[10px] text-on-surface-variant font-bold uppercase tracking-widest mb-0.5 whitespace-nowrap">Target Wallet</p>
+                    <p className="text-xs md:text-sm font-bold font-headline text-white leading-none whitespace-nowrap">
                       {publicKey ? `${publicKey.toString().slice(0, 4)}...${publicKey.toString().slice(-4)}` : "Unknown"}
                     </p>
                   </div>
                 </div>
 
                 {/* Separator */}
-                <div className="w-px h-8 md:h-10 bg-white/10 shrink-0" />
+                <div className="w-px h-6 md:h-8 bg-white/10 shrink-0" />
 
                 {/* Amount Info */}
-                <div className="flex items-center gap-3 md:gap-4">
-                  <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl md:rounded-2xl bg-tertiary/10 flex items-center justify-center border border-tertiary/20 shadow-inner shrink-0">
-                    <IconBolt size={18} className="text-tertiary md:w-6 md:h-6" />
+                <div className="flex items-center gap-2 md:gap-3">
+                  <div className="w-8 h-8 md:w-10 md:h-10 rounded-xl md:rounded-2xl bg-tertiary/10 flex items-center justify-center border border-tertiary/20 shadow-inner shrink-0">
+                    <IconBolt size={16} className="text-tertiary md:w-5 md:h-5" />
                   </div>
                   <div className="text-left">
-                    <p className="text-[10px] md:text-[11px] text-on-surface-variant font-bold uppercase tracking-widest mb-0.5 md:mb-1 whitespace-nowrap">Total Amount</p>
-                    <p className="text-sm md:text-base font-bold font-headline text-white leading-none whitespace-nowrap">
+                    <p className="text-[9px] md:text-[10px] text-on-surface-variant font-bold uppercase tracking-widest mb-0.5 whitespace-nowrap">Total Amount</p>
+                    <p className="text-xs md:text-sm font-bold font-headline text-white leading-none whitespace-nowrap">
                       {state.amount || 0} SOL
+                    </p>
+                  </div>
+                </div>
+
+                {/* Separator */}
+                <div className="w-px h-6 md:h-8 bg-white/10 shrink-0" />
+
+                {/* Network Info */}
+                <div className="flex items-center gap-2 md:gap-3">
+                  <div className={`w-8 h-8 md:w-10 md:h-10 rounded-xl md:rounded-2xl flex items-center justify-center border shadow-inner shrink-0 ${
+                    isMainnet
+                      ? "bg-emerald-500/10 border-emerald-500/20"
+                      : "bg-primary/10 border-primary/20"
+                  }`}>
+                    <span className={`text-sm md:text-base ${isMainnet ? "text-emerald-400" : "text-primary"}`}>
+                      {isMainnet ? "🟢" : "🔵"}
+                    </span>
+                  </div>
+                  <div className="text-left">
+                    <p className="text-[9px] md:text-[10px] text-on-surface-variant font-bold uppercase tracking-widest mb-0.5 whitespace-nowrap">Network</p>
+                    <p className={`text-xs md:text-sm font-bold font-headline leading-none whitespace-nowrap ${
+                      isMainnet ? "text-emerald-400" : "text-primary"
+                    }`}>
+                      {networkLabel}
                     </p>
                   </div>
                 </div>
@@ -521,9 +553,9 @@ function ExecutingContent() {
               {status === "processing" && (
                 <Link
                   href={isWithdrawal ? "/withdraw" : "/preview"}
-                  className="w-full sm:w-auto px-8 py-3.5 md:py-4 bg-surface-container-highest text-on-surface text-sm md:text-base font-bold rounded-2xl hover:bg-surface-bright transition-all duration-300 text-center border border-white/5 active:scale-95 shadow-lg whitespace-nowrap shrink-0"
+                  className="w-full sm:w-auto px-8 py-2.5 md:py-3 bg-surface-container-highest text-on-surface text-xs md:text-sm font-bold rounded-2xl hover:bg-surface-bright transition-all duration-300 text-center border border-white/5 active:scale-95 shadow-lg whitespace-nowrap shrink-0"
                 >
-                  Cancel Task
+                  Cancel
                 </Link>
               )}
             </div>

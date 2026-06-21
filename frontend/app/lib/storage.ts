@@ -8,6 +8,19 @@
 const VAULTS_KEY = "autofi_vaults";
 const HISTORY_KEY = "autofi_history";
 
+function getNetworkPrefix() {
+  if (typeof window === "undefined") return "devnet";
+  return localStorage.getItem("autofi_network") || "devnet";
+}
+
+function getVaultsKey() {
+  return `${VAULTS_KEY}_${getNetworkPrefix()}`;
+}
+
+function getHistoryKey() {
+  return `${HISTORY_KEY}_${getNetworkPrefix()}`;
+}
+
 /* ── Types ── */
 
 export interface Vault {
@@ -42,7 +55,7 @@ export interface Transaction {
 export function getVaults(): Vault[] {
   if (typeof window === "undefined") return [];
   try {
-    return JSON.parse(localStorage.getItem(VAULTS_KEY) || "[]");
+    return JSON.parse(localStorage.getItem(getVaultsKey()) || "[]");
   } catch {
     return [];
   }
@@ -52,13 +65,13 @@ export function saveVault(vault: Omit<Vault, "id">): Vault {
   const vaults = getVaults();
   const newVault: Vault = { ...vault, id: `vault-${Date.now()}` };
   vaults.push(newVault);
-  localStorage.setItem(VAULTS_KEY, JSON.stringify(vaults));
+  localStorage.setItem(getVaultsKey(), JSON.stringify(vaults));
   return newVault;
 }
 
 export function removeVault(id: string): void {
   const vaults = getVaults().filter((v) => v.id !== id);
-  localStorage.setItem(VAULTS_KEY, JSON.stringify(vaults));
+  localStorage.setItem(getVaultsKey(), JSON.stringify(vaults));
 }
 
 /**
@@ -68,7 +81,7 @@ export function restoreVault(vault: Vault): void {
   const vaults = getVaults();
   if (!vaults.find(v => v.id === vault.id)) {
     vaults.push(vault);
-    localStorage.setItem(VAULTS_KEY, JSON.stringify(vaults));
+    localStorage.setItem(getVaultsKey(), JSON.stringify(vaults));
   }
 }
 
@@ -77,14 +90,14 @@ export function updateVault(updatedVault: Vault): void {
   const index = vaults.findIndex((v) => v.id === updatedVault.id);
   if (index !== -1) {
     vaults[index] = updatedVault;
-    localStorage.setItem(VAULTS_KEY, JSON.stringify(vaults));
+    localStorage.setItem(getVaultsKey(), JSON.stringify(vaults));
   }
 }
 
 export function hardReset(): void {
   if (typeof window === "undefined") return;
-  localStorage.removeItem(VAULTS_KEY);
-  localStorage.removeItem(HISTORY_KEY);
+  localStorage.removeItem(getVaultsKey());
+  localStorage.removeItem(getHistoryKey());
 }
 
 
@@ -96,7 +109,7 @@ export function updateVaultAmount(id: string, newAmount: number): void {
     vault.amount = newAmount;
     // Reset deployedAt so yield calculation restarts from new amount
     vault.deployedAt = Date.now();
-    localStorage.setItem(VAULTS_KEY, JSON.stringify(vaults));
+    localStorage.setItem(getVaultsKey(), JSON.stringify(vaults));
   }
 }
 
@@ -109,7 +122,7 @@ export function getVaultById(id: string): Vault | undefined {
 export function getTransactions(): Transaction[] {
   if (typeof window === "undefined") return [];
   try {
-    return JSON.parse(localStorage.getItem(HISTORY_KEY) || "[]");
+    return JSON.parse(localStorage.getItem(getHistoryKey()) || "[]");
   } catch {
     return [];
   }
@@ -119,7 +132,7 @@ export function addTransaction(tx: Omit<Transaction, "id">): Transaction {
   const txs = getTransactions();
   const newTx: Transaction = { ...tx, id: `tx-${Date.now()}` };
   txs.unshift(newTx); // newest first
-  localStorage.setItem(HISTORY_KEY, JSON.stringify(txs));
+  localStorage.setItem(getHistoryKey(), JSON.stringify(txs));
   return newTx;
 }
 
