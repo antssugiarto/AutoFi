@@ -32,7 +32,7 @@ if (process.env.MONGODB_URI) {
 
 // --- Middleware ---
 app.use(cors({
-  origin: ["http://localhost:3000", "http://localhost:3001"],
+  origin: process.env.CORS_ORIGIN || "*",
   methods: ["GET", "POST"],
 }));
 app.use(express.json());

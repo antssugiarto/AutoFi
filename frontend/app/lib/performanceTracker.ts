@@ -5,7 +5,7 @@
  * so the AI can learn and adjust confidence scores.
  */
 
-const API_BASE = "http://localhost:3001";
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
 
 /**
  * Report deployment to backend (records expected profit).
