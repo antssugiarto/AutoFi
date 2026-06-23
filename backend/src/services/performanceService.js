@@ -16,7 +16,9 @@ const path = require("path");
 const mongoose = require("mongoose");
 const StrategyModel = require("../models/Performance");
 
-const DATA_FILE = path.join(__dirname, "../../data/performance.json");
+const DATA_FILE = process.env.VERCEL 
+  ? path.join("/tmp", "performance.json")
+  : path.join(__dirname, "../../data/performance.json");
 
 // Default confidence per strategy (matches initial backtest output)
 // Now using 0.0 - 1.0 scale (decimal) for consistency
