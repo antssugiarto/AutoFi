@@ -54,16 +54,18 @@ app.get("/health", (req, res) => {
   res.json({ status: "ok", engine: "AutoFi DeFi Strategy Engine", version: "1.0.0" });
 });
 
-// --- Start server ---
-const server = app.listen(PORT, () => {
-  console.log(`AutoFi engine running on http://localhost:${PORT}`);
-}).on('error', (err) => {
-  if (err.code === 'EADDRINUSE') {
-    console.error(`Error: Port ${PORT} is already in use. Please kill the existing process or use a different port.`);
-  } else {
-    console.error('Server error:', err);
-  }
-  process.exit(1);
-});
+// --- Start server (only in local/non-serverless environment) ---
+if (!process.env.VERCEL) {
+  const server = app.listen(PORT, () => {
+    console.log(`AutoFi engine running on http://localhost:${PORT}`);
+  }).on('error', (err) => {
+    if (err.code === 'EADDRINUSE') {
+      console.error(`Error: Port ${PORT} is already in use. Please kill the existing process or use a different port.`);
+    } else {
+      console.error('Server error:', err);
+    }
+    process.exit(1);
+  });
+}
 
 module.exports = app;

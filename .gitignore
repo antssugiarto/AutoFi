@@ -24,3 +24,4 @@ backend/data/
 !package.json
 !tsconfig.json
 !**/idl/*.json
+!**/vercel.json
