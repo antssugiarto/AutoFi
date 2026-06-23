@@ -1,0 +1,24 @@
+{
+  "experimentalServices": {
+    "frontend": {
+      "root": "frontend",
+      "framework": "nextjs"
+    },
+    "backend": {
+      "root": "backend",
+      "framework": null,
+      "builds": [
+        {
+          "src": "src/app.js",
+          "use": "@vercel/node"
+        }
+      ],
+      "routes": [
+        {
+          "src": "/(.*)",
+          "dest": "src/app.js"
+        }
+      ]
+    }
+  }
+}
