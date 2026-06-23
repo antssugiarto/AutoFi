@@ -42,7 +42,7 @@ async function handleIntent(req, res) {
     );
 
     // Use DYNAMIC confidence from Improve Loop (overrides static backtest)
-    const dynamicConfidence = getStrategyConfidence(bestStrategy.name);
+    const dynamicConfidence = await getStrategyConfidence(bestStrategy.name);
 
     return res.json({
       strategy: {

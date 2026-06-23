@@ -19,6 +19,7 @@ export default function InvestPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [solBalance, setSolBalance] = useState<number | null>(null);
   const [isFetchingBalance, setIsFetchingBalance] = useState(true);
+  const [solUsdPrice, setSolUsdPrice] = useState(73.89); // Harga fallback awal
   const { setAmount, setBacktestResult, setStrategyResult, state } = useGlobalState();
   const router = useRouter();
   const { publicKey } = useWallet();
@@ -47,10 +48,25 @@ export default function InvestPage() {
     fetchBalance();
   }, [publicKey, connection]);
 
+  // Fetch real-time SOL price from our internal API proxy
+  useEffect(() => {
+    async function fetchPrice() {
+      try {
+        const res = await fetch("/api/price");
+        const json = await res.json();
+        if (json.data && json.data.SOL && json.data.SOL.price) {
+          setSolUsdPrice(json.data.SOL.price);
+        }
+      } catch (e) {
+        // Gunakan console.warn agar Next.js tidak menampilkan layar merah (error overlay)
+        console.warn("Using fallback price. Failed to fetch real-time SOL price", e);
+      }
+    }
+    fetchPrice();
+  }, []);
+
   const maxBalance = solBalance ?? 0;
   const numericAmount = parseFloat(localAmount) || 0;
-  // SOL price estimation (could be fetched from API in production)
-  const solUsdPrice = 178.5;
   const usdValue = (numericAmount * solUsdPrice).toLocaleString("en-US", {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,

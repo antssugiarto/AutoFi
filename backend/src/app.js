@@ -5,7 +5,9 @@
  * Implements: Intent → Validation → Strategy → Scoring → Backtest → Output
  */
 
+require('dotenv').config();
 const express = require("express");
+const mongoose = require("mongoose");
 const cors = require("cors");
 const { handleIntent } = require("./controllers/intentController");
 const {
@@ -18,6 +20,15 @@ const { handleCheck: handleRebalanceCheck } = require("./controllers/rebalanceCo
 
 const app = express();
 const PORT = process.env.PORT || 3001;
+
+// --- Database Connection ---
+if (process.env.MONGODB_URI) {
+  mongoose.connect(process.env.MONGODB_URI)
+  .then(() => console.log("[MongoDB] Successfully connected to cloud database."))
+  .catch((err) => console.error("[MongoDB] Connection error:", err));
+} else {
+  console.log("[Local DB] MONGODB_URI not found in .env. Falling back to local performance.json");
+}
 
 // --- Middleware ---
 app.use(cors({

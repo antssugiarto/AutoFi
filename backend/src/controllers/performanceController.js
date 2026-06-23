@@ -27,7 +27,7 @@ async function handleDeploy(req, res) {
       return res.status(400).json({ error: "Missing required fields" });
     }
 
-    const result = recordDeployment(
+    const result = await recordDeployment(
       strategyName,
       walletAddress || "anonymous",
       amount,
@@ -52,7 +52,7 @@ async function handleCheck(req, res) {
       return res.status(400).json({ error: "Missing required fields" });
     }
 
-    const result = recordActualProfit(
+    const result = await recordActualProfit(
       strategyName,
       walletAddress || "anonymous",
       amount,
@@ -72,10 +72,10 @@ async function handleCheck(req, res) {
  */
 async function handleGetConfidence(req, res) {
   try {
-    const scores = getConfidenceScores();
-    return res.json(scores);
+    const scores = await getConfidenceScores();
+    return res.json({ success: true, scores });
   } catch (error) {
-    return res.status(500).json({ error: error.message });
+    return res.status(500).json({ success: false, error: error.message });
   }
 }
 
@@ -86,8 +86,8 @@ async function handleGetConfidence(req, res) {
 async function handleGetHistory(req, res) {
   try {
     const { strategy } = req.params;
-    const history = getPerformanceHistory(strategy);
-    return res.json(history);
+    const history = await getPerformanceHistory(strategy);
+    return res.json({ success: true, strategy, ...history });
   } catch (error) {
     return res.status(500).json({ error: error.message });
   }

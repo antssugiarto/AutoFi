@@ -13,6 +13,8 @@
 
 const fs = require("fs");
 const path = require("path");
+const mongoose = require("mongoose");
+const StrategyModel = require("../models/Performance");
 
 const DATA_FILE = path.join(__dirname, "../../data/performance.json");
 
@@ -63,11 +65,49 @@ function saveData(data) {
   fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2));
 }
 
+const isCloud = () => mongoose.connection.readyState === 1;
+
+async function loadDataAsync() {
+  if (isCloud()) {
+    const strategies = await StrategyModel.find();
+    const data = { strategies: {} };
+    for (const s of strategies) {
+      data.strategies[s.name] = s.toObject();
+    }
+    for (const [name, confidence] of Object.entries(DEFAULT_CONFIDENCE)) {
+      if (!data.strategies[name]) {
+        data.strategies[name] = {
+          confidence,
+          totalRecords: 0,
+          avgAccuracy: 1.0,
+          records: [],
+        };
+      }
+    }
+    return data;
+  }
+  return loadData();
+}
+
+async function saveDataAsync(data) {
+  if (isCloud()) {
+    for (const [name, strategyData] of Object.entries(data.strategies)) {
+      await StrategyModel.findOneAndUpdate(
+        { name },
+        { $set: strategyData },
+        { upsert: true, new: true }
+      );
+    }
+  } else {
+    saveData(data);
+  }
+}
+
 /**
  * Record expected profit when user deploys a strategy.
  */
-function recordDeployment(strategyName, walletAddress, amount, expectedAPY) {
-  const data = loadData();
+async function recordDeployment(strategyName, walletAddress, amount, expectedAPY) {
+  const data = await loadDataAsync();
   
   if (!data.strategies[strategyName]) {
     data.strategies[strategyName] = {
@@ -93,7 +133,7 @@ function recordDeployment(strategyName, walletAddress, amount, expectedAPY) {
     checkedAt: null,
   });
 
-  saveData(data);
+  await saveDataAsync(data);
   return { success: true, strategyName };
 }
 
@@ -101,8 +141,8 @@ function recordDeployment(strategyName, walletAddress, amount, expectedAPY) {
  * Record actual profit and update confidence.
  * Called when user checks performance or withdraws.
  */
-function recordActualProfit(strategyName, walletAddress, amount, actualProfit, daysElapsed) {
-  const data = loadData();
+async function recordActualProfit(strategyName, walletAddress, amount, actualProfit, daysElapsed) {
+  const data = await loadDataAsync();
   const strategy = data.strategies[strategyName];
 
   if (!strategy) {
@@ -195,7 +235,7 @@ function recordActualProfit(strategyName, walletAddress, amount, actualProfit, d
     }
   }
 
-  saveData(data);
+  await saveDataAsync(data);
 
   return {
     success: true,
@@ -209,8 +249,8 @@ function recordActualProfit(strategyName, walletAddress, amount, actualProfit, d
 /**
  * Get current confidence scores for all strategies.
  */
-function getConfidenceScores() {
-  const data = loadData();
+async function getConfidenceScores() {
+  const data = await loadDataAsync();
   const scores = {};
 
   for (const [name, strategy] of Object.entries(data.strategies)) {
@@ -227,8 +267,8 @@ function getConfidenceScores() {
 /**
  * Get confidence for a specific strategy.
  */
-function getStrategyConfidence(strategyName) {
-  const data = loadData();
+async function getStrategyConfidence(strategyName) {
+  const data = await loadDataAsync();
   const strategy = data.strategies[strategyName];
   
   if (!strategy) {
@@ -241,8 +281,8 @@ function getStrategyConfidence(strategyName) {
 /**
  * Get full performance history for a strategy.
  */
-function getPerformanceHistory(strategyName) {
-  const data = loadData();
+async function getPerformanceHistory(strategyName) {
+  const data = await loadDataAsync();
   const strategy = data.strategies[strategyName];
 
   if (!strategy) {
@@ -260,7 +300,7 @@ function getPerformanceHistory(strategyName) {
 /**
  * Resets all performance data.
  */
-function resetData() {
+async function resetData() {
   const defaultData = { strategies: {} };
   for (const [name, confidence] of Object.entries(DEFAULT_CONFIDENCE)) {
     defaultData.strategies[name] = {
@@ -270,7 +310,7 @@ function resetData() {
       records: [],
     };
   }
-  saveData(defaultData);
+  await saveDataAsync(defaultData);
   return { success: true };
 }
 
