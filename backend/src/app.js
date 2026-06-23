@@ -38,21 +38,27 @@ app.use(cors({
 app.use(express.json());
 
 // --- Routes ---
-app.post("/intent", handleIntent);
+const router = express.Router();
+
+router.post("/intent", handleIntent);
 
 // --- Performance / Improve Loop Routes ---
-app.post("/performance/deploy", handleDeploy);
-app.post("/performance/check", handleCheck);
-app.get("/performance/confidence", handleGetConfidence);
-app.get("/performance/history/:strategy", handleGetHistory);
+router.post("/performance/deploy", handleDeploy);
+router.post("/performance/check", handleCheck);
+router.get("/performance/confidence", handleGetConfidence);
+router.get("/performance/history/:strategy", handleGetHistory);
 
 // --- Rebalance Monitor Routes ---
-app.get("/rebalance/check", handleRebalanceCheck);
+router.get("/rebalance/check", handleRebalanceCheck);
 
 // --- Health check ---
-app.get("/health", (req, res) => {
+router.get("/health", (req, res) => {
   res.json({ status: "ok", engine: "AutoFi DeFi Strategy Engine", version: "1.0.0" });
 });
+
+// Mount router ke root dan ke awalan Vercel
+app.use("/", router);
+app.use("/_/backend", router);
 
 // --- Start server (only in local/non-serverless environment) ---
 if (!process.env.VERCEL) {
